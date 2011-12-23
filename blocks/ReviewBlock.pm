@@ -89,23 +89,56 @@ sub user_can_sort {
 }
 
 
-## @method $ get_sort_data($user, $period, $fullsort)
+## @method $ get_sort_data($userid, $periodid, $fullsort)
 # Obtain the sort data submitted by the user during the specified period. Each user may perform a
 # sort exactly once during any period, so this method can only return at most one sort of data.
 #
-# @param user     The id of the user to fetch the sort dadta for.
-# @param period   The period during which the user should have performed the sort.
+# @param userid   The id of the user to fetch the sort dadta for.
+# @param periodid The period during which the user should have performed the sort.
 # @param fullsort If this is set, the full sort data is included in the returned hash, otherwise
 #                 only the sort header (user, period, sort date and last update) will be returned.
 # @return A reference to a hash containing the sort data (including a hash of sort answers,
 #         justifications, survey answers, and an array of summary hashes if $fullsort is set)
 sub get_sort_data {
     my $self     = shift;
-    my $user     = shift;
-    my $period   = shift;
+    my $userid   = shift;
+    my $periodid = shift;
     my $fullsort = shift;
 
+    # Get the sort header first, this is pretty easy to pull...
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
+                                             WHERE user_id = ?
+                                             AND period_id = ?");
+    $sorth -> execute($userid, $periodid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
 
+    # If there is no sort record for this user/period, or fullsort is not set, return whatever we got...
+    my $sort = $sorth -> fetchrow_hashref();
+    return $sort if(!$sort || !$fullsort); # order is important here!
+
+    # fullsort is set, so the rest of the sort data needs to be loaded...
+    my $datah = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"sortdata"}."
+                                             WHERE sort_id = ?");
+    $datah -> execute($sort -> {"id"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
+
+    # Copy any data we get into the sort hash
+    while(my $data = $datah -> fetchrow_hashref()) {
+        $sort -> {"data"} -> {$data -> {"name"}} = $data -> {"value"};
+    }
+
+    # now load the summaries, newest first
+    my $summh = $self -> {"dbh"} -> prepare("SELECT summary, storetime FROM ".$self -> {"settings"} -> {"database"} -> {"summaries"}."
+                                             WHERE sort_id = ?
+                                             ORDER BY storetime DESC");
+    $summh -> execute($sort -> {"id"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
+
+    # Fetch all the rows as an array of hashrefs...
+    $sort -> {"summaries"} = $sumh -> fetchall_arrayref({});
+
+    # And done...
+    return $sort;
 }
 
 1;
