@@ -100,7 +100,8 @@ my $modules = Modules -> new(cgi      => $out,
                              settings => $settings,
                              template => $template,
                              session  => $session,
-                             blockdir => "blocks")
+                             blockdir => "blocks",
+                             logtable => $settings -> {"database"} -> {"logging"})
     or die_log($out -> remote_host(), "Unable to create module handling object: ".$Modules::errstr);
 
 # Obtain the page moduleid, fall back on the default if this fails
