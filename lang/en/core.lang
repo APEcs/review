@@ -1,0 +1,4 @@
+SORT_NOLOGIN  = You must be logged in before you can undertake a progress review.
+SORT_NOPERIOD = You can not undertake a progress review at this time.
+SORT_HAVEDONE = You have already done your progress review for this period.
+
