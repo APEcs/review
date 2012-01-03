@@ -140,6 +140,7 @@ sub page_display {
         # Is the user requesting a logout? If so, doo eet.
         if(defined($self -> {"cgi"} -> param("logout"))) {
             if($self -> {"session"} -> delete_session()) {
+                $self -> log("logout", $self -> {"session"} -> {"sessuser"});
                 ($title, $body, $extrahead) = $self -> generate_loggedout();
             } else {
                 return $self -> generate_fatal($SessionHandler::errstr);
@@ -158,6 +159,7 @@ sub page_display {
 
         # Do we have any errors? If so, send back the login form with them
         if($login_errors) {
+            $self -> log("login error", $login_errors);
             ($title, $body, $extrahead) = $self -> generate_login_form($login_errors, 1);
 
         # No errors, user is valid...
@@ -165,18 +167,9 @@ sub page_display {
             # create the new logged-in session
             $self -> {"session"} -> create_session($user -> {"user_id"}, $self -> {"cgi"} -> param("persist")) if($user);
 
-            # Do we have realname/rolename for the user? If so, send the loggedin message...
-            if($user -> {"realname"} && $user -> {"rolename"}) {
-                ($title, $body, $extrahead) = $self -> generate_loggedin();
-
-            # missing user details...
-            } else {
-                $title = $self -> {"template"} -> replace_langvar("DETAILS_TITLES");
-                $body  = $self -> generate_userdetails_form({"block" => $self -> {"block"},
-                                                             "back" => $self -> get_back()}, undef, $self -> {"template"} -> load_template("blocks/new_user.tem"));
-            }
+            $self -> log("login", $user -> {"username"});
+            ($title, $body, $extrahead) = $self -> generate_loggedin();
         }
-
     # No session, no submission? Send back the login form...
     } else {
         ($title, $body, $extrahead) = $self -> generate_login_form(undef, 1);
