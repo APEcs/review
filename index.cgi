@@ -81,10 +81,10 @@ my $template = Template -> new(basedir   => path_join($settings -> {"config"} ->
     or die_log($out -> remote_host(), "Unable to create template handling object: ".$Template::errstr);
 
 # Create the authenticator
-my $auth =  SSHAuth -> new(cgi => $out,
+my $auth =  SSHCohortAuth -> new(cgi => $out,
                            dbh => $dbh,
                            settings => $settings)
-    or die_log($out -> remote_host(), "Unable to create session object: ".$SessionHandler::errstr);
+    or die_log($out -> remote_host(), "Unable to create auth object: ".$SessionHandler::errstr);
 
 # Start the session engine...
 my $session = SessionHandler -> new(cgi      => $out,
