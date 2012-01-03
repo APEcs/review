@@ -1,0 +1,490 @@
+@charset "utf-8";
+body  {
+    font: 100% Verdana, Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: #000000;
+    background-color: #FFFFFF;
+    font-size: 13px;
+}
+
+.review #container {
+    margin: 0 auto;
+    text-align: left; /* this overrides the text-align: center on the body element. */
+    padding: 90px 20px 10px 20px;
+}
+
+.noticeboard #container {
+    margin: 0 auto;
+    text-align: left; /* this overrides the text-align: center on the body element. */
+    padding: 90px 0px 10px 0px;
+}
+
+#header {
+  font-size: 127%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 80px;
+  min-width: 940px;
+}
+
+#siteLogo {
+    background-image: url("images/review.png");
+    background-position: center left ;
+    background-repeat: no-repeat;
+    float: left;
+    width: 320px;
+    margin: 10px 0;
+    padding: 15px 0 0 69px;
+}
+
+#siteLogo h1 a {
+    color: black;
+    text-decoration: none;
+}
+
+#noteLogo {
+    background-image: url("images/noticeboard.png");
+    background-position: center left ;
+    background-repeat: no-repeat;
+    float: left;
+    width: 320px;
+    margin: 10px 0;
+    padding: 15px 0 0 69px;
+}
+
+#noteLogo h1 a {
+    color: black;
+    text-decoration: none;
+}
+
+#siteSub {
+    color: #777;
+    display: inline;
+    font-size: 9pt;
+    font-weight: normal;
+    font-style: normal;
+    text-align: right;
+    float: right;
+}
+
+#header h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 17pt;
+    border-bottom: 1px solid #aaa;
+}
+
+#header #topright {
+  text-align: right;
+  float: right;
+  margin: 5px 0 0 0;
+  width: 550px;
+}
+
+#header #topright ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  }
+
+#header #topright li {
+  font-size: 9pt;
+  display: inline;
+  }
+
+#header #topright li a {
+  font-size: 9pt;
+  padding: 0 0 0 1.5em;
+  text-decoration: none;
+  }
+
+#header #topright li a:hover {
+  text-decoration: underline;
+  }
+
+#footer {
+    padding: 0 10px;
+}
+
+#footer p {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.fltrt {
+    float: right;
+    margin-left: 8px;
+}
+
+.fltlft {
+    float: left;
+    margin-right: 8px;
+}
+
+.error {
+    color: red;
+}
+
+.warn {
+    color: yellow;
+    font-weight: bold;
+}
+
+.small {
+    font-size: x-small;
+}
+
+.center {
+    text-align: center;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.noborder {
+    border: 0px;
+}
+
+.padover {
+    padding-top: 1em;
+}
+
+.hide {
+    display: none;
+}
+
+table.notebox {
+    margin: 0px 10%;   /* 10% = Will not overlap with other elements */
+    border: 1px solid #aaa;
+    border-left: 10px solid #1e90ff;    /* Default "notice" blue */
+    background: #fbfbfb;
+}
+table.notebox + table.notebox {   /* Single border between stacked boxes. */
+    margin-top: -1px;
+}
+.notebox th.nbox-text,
+.notebox td.nbox-text {            /* The message body cell(s) */
+    padding: 0.25em 0.5em;       /* 0.5em left/right */
+}
+.notebox td.nbox-image {           /* The left image cell */
+    padding: 2px 0 2px 0.5em;    /* 0.5em left, 0px right */
+}
+.notebox td.nbox-imageright {      /* The right image cell */
+    padding: 2px 0.5em 2px 0;    /* 0px left, 0.5em right */
+}
+
+table.notebox-notice {
+    border-left: 10px solid #1e90ff;    /* Blue */
+}
+table.notebox-warning {
+    border-left: 10px solid #b22222;    /* Red */
+}
+
+table.formtable {
+    width: 100%;
+    padding-right: 48px;
+}
+
+table.formtable td.label {
+    font-weight: bold;
+    text-align: right;
+    min-width: 10em;
+    white-space: nowrap;
+}
+
+table.formtable td.field {
+    text-align: left;
+    vertical-align: middle;
+}
+
+table.formtable td.subtitle {
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10px;
+    border-bottom: 1px dotted grey;
+}
+
+table.formtable td.top {
+    vertical-align: top;
+}
+
+
+div.message {
+    width: 100%;
+    padding: 5px;
+}
+
+div.message h2 {
+    padding: 2px;
+    margin: 0;
+    font-size: 14pt;
+    border-bottom: 1px dotted #666;
+}
+
+div.mbody {
+    padding-top: 5px;
+}
+
+.required {
+    color: red;
+}
+
+img.control {
+    padding-left: 3px;
+}
+
+div.matrix {
+    width: 100%;
+    max-height: 15.5em;
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: scroll;
+}
+
+table.matrix {
+    margin-right: 1px;
+}
+
+table.matrix th.help {
+    text-align: left;
+    white-space: nowrap;
+}
+
+table.matrix td.recip {
+    width: 100%;
+}
+
+/* CSS for zebratables */
+.alt1 {
+    background: #f7f7ff;
+    color: #000000;
+    vertical-align: middle;
+}
+
+.alt2 {
+    color: #000000;
+    background-color: #ffffff;
+    vertical-align: middle;
+}
+
+.alth {
+    color: #000000;
+    background-color:  #d4d4ff;
+    vertical-align: middle;
+}
+
+.hover {
+    color: #000000;
+    background-color: #d5fcdc;
+    vertical-align: middle;
+}
+
+td.zebra {
+    border: 1pt solid #ADB9CC;
+    padding: 0.25em 0.5em;
+}
+
+th.zebra {
+    border: 1pt solid #ADB9CC;
+    padding: 0.25em 0.5em;
+    vertical-align: middle;
+}
+
+table.zebra {
+    border-collapse: collapse;
+}
+
+a {
+    text-decoration: none;
+    color: #0645ad;
+    background: none;
+}
+a:visited {
+    color: #0b0080;
+}
+a:active {
+    color: #faa700;
+}
+a:hover, a:focus {
+    text-decoration: underline;
+}
+
+table.messagelist {
+    width: 100%;
+}
+
+table.messagelist td {
+    white-space: nowrap;
+}
+
+table.messagelist th {
+    white-space: nowrap;
+}
+
+table.messagelist td ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+table.messagelist td li {
+  display: inline;
+}
+
+ul#states li {
+    padding-bottom: 0.5em;
+}
+
+.cleared {
+    clear: both;
+}
+
+div.paginate {
+    float: right;
+    text-align: right;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+div.showhide {
+    float: left;
+    text-align: left;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    line-height: 27px;
+}
+
+span.pagebox {
+    border: 1px solid #cedfeb;
+    vertical-align: middle;
+    padding: 3px;
+    background-color: #e2e6f8;
+    margin-left: 1px;
+    line-height: 27px;
+}
+
+span.active {
+    background-color: #c1c1ff;
+}
+
+img.pageimg {
+    vertical-align: middle;
+}
+
+textarea.countarea {
+    width: 100%;
+}
+
+div.counter {
+    border: 1px inset grey;
+    padding: 3px;
+    font-size: x-small;
+}
+
+.twitokay {
+    color: green;
+}
+
+.twitlong {
+    color: red;
+}
+
+.delay-long {
+    color: green;
+}
+
+.delay-med {
+    color: orange;
+}
+
+.delay-short {
+    color: red;
+}
+
+div.messageview {
+    font-face: fixed;
+    white-space: pre-wrap;
+    overflow: auto;
+    overflow-x: auto;
+}
+
+div.cron {
+    font-face: fixed;
+    max-height: 25em;
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+img.link {
+    display: inline;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.iewarning {
+    display: none;
+}
+
+span.recipient:hover {
+    cursor: pointer;
+}
+
+span.recipient.child {
+    padding-left: 18px;
+}
+
+span.recipient.parent {
+    padding-left: 3px;
+}
+
+img.treetoggle {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    cursor: pointer;
+}
+
+div.recipient.parent.open {
+    background: url(images/blockopen.png) left center no-repeat;
+}
+
+div.recipient.parent.closed {
+    background: url(images/blockclose.png) left center no-repeat;
+}
+
+div#viewbar {
+    padding-left: 10px;
+    height: 22px;
+    background: url(images/noticeboard/ctrlbar_back.png) left center repeat-x;
+}
+
+#viewbar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#viewbar li {
+  font-size: 11pt;
+  display: inline;
+}
+
+#messages {
+    height: 100%;
+}
