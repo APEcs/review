@@ -1,0 +1,32 @@
+        <div class="message">
+            <h2>{L_LOGIN_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/images/password.png" width="48" height="48" alt="login" class="fltrt" />
+                ***error***
+                <div>{L_LOGIN_MESSAGE}</div>
+                <table class="formtable">
+                    <tr>
+                        <td class="label"><label class="required" for="username">{L_LOGIN_USERNAME}:</label></td>
+                        <td class="field"><input name="username" id="username" type="text" size="12" maxlength="12" /></td>
+                    </tr>
+                    <tr>
+                        <td class="label"><label class="required" for="password">{L_LOGIN_PASSWORD}:</label></td>
+                        <td class="field"><input name="password" id="password" type="password" size="24" maxlength="255" /></td>
+                    </tr>
+                    <tr>
+                        <td class="label"></td>
+                        <td class="field"><input onchange="persistWarning()" name="persist" id="persist" type="checkbox" /><label for="persist">{L_LOGIN_REMEMBER} ({L_LOGIN_MAX} ***persistlen*** {L_LOGIN_DAYS})</label></td>
+                    </tr>
+                    <tr>
+                        <td class="label"></td>
+                        <td class="field"><input name="login" id="login" type="submit" value="{L_LOGIN_TITLE}" /></td>
+                    </tr>
+                </table>
+                <table class="notebox notebox-warning hide" id="persistwarn">
+                    <tr>
+                        <td class="nbox-image"><img src="templates/default/images/important.png" width="48" height="48" alt="important" /></td>
+                        <td class="nbox-text">{L_PERSIST_WARNING}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>

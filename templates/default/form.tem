@@ -1,0 +1,7 @@
+        <form method="post" action="index.cgi">
+***content***
+        <div class="hide" id="hiddenargs">
+            <input type="hidden" name="block" value="***block***" />
+***args***
+        </div>
+        </form>

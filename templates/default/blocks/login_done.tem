@@ -1,0 +1,8 @@
+        <div class="message">
+            <h2>{L_LOGIN_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/images/password.png" width="48" height="48" alt="login" class="fltrt" />
+                <div>{L_LOGIN_DONE}</div>
+                ***return***
+            </div>
+        </div>
