@@ -55,7 +55,7 @@ sub get_current_period {
     $periodh -> execute()
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
 
-    return $period;
+    return $periodh -> fetchrow_hashref();
 }
 
 
@@ -135,7 +135,7 @@ sub get_sort_data {
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
 
     # Fetch all the rows as an array of hashrefs...
-    $sort -> {"summaries"} = $sumh -> fetchall_arrayref({});
+    $sort -> {"summaries"} = $summh -> fetchall_arrayref({});
 
     # And done...
     return $sort;
