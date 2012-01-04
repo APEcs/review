@@ -59,7 +59,85 @@ sub get_back {
 
 
 # ============================================================================
+#  Validation functions
+
+## @method @ validate_login()
+# Determine whether the username and password provided by the user are valid. If
+# they are, return the user's data.
+#
+# @return An array of two values: the first is either a reference to a hash containing
+#         the user's data, or undef. The second is either undef or an error message.
+sub validate_login {
+    my $self   = shift;
+    my $error  = "";
+    my $args   = {};
+
+    my $errtem = $self -> {"template"} -> load_template("blocks/login_error.tem");
+
+    # Check that the username is provided and valid
+    ($args -> {"username"}, $error) = $self -> validate_string("username", {"required"   => 1,
+                                                                            "nicename"   => $self -> {"template"} -> replace_langvar("LOGIN_USERNAME"),
+                                                                            "minlen"     => 2,
+                                                                            "maxlen"     => 12,
+                                                                            "formattest" => '^\w+',
+                                                                            "formatdesc" => $self -> {"template"} -> replace_langvar("LOGIN_ERR_BADUSERCHAR")});
+    # Bomb out at this point if the username is not valid.
+    return (undef, $self -> {"template"} -> process_template($errtem, {"***reason***" => $error})) if($error);
+
+    # Do the same with the password...
+    ($args -> {"password"}, $error) = $self -> validate_string("password", {"required"   => 1,
+                                                                            "nicename"   => $self -> {"template"} -> replace_langvar("LOGIN_PASSWORD"),
+                                                                            "minlen"     => 2,
+                                                                            "maxlen"     => 255});
+    return (undef, $self -> {"template"} -> process_template($errtem, {"***reason***" => $error})) if($error);
+
+    # Username and password appear to be present and contain sane characters. Try to log the user in...
+    my $user = $self -> {"session"} -> {"auth"} -> valid_user($args -> {"username"}, $args -> {"password"});
+
+    # User is valid!
+    return ($user, undef) if($user);
+
+    # User is not valid, does the lasterr contain anything?
+    return (undef, $self -> {"template"} -> process_template($errtem, {"***reason***" => $self -> {"session"} -> {"auth"} -> {"lasterr"}}))
+        if($self -> {"session"} -> {"auth"} -> {"lasterr"});
+
+    # Nothing useful, just return a fallback
+    return (undef, $self -> {"template"} -> process_template($errtem, {"***reason***" => $self -> {"template"} -> replace_langvar("LOGIN_INVALID")}));
+}
+
+
+# ============================================================================
 #  Content generation functions
+
+## @method $generate_login($error)
+# Generate the 'login' block to send to the user. This will not pre-populate the form fields, even
+# after the user has submitted and received an error - the user must fill in the details each time.
+#
+# @param error An error message to display in the login form.
+# @return A string containing the login block.
+sub generate_login {
+    my $self  = shift;
+    my $error = shift;
+
+    # Wrap the error message in a message box if we have one.
+    $error = $self -> {"template"} -> load_template("blocks/error_box.tem", {"***message***" => $error})
+        if($error);
+
+    my $persist_length = $self -> {"session"} -> {"auth"} -> get_config("max_autologin_time");
+
+    # Fix up possible modifiers
+    $persist_length =~ s/s$/ seconds/;
+    $persist_length =~ s/m$/ minutes/;
+    $persist_length =~ s/h$/ hours/;
+    $persist_length =~ s/d$/ days/;
+    $persist_length =~ s/M$/ months/;
+    $persist_length =~ s/y$/ years/;
+
+    # And build the login block
+    return $self -> {"template"} -> load_template("blocks/login.tem", {"***error***"      => $error,
+                                                                       "***persistlen***" => $persist_length});
+}
+
 
 ## @method $ generate_login_form($login_errors)
 # Generate the content of the login form.
@@ -76,7 +154,7 @@ sub generate_login_form {
                                                                       "***value***" => $self -> get_back()});
 
     return ($self -> {"template"} -> replace_langvar("LOGIN_TITLE"),
-            $self -> {"template"} -> load_template("form.tem", {"***content***" => $self -> generate_login($login_errors, 1),
+            $self -> {"template"} -> load_template("form.tem", {"***content***" => $self -> generate_login($login_errors),
                                                                 "***args***"    => $args,
                                                                 "***block***"   => $self -> {"block"}}),
             "");
