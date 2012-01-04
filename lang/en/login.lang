@@ -1,0 +1,17 @@
+LOGIN_TITLE     = Log in
+LOGIN_MESSAGE   = Please enter your School of CS unix login here. The information you enter <strong>is not stored</strong>, and is used for authentication only. Both fields are required.
+LOGIN_USERNAME  = Username
+LOGIN_PASSWORD  = Password
+LOGIN_REMEMBER  = Remember my login on this browser
+LOGIN_MAX       = for a maximum of
+PERSIST_WARNING = <strong>WARNING</strong>: do not enable the "Remember my login" option on shared, cluster, or public computers. This option should only be enabled on machines you have exclusive access to.
+LOGIN_FAILED    = Login failed
+LOGIN_INVALID   = Username or password are not valid.
+LOGIN_DAYS      = days
+
+LOGIN_DONE      = You have successfully logged into the system, and you will be redirected shortly.
+LOGIN_REDIRECT  = <p>If you do not want to wait, <a href="***url***">click here</a>.</p><p><a href="index.cgi">Click here</a> to return to the front page.</p>
+
+LOGOUT_TITLE    = Logged out
+LOGOUT_DONE     = You have successfully logged out of the system, and you will be redirected shortly.
+LOGOUT_REDIRECT = <p>If you do not want to wait, <a href="***url***">click here</a>.</p><p><a href="index.cgi">Click here</a> to return to the front page.</p>
