@@ -108,11 +108,7 @@ sub get_user_byid {
 
     my $user = $userh -> fetchrow_hashref();
 
-    # We have a 'real' user, but are they listed in the authorised users?
-    my $type = $self -> _authorised_user($user -> {"username"});
-    return undef if(!defined($type));
-
-    # Authorised user!
+    # Return the user record
     return $user;
 }
 
