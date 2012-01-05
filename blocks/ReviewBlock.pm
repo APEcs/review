@@ -169,11 +169,24 @@ sub get_user_sorts {
     $sorth -> execute($userid)
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
 
+    # Query to get the number of summaries for a given sort
+    my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(id) FROM ".$self -> {"settings"} -> {"database"} -> {"summaries"}."
+                                              WHERE sort_id = ?");
+
     # Get the current period for reference ease...
     my $period = $self -> get_current_period();
     my $current;
     my @sorts;
     while(my $sort = $sorth -> fetchrow_hashref()) {
+        # Work out the sort summary count for this sort
+        $counth -> execute($sort -> {"id"})
+            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary count query: ".$self -> {"dbh"} -> errstr);
+
+        my $count = $counth -> fetchrow_arrayref();
+        $sort -> {"summary_count"} = $count ? $count -> [0] : 0;
+
+        # If this is the current period sort, make sure it is recorded as such, then
+        # store the sort reference in the sort array to send back to the caller.
         $current = $sort if($period && $period -> {"id"} == $sort -> {"period_id"});
         push(@sorts, $sort);
     }
