@@ -25,7 +25,7 @@ package Login;
 # login form, checks the credentials they enter, and then redirects
 # them back to the task they were performing that required a login.
 use strict;
-use base qw(Block); # This class extends Block
+use base qw(ReviewBlock); # This class extends ReviewBlock
 
 # ============================================================================
 #  Query string handling
@@ -217,8 +217,8 @@ sub page_display {
 
         # Is the user requesting a logout? If so, doo eet.
         if(defined($self -> {"cgi"} -> param("logout"))) {
+            $self -> log("logout", $self -> {"session"} -> {"sessuser"});
             if($self -> {"session"} -> delete_session()) {
-                $self -> log("logout", $self -> {"session"} -> {"sessuser"});
                 ($title, $body, $extrahead) = $self -> generate_loggedout();
             } else {
                 return $self -> generate_fatal($SessionHandler::errstr);
@@ -255,6 +255,7 @@ sub page_display {
 
     # Done generating the page content, return the filled in page template
     return $self -> {"template"} -> load_template("page.tem", {"***title***"     => $title,
+                                                               "***topright***"  => $self -> generate_topright(),
                                                                "***extrahead***" => $extrahead,
                                                                "***content***"   => $body});
 }
