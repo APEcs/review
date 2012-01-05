@@ -30,6 +30,53 @@ use Logging qw(die_log);
 
 
 # ============================================================================
+#  Content generation functions
+
+## @method $ build_sort_list()
+# Generate a list of sorts the current user has performed, with links to view the
+# sort and edit the sort summary text.
+#
+# @return The page block containing the sort list.
+sub build_sort_list {
+    my $self     = shift;
+    my $sortlist = "";
+
+    # Fetch the list of sorts to process into html...
+    my ($sorts, $current) = $self -> get_user_sorts($self -> {"session"} -> {"sessuser"});
+
+    # If there are no sorts, fall back on the "no sorts done" message
+    if(!$sorts || !scalar(@{$sorts})) {
+        $sortlist = $self -> {"template"} -> load_template("blocks/sort_history_noentries.tem");
+
+    # Otherwise, process the sorts
+    } else {
+        my $sorttem = $self -> {"template"} -> load_template("blocks/sort_history_entry.tem");
+
+        foreach my $sort (@{$sorts}) {
+            # Precalculate some fiddlier things before processing the template
+            my $isactive   = $current && ($current -> {"id"} == $sort -> {"id"});
+            my $hassummary = $self -> {"template"} -> replace_langvar($sort -> {"summary_count"} ? "SORTHIST_GOTSUMMARY" : "SORTHIST_NOSUMMARY");
+
+            # Dumb append, this should just be a series of consecutive entries anyway
+            $sortlist .= $self -> {"template"} -> process_template($sorttem, {"***id***"    => $sort -> {"id"},
+                                                                              "***state***" => $isactive ? "active" : "inactive",
+                                                                              "***name***"  => $sort -> {"name"},
+                                                                              "***year***"  => $sort -> {"year"},
+                                                                              "***taken***" => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
+                                                                              "***hassummary***" => $hassummary });
+        }
+    }
+
+    return $self -> {"template"} -> load_template("blocks/sort_history.tem", {"***sorthist***" => $sortlist});
+}
+
+
+sub build_sort_option {
+    my $self = shift;
+
+
+
+# ============================================================================
 #  Interface functions
 
 ## @method $ page_display()
@@ -38,10 +85,12 @@ sub page_display {
     my $self = shift;
 
     # We need to determine what the page title should be, and the content to shove in it...
-    my ($title, $content) = ("", "");
+    my ($title, $content) = ($self -> {"template"} -> replace_langvar("PAGE_TITLE"), "");
 
     # User must be logged in before we can do anything else
     if($self -> {"session"} -> {"sessuser"} && $self -> {"session"} -> {"sessuser"} != $self -> {"session"} -> {"auth"} -> {"ANONYMOUS"}) {
+        $content = $self -> {"template"} -> load_template("blocks/core.tem", {"***sorthist***" => $self -> build_sort_list(),
+                                                          });
 
     # User has not logged in, force them to
     } else {
