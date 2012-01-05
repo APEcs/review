@@ -141,4 +141,42 @@ sub get_sort_data {
     return $sort;
 }
 
+
+## @method @ get_user_sorts($userid)
+# Obtain a list of sort ids and timestamps for the specified user. This returns a
+# reference to an array of hashes, one hash for each sort the user has performed.
+# If the user has performed a sort during the current time period, the second value
+# returned by this function is a hashref containing the id and timestamp of the
+# current-period sort.
+#
+# @param userid The ID of the user to obtain sorts for.
+# @return A reference to an array of hashes for each sort (ordered in reverse chronological
+#         order), and either a reference to a hash for the current period sort, or undef if
+#         the user has not done a sort during the current period.
+sub get_user_sorts {
+    my $self   = shift;
+    my $userid = shift;
+
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT s.id, s.sortdate, s.period_id, p.year, p.name
+                                             FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}." AS s,
+                                                  ".$self -> {"settings"} -> {"database"} -> {"periods"}." AS p
+                                             WHERE s.user_id = ?
+                                             AND p.id = s.period_id
+                                             ORDER BY s.sortdate DESC");
+    $sorth -> execute($userid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
+
+    # Get the current period for reference ease...
+    my $period = $self -> get_current_period();
+    my $current;
+    my @sorts;
+    while(my $sort = $sorth -> fetchrow_hashref()) {
+        $current = $sort if($period && $period -> {"id"} == $sort -> {"period_id"});
+        push(@sorts, $sort);
+    }
+
+    return (\@sorts, $current);
+}
+
+
 1;
