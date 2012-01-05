@@ -1,0 +1,4 @@
+TOPRIGHT_LOGIN     = Log in
+TOPRIGHT_LOGOUT    = Log out
+TOPRIGHT_LOGGEDIN  = Logged in as
+TOPRIGHT_NOTLOGGED = Not logged in
