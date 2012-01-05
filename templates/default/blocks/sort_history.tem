@@ -1,0 +1,10 @@
+        <div class="message">
+            <h2>{L_SORTHIST_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/images/history.png" width="48" height="48" alt="history" class="fltrt" />
+                <div>{L_SORTHIST_INTRO}</div>
+                <ul>
+                ***sorthist***
+                </ul>
+            </div>
+        </div>
