@@ -29,6 +29,9 @@ use base qw(Block); # This class extends Block
 use Logging qw(die_log);
 
 
+# ============================================================================
+#  Database interaction functions
+
 ## @method $ get_current_period($allow_sort)
 # Obtain the data for the current time period as given in the sort_periods table.
 # This will look in the sort_periods table for a period that the current day and
@@ -178,5 +181,28 @@ sub get_user_sorts {
     return (\@sorts, $current);
 }
 
+
+# ============================================================================
+#  Content generation functions
+
+## @method $ generate_topright()
+# Generate the username/login/logout links at the top right of the page, based on
+# whether the user has logged in yet or not.
+#
+# @return A string containing the content to show in the page top-right menu block.
+sub generate_topright {
+    my $self = shift;
+
+    # Has the user logged in?
+    if($self -> {"session"} -> {"sessuser"} && $self -> {"session"} -> {"sessuser"} != $self -> {"session"} -> {"auth"} -> {"ANONYMOUS"}) {
+        # We need the user's details
+        my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
+
+        return $self -> {"template"} -> load_template("topright_loggedin.tem", {"***user***" => $user -> {"username"}});
+    }
+
+    # User hasn't logged in, return the basic login stuff
+    return $self -> {"template"} -> load_template("topright_loggedout.tem");
+}
 
 1;
