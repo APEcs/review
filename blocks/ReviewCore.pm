@@ -53,7 +53,6 @@ sub page_display {
 
     # Done generating the page content, return the filled in page template
     return $self -> {"template"} -> load_template("page.tem", {"***title***"     => $title,
-                                                               "***sitewarn***"  => $self -> generate_sitewarn(),
                                                                "***extrahead***" => "",
                                                                "***content***"   => $content});
 
