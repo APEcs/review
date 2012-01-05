@@ -1,0 +1,8 @@
+        <div class="message">
+            <h2>{L_SORTOPT_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/images/sort.png" width="48" height="48" alt="sort" class="fltrt" />
+                <div>***sortmsg***</div>
+                ***sortform***
+            </div>
+        </div>
