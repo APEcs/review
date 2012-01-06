@@ -2,3 +2,4 @@ XML_NOLOGIN      = Unable to determine user cohort: user is not logged in.
 XML_BADUSER      = Unable to obtain user data, giving up.
 XML_BADCOHORT    = User does not belong to a cohort, unable to continue.
 XML_NOSTATEMENTS = No statements have been defined for the user's cohort.
+XML_NOMAP        = No map specifications have been defined for the user's cohort.
