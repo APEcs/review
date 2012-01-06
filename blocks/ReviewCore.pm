@@ -71,9 +71,24 @@ sub build_sort_list {
 }
 
 
+## @method $ build_sort_option()
+# Create the sort option box to send back to the user. This will put together the
+# sort status message and form based on the user's ability to perform a sort in the
+# current period. If the user can not sort, this returns a block stating that and
+# the reason, if the user can sort this returns a "do sort" form.
+#
+# @return The page block containing the sort message and form.
 sub build_sort_option {
     my $self = shift;
 
+    my $cansort = $self -> user_can_sort();
+    my $message = $self -> {"template"} -> load_template($cansort ? "blocks/sort_option_disabled.tem" : "blocks/sort_option_enabled.tem",
+                                                         { "***reason***" => $cansort });
+    my $form    = $cansort ? "" : $self -> {"template"} -> load_template("blocks/sort_option_form.tem");
+
+    return $self -> {"template"} -> load_template("blocks/sort_option.tem", {"***sortmsg***"  => $message,
+                                                                             "***sortform***" => $form});
+}
 
 
 # ============================================================================
@@ -89,8 +104,12 @@ sub page_display {
 
     # User must be logged in before we can do anything else
     if($self -> {"session"} -> {"sessuser"} && $self -> {"session"} -> {"sessuser"} != $self -> {"session"} -> {"auth"} -> {"ANONYMOUS"}) {
+        # Excessive logging enabled? If so, log the user viewing this...
+        $self -> log("view", "Sort history") if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
+
         $content = $self -> {"template"} -> load_template("blocks/core.tem", {"***sorthist***" => $self -> build_sort_list(),
-                                                          });
+                                                                              "***takesort***" => $self -> build_sort_option(),
+                                                                             });
 
     # User has not logged in, force them to
     } else {
