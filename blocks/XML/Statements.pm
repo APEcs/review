@@ -23,7 +23,7 @@ package XML::Statements;
 ## @class XML::Statements
 # This class generates XML containing the statements for the logged-in
 # user's sort. The class looks at the currently logged-in user's cohort
-# to determine which set of questions should be sent to the flashq
+# to determine which set of statements should be sent to the flashq
 # application.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
