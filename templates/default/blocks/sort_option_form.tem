@@ -1,0 +1,4 @@
+<form action="index.cgi" method="post">
+<input type="hidden" name="block" value="sort" />
+<div class="center"><input type="submit" name="submit" id="dosort" value="{L_SORTOPT_SORT}" /></div>
+</form>

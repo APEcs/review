@@ -485,6 +485,11 @@ div#viewbar {
   display: inline;
 }
 
-#messages {
-    height: 100%;
+input#dosort {
+    background: #ccc url(images/sort_btn.png) no-repeat 2px center;
+    margin: 10px;
+    padding: 3px;
+    padding-left: 22px;
+    font-weight: bold;
+
 }
