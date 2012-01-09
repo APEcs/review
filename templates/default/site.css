@@ -493,3 +493,17 @@ input#dosort {
     font-weight: bold;
 
 }
+
+.sortview {
+    height: 100%;
+}
+
+.sortviewpad {
+    height: 80%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0px auto;
+    padding-top: 80px;
+}

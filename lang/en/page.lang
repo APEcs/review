@@ -2,3 +2,5 @@ PAGE_TITLE    = PR Reflection
 PAGE_SUBTITLE = Progress Review and Reflection System
 PAGE_FOOTER   = Icons taken from the <a href="http://www.icon-king.com/files/nuvola-1.0.tar.gz">Nuvola icon set</a> by David Vignoni, and <a href="http://www.everaldo.com/crystal/">Crystal icons</a> by Everaldo Coelho under LGPL.<br/>Website code by Chris Page. Contact <a href="mailto:moodlesupport@cs.man.ac.uk">moodlesupport@cs.man.ac.uk</a> if you encounter any problems using this site.
 PAGE_IEISCRAP = This web application does not function correctly when used in Internet Explorer. Please use a standards-compliant browser like Firefox or Opera to use this site.
+
+SORTPAGE_TITLE = PR Sort

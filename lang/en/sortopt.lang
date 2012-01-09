@@ -2,3 +2,4 @@ SORTOPT_TITLE  = Sort
 SORTOPT_NOSORT = You are not currently allowed to perform any progress review sorts
 SORTOPT_DOSORT = You are eligible to perform a sort, please click on the 'Do sort' button below to bring up the sort application. Note that the sort application requires the Adobe Flash plugin to be installed and available to your web browser - if you do not have the Flash plugin installed, please install it before continuing. <b>IMPORTANT: You are very strongly advised to maximise your web browser window before clicking on the "Do sort" button.</b>
 SORTOPT_SORT   = Do sort
+SORTOPT_ERROR  = You are not currently sllowed to perform any progress review sorts:
