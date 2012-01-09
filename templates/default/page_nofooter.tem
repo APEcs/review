@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html class="sortview" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://www.w3.org/2005/10/profile">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{L_PAGE_TITLE}: ***title***</title>
+
+    <!-- mootools for effects and javascript sanity -->
+    <script type='text/javascript' src="templates/default/mootools-core.js"></script>
+    <script type='text/javascript' src="templates/default/mootools-more.js"></script>
+
+    <!-- popup stuff, reuses my MediaWiki extension resources -->
+    <link href="templates/default/TWPopup/popup.css" rel="stylesheet" type="text/css" />
+    <script type='text/javascript' src="templates/default/TWPopup/webtoolkit.base64.js"></script>
+    <script type='text/javascript' src="templates/default/TWPopup/popup.js"></script>
+
+    <!-- automatic table colouring -->
+    <script type='text/javascript' src="templates/default/zebratables/zebra.js"></script>
+
+    <!-- any site-specific javascriptery and styles -->
+    <script type='text/javascript' src="templates/default/site.js"></script>
+    <link href="templates/default/site.css" rel="stylesheet" type="text/css" />
+
+    <!--[if IE]>
+    <style type="text/css">
+        /* place css fixes for all versions of IE in this conditional comment */
+        .review #sidebar2, .review #sidebar1 { padding-top: 30px; }
+        .review #mainContent { zoom: 1; padding-top: 15px; }
+        /* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+        .iewarning { display: block; }
+    </style>
+    <![endif]-->
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href="templates/default/images/favicon.png">
+
+    ***extrahead***
+</head>
+
+<body class="review sortview">
+<div id="container" class="sortview">
+    <div id="header">
+        <div id="siteLogo">
+            <h1><a href="index.cgi">{L_PAGE_TITLE}</a></h1>
+            <div id="siteSub">{L_PAGE_SUBTITLE}</div>
+        </div>
+        <div id="topright">
+            <ul>***topright***</ul>
+        </div>
+    </div> <!-- #header -->
+    <div class="sortviewpad">
+***content***
+    </div>
+</div><!-- #container -->
+</body>
+</html>

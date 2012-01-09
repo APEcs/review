@@ -1,0 +1,16 @@
+        <div class="message sortview">
+            <h2>{L_SORTPAGE_TITLE}</h2>
+            <div class="mbody sortview">
+<object class="sortview" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="100%" height="100%" id="flashQ10mm" align="middle">
+<param name="allowScriptAccess" value="sameDomain" />
+<param name="movie" value="flashQ10mm.swf" />
+<param name="menu" value="false" />
+<param name="quality" value="high" />
+<param name="scale" value="noscale" />
+<param name="salign" value="t" />
+<param name="bgcolor" value="#ffffff" />
+<param name="flashVars" value="configFile=index.cgi?block=config" />
+<embed class="sortview" src="flashQ10mm.swf" flashVars="configFile=index.cgi?block=config" menu="false" quality="high" scale="noscale" salign="t" bgcolor="#ffffff" width="100%" height="100%" name="flashQ10mm" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+</object>
+            </div>
+        </div>
