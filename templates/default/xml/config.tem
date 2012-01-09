@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config version="1.0" htmlParse="false">
+  <!-- configuration files -->
+  <item id="xmlLanguageFile">config/language.xml</item>
+  <item id="xmlMapFile">index.cgi?block=map</item>
+  <item id="xmlStatementsFile">index.cgi?block=statements</item>
+
+  <!-- title of the study -->
+  <item id="studyTitle">Progress Review</item>
+
+  <!-- text-align property(left|right) -->
+  <item id="textAlign">left</item>
+
+  <!-- shuffle cards (true|false)  -->
+  <item id="shuffleCards">true</item>
+
+  <!-- login required (true|false) -->
+  <item id="loginrequired">false</item>
+  <!-- login with common password (leave blank if not required) -->
+  <item id="loginPassword"></item>
+  <!-- URL to individual login script(leave blank if not required) -->
+  <item id="loginUrl"></item>
+  <!-- request mode (post|get) -->
+  <item id="loginUrlMethod"></item>
+
+  <!-- activate/deactivate optional steps (true|false) -->
+  <item id="showStep3">true</item>
+  <item id="showStep4">true</item>
+  <item id="showStep5">true</item>
+
+  <!-- define form elements for step5; only displayed if showStep5 is true (delete tags if not required) -->
+  <item id="form">
+***formfields***<note bg="false">All fields marked with an * are mandatory.</note>
+  </item>
+
+  <!-- URL for data transmission via POST/GET (leave blank if not required) -->
+  <item id="submitUrl">index.cgi?block=save</item>
+  <!-- request mode (post|get) -->
+  <item id="submitUrlMethod">post</item>
+
+  <!-- data transmission via email, user must have an e-mail program like Outlook (leave blank if not required) -->
+  <item id="submitMail"></item>
+</config>
