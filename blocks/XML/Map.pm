@@ -36,7 +36,7 @@ use Logging qw(die_log);
 # a string containing an xml representation of the map in a form that
 # flashq can understand.
 #
-# @param userid The ID of the user to obtain the statements for.
+# @param userid The ID of the user to obtain the map for.
 # @return A string containing the map to present to the user in flashq.
 sub build_map_tree {
     my $self   = shift;
