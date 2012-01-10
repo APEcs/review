@@ -35,9 +35,12 @@
   </item>
 
   <!-- URL for data transmission via POST/GET (leave blank if not required) -->
-  <item id="submitUrl">index.cgi?block=save</item>
+  <item id="submitUrl">index.cgi</item>
+
   <!-- request mode (post|get) -->
   <item id="submitUrlMethod">post</item>
+
+  <item id="submitExtraArgs">block=save</item>
 
   <!-- Where to return the user to on exit -->
   <item id="returnURL">index.cgi</item>
