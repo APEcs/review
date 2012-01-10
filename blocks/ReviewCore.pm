@@ -56,6 +56,7 @@ sub build_sort_list {
             # Precalculate some fiddlier things before processing the template
             my $isactive   = $current && ($current -> {"id"} == $sort -> {"id"});
             my $hassummary = $self -> {"template"} -> replace_langvar($sort -> {"summary_count"} ? "SORTHIST_GOTSUMMARY" : "SORTHIST_NOSUMMARY");
+            my $title      = $self -> {"template"} -> replace_langvar($isactive ? "SORTHIST_CURRENT" : "SORTHIST_PAST");
 
             # Dumb append, this should just be a series of consecutive entries anyway
             $sortlist .= $self -> {"template"} -> process_template($sorttem, {"***id***"    => $sort -> {"id"},

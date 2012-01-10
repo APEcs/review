@@ -1,6 +1,9 @@
-SORTHIST_TITLE  = Sort and reflection history
-SORTHIST_INTRO  = Below is a list of all the sorts you have performed, with links through which you may view each sort, and edit or view your reflective summary of the sort.
-SORTHIST_NOHIST = You have not performed any sorts.
-SORTHIST_TAKEN  = Taken on
+SORTHIST_TITLE      = Sort and reflection history
+SORTHIST_INTRO      = Below is a list of all the sorts you have performed, with links through which you may view each sort, and edit or view your reflective summary of the sort.
+SORTHIST_NOHIST     = You have not performed any sorts.
+SORTHIST_TAKEN      = Taken on
+SORTHIST_ACYEAR     = academic year
+SORTHIST_CURRENT    = PR Sort for the current sort period.
+SORTHIST_PAST       = PR Sort for a past sort period.
 SORTHIST_NOSUMMARY  = No reflective summary stored, click to add one.
 SORTHIST_GOTSUMMARY = Reflective summary stored, click to view or edit it.

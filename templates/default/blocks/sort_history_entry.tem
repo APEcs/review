@@ -1,1 +1,1 @@
-<li><img src="templates/default/images/markers/***state***.png" width="16" height="16" alt="***state***" />&nbsp;***name***, ***year*** ({L_SORTHIST_TAKEN} ***taken***): <a href="index.cgi?block=summary&amp;sortid=***id***">***hassummary***</a></li>
+<li><img src="templates/default/images/markers/***state***.png" width="16" height="16" alt="***state***" title="***title***" />&nbsp;***name*** (***year*** {L_SORTHIST_ACYEAR}). {L_SORTHIST_TAKEN} ***taken***: <a href="index.cgi?block=summary&amp;sortid=***id***">***hassummary***</a></li>
