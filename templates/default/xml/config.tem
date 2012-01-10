@@ -39,6 +39,9 @@
   <!-- request mode (post|get) -->
   <item id="submitUrlMethod">post</item>
 
+  <!-- Where to return the user to on exit -->
+  <item id="returnURL">index.cgi</item>
+
   <!-- data transmission via email, user must have an e-mail program like Outlook (leave blank if not required) -->
   <item id="submitMail"></item>
 </config>

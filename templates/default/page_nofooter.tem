@@ -38,7 +38,7 @@
 </head>
 
 <body class="review sortview">
-<div id="container" class="sortview">
+<div id="containernp" class="sortview">
     <div id="header">
         <div id="siteLogo">
             <h1><a href="index.cgi">{L_PAGE_TITLE}</a></h1>

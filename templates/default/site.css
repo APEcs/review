@@ -15,6 +15,12 @@ body  {
     padding: 90px 20px 10px 20px;
 }
 
+.review #containernp {
+    margin: 0 auto;
+    text-align: left; /* this overrides the text-align: center on the body element. */
+    padding: 90px 20px 0px 20px;
+}
+
 .noticeboard #container {
     margin: 0 auto;
     text-align: left; /* this overrides the text-align: center on the body element. */
