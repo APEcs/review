@@ -1,0 +1,162 @@
+span.twpopup
+{
+    color: #008800;
+    background-repeat: no-repeat;
+    background-image: url(images/twpopup/popup.png);
+    background-position: 100% 50%;
+    background-color: transparent;
+    padding-top: 0px;
+    padding-right: 20px;
+    padding-bottom: 0px;
+}
+
+span.twpopup-sys
+{
+    color: #008800;
+}
+
+div.twpopup
+{
+    visibility: hidden; 
+    opacity: 0;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ccc;
+    z-index: 1000;
+}
+
+div.twpopup div.twpopup-body
+{
+    color: #ccc;
+}
+
+table.twpopup 
+{
+    background-color: #333;
+    color: #ccc;
+}
+
+div.twpopup div.twpopup-body div.twpopup-core 
+{
+    background-color: #333;
+    padding: 5px 5px 5px 11px;
+/*    white-space: nowrap; */
+}
+
+div.twpopup-core
+{
+    min-width: 512px;
+}
+
+div.twpopup-core-sys
+{
+    background-color: #333;
+    padding: 5px 5px 5px 11px;
+}
+
+div.twpopup div.twpopup-body
+{
+    background-image: url(images/twpopup/rc.png);
+    background-position: top right;
+    background-repeat: repeat-y;
+    padding: 0 8px 0 0;
+}
+
+div.twpopup div.twpopup-body div.twpopup-bar
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 6px;
+    background-image: url(images/twpopup/lc.png);
+    background-position: top left;
+    background-repeat: repeat-y;
+}
+
+div.twpopup div.twpopup-header
+{
+    position: relative;
+    height: 6px;
+    padding: 0 6px;
+    background-image: url(images/twpopup/tr.png);
+    background-position: top right;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+div.twpopup div.twpopup-header div.twpopup-bar
+{
+    height: 6px;
+    background-image: url(images/twpopup/tc.png);
+    background-position: top left;
+    background-repeat: repeat-x;
+    overflow: hidden;
+}
+
+div.twpopup div.twpopup-footer
+{
+    position: relative;
+    height: 9px;
+    padding: 0 8px 0 6px;
+    background-image: url(images/twpopup/br.png);
+    background-position: top right;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+div.twpopup div.twpopup-footer div.twpopup-bar
+{
+    height: 9px;
+    background-image: url(images/twpopup/bc.png);
+    background-position: top left;
+    background-repeat: repeat-x;
+    overflow: hidden;
+}
+
+div.twpopup div.twpopup-header div.twpopup-corner
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 6px;
+	width: 6px;
+	background-image: url(images/twpopup/tl.png);
+	background-position: top left;
+	background-repeat: no-repeat;
+}
+
+div.twpopup div.twpopup-footer div.twpopup-corner
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 9px;
+	width: 6px;
+	background-image: url(images/twpopup/bl.png);
+	background-position: top left;
+	background-repeat: no-repeat;
+}
+
+span.twpopup-entrytitle
+{
+    color: #6eade7;
+}
+
+td.twpopup-entrytitle
+{
+    color: #6eade7;
+    text-align: right;
+    vertical-align: top;
+}
+
+div.twpopup-title
+{
+    font-weight: bold;
+}
+
+div.twpopup-controls
+{
+    padding-top: 5px;
+}
