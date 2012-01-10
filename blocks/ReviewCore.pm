@@ -59,12 +59,13 @@ sub build_sort_list {
             my $title      = $self -> {"template"} -> replace_langvar($isactive ? "SORTHIST_CURRENT" : "SORTHIST_PAST");
 
             # Dumb append, this should just be a series of consecutive entries anyway
-            $sortlist .= $self -> {"template"} -> process_template($sorttem, {"***id***"    => $sort -> {"id"},
-                                                                              "***state***" => $isactive ? "active" : "inactive",
-                                                                              "***name***"  => $sort -> {"name"},
-                                                                              "***year***"  => $sort -> {"year"},
-                                                                              "***taken***" => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
-                                                                              "***hassummary***" => $hassummary });
+            $sortlist .= $self -> {"template"} -> process_template($sorttem, {"***id***"         => $sort -> {"id"},
+                                                                              "***state***"      => $isactive ? "active" : "inactive",
+                                                                              "***name***"       => $sort -> {"name"},
+                                                                              "***year***"       => $sort -> {"year"},
+                                                                              "***taken***"      => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
+                                                                              "***hassummary***" => $hassummary,
+                                                                              "***title***"      => $title});
         }
     }
 
