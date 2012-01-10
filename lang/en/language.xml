@@ -36,9 +36,9 @@
   <item id="transferHead">Submit Data</item>
   <item id="transferText">You've finished the survey. Please submit your data now.</item>
   <item id="transferFailed">Data submission failed. Please try again or mail your results via email/post.</item>
-  <item id="transferOk">Thank you for using FlashQ. We would appreciate if you could send us feedback about this application (bugs, ideas, suggestion, etc.).{br}{br}Christian Hackert{br}{a href="http://www.hackert.biz/flashq" target="_blank"}{u}www.hackert.biz/flashq{/u}{/a}.{br}{br}You can now close your browser window.</item>
+  <item id="transferOk">Your sort has been submitted successfully, and has been saved by the system.{br}{br}Please click "Exit" below to return to your sort history.</item>
   <item id="mailHead">Submit Data</item>
   <item id="mailText">You can either submit your data either via email or post. In the former case you'll need an email client like Outlook, in the latter a printer.</item>
   <item id="mailBody">Thank you for completing your sort.</item>
-  <item id="printoutText">Somebody{br}Some street 100{br}Some city{br}{br}Please send this printout to address mentioned above. Thanks for you help.</item>
+  <item id="printoutText">Please bring this printout to your tutor.</item>
 </language>
