@@ -513,3 +513,7 @@ input#dosort {
     margin: 0px auto;
     padding-top: 80px;
 }
+
+ul.sorthist {
+    list-style: none;
+}
