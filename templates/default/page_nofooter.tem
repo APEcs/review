@@ -39,6 +39,9 @@
 
 <body class="review sortview">
 <div id="containernp" class="sortview">
+    <div class="sortviewpad">
+***content***
+    </div>
     <div id="header">
         <div id="siteLogo">
             <h1><a href="index.cgi">{L_PAGE_TITLE}</a></h1>
@@ -48,9 +51,6 @@
             <ul>***topright***</ul>
         </div>
     </div> <!-- #header -->
-    <div class="sortviewpad">
-***content***
-    </div>
 </div><!-- #container -->
 </body>
 </html>
