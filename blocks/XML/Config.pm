@@ -101,7 +101,7 @@ sub page_display {
 
     print $self -> {"cgi"} -> header(-type => 'application/xml',
                                      -charset => 'utf-8');
-    print $self -> {"template"} -> load_template("xml/config.tem", {"***formfields***"  => $tree});
+    print Encode::encode_utf8($self -> {"template"} -> load_template("xml/config.tem", {"***formfields***"  => $tree}));
     exit;
 }
 
