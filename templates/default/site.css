@@ -32,9 +32,8 @@ body  {
   position: absolute;
   top: 0px;
   left: 0px;
-  margin: 0 auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  margin: 0 20px;
+  padding: 0px;
   height: 80px;
   min-width: 940px;
 }
