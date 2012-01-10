@@ -160,7 +160,7 @@ sub get_user_sorts {
     my $self   = shift;
     my $userid = shift;
 
-    my $sorth = $self -> {"dbh"} -> prepare("SELECT s.id, s.sortdate, s.period_id, p.year, p.name
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT s.id, s.sortdate, s.updated, s.period_id, p.year, p.name
                                              FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}." AS s,
                                                   ".$self -> {"settings"} -> {"database"} -> {"periods"}." AS p
                                              WHERE s.user_id = ?

@@ -64,6 +64,7 @@ sub build_sort_list {
                                                                               "***name***"       => $sort -> {"name"},
                                                                               "***year***"       => $sort -> {"year"},
                                                                               "***taken***"      => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
+                                                                              "***updated***"    => $self -> {"template"} -> format_time($sort -> {"updated"}),
                                                                               "***hassummary***" => $hassummary,
                                                                               "***title***"      => $title});
         }

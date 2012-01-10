@@ -3,8 +3,9 @@
             <div class="mbody">
                 <img src="templates/default/images/history.png" width="48" height="48" alt="history" class="fltrt" />
                 <div>{L_SORTHIST_INTRO}</div>
-                <ul class="sorthist">
+                <table class="zebra" style="margin-top: 0.5em;">
+                <tr><th>&nbsp;</th><th>{L_SORTHIST_PERIOD}</th><th>{L_SORTHIST_ACYEAR}</th><th>{L_SORTHIST_TAKEN}</th><th>{L_SORTHIST_UPDATED}</th><th>&nbsp;</th></tr>
                 ***sorthist***
-                </ul>
+                </table>
             </div>
         </div>

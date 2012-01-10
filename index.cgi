@@ -76,6 +76,7 @@ start_log($settings -> {"config"} -> {"logfile"}) if($settings -> {"config"} -> 
 
 # Create the template handler object
 my $template = Template -> new(basedir   => path_join($settings -> {"config"} -> {"base"}, "templates"),
+                               timefmt   => $settings -> {"config"} -> {"timefmt"},
                                blockname => 1,
                                mailcmd   => '/usr/sbin/sendmail -t -f '.$settings -> {"config"} -> {"Core:envelope_address"})
     or die_log($out -> remote_host(), "Unable to create template handling object: ".$Template::errstr);
