@@ -1,0 +1,6 @@
+SORTGRID_LEASTLIKE  = LEAST LIKE ME
+SORTGRID_MOSTLIKE   = MOST LIKE ME
+
+SORTGRID_ERR_NOUSER = Unable to locate record for user ***userid***. Please report this error!
+SORTGRID_ERR_NOMAP  = No map definition found for cohort ***cohortid***. Please report this error!
+SORTGRID_ERR_NOSORT = No sort data has been recorded for the specified sort (id ***sortid***). Please report this error!
