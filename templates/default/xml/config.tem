@@ -24,6 +24,10 @@
   <!-- request mode (post|get) -->
   <item id="loginUrlMethod"></item>
 
+  <item id="negativeColour">***negcol***</item>
+  <item id="neutralColour">***neucol***</item>
+  <item id="positiveColour">***poscol***</item>
+
   <!-- activate/deactivate optional steps (true|false) -->
   <item id="showStep3">true</item>
   <item id="showStep4">true</item>
