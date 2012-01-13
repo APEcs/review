@@ -1,0 +1,14 @@
+<table id="sort">
+***rows***
+</table>
+<style type="text/css">
+th.sortlabel  { width: ***cellwidth*** }
+th.sortheader { width: ***cellwidth*** }
+td.sortbox {
+    width: ***cellwidth***;
+    height: ***cellheight****;
+}
+div.cellbox {
+    height: ***cellheight***;
+}
+</style>

@@ -1,0 +1,6 @@
+        <div class="message">
+            <h2>{L_SUMMARY_SORTTITLE} ***user*** ({L_SUMMARY_SORTTAKEN} ***time***)</h2>
+            <div class="mbody">
+***sortgrid***
+            </div>
+        </div>
