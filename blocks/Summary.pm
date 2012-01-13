@@ -1,10 +1,10 @@
 ## @file
-# This file contains the implementation of the core review features.
+# This file contains the implementation of the summary view features.
 #
 # @author  Chris Page &lt;chris@starforge.co.uk&gt;
 # @version 1.0
-# @date    22 December 2011
-# @copy    2011, Chris Page &lt;chris@starforge.co.uk&gt;
+# @date    12 January 2012
+# @copy    2012, Chris Page &lt;chris@starforge.co.uk&gt;
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,126 +18,50 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-package ReviewCore;
+package Summary;
 
-## @class ReviewCore
-# Implementation of the core functionality for the review webapp. This will show
-# the user their list of past sorts, provide the option to start a new sort if it
-# is available, and serve up the flashQ application page if appropriate.
+## @class Summary
+# Implementation of the summary view functionality for the review webapp. This
+# displays the selected sort (if the logged in user matches the id of the user
+# that did the sort), and allows the user to update the reflective summary for it.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
 use Logging qw(die_log);
+use Utils qw(is_defined_numeric);
 
-
-# ============================================================================
-#  Content generation functions
-
-
-sub build_sort_grid {
+## @method $ build_summary_view($sortid)
+# Generate the summary view for the specified sortid, or an error if the user
+# requesting the view is not logged in or is not the user who did the sort.
+#
+# @param sortid The ID of the sort to show.
+# @return The summary view, or an error message.
+sub build_summary_view {
     my $self   = shift;
-    my $userid = shift;
     my $sortid = shift;
 
-    my @colours = ($self -> {"settings"} -> {"config"} -> {"XML::Config:negativeColour"},
-                   $self -> {"settings"} -> {"config"} -> {"XML::Config:neutralColour"},
-                   $self -> {"settings"} -> {"config"} -> {"XML::Config:positiveColour"});
-
-    # First stage of grid construction is determining the user's cohort...
-    my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($userid);
+    # Obtain the logged-in user's record
+    my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
     return $self -> {"template"} -> load_template("blocks/error_box.tem",
                                                   {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
-                                                                                                               {"***userid***" => $userid})
+                                                                                                               {"***userid***" => $self -> {"session"} -> {"sessuser"}})
                                                   })
         unless($user);
 
-    # pull in the map for the cohort
-    my $maph = $self -> {"dbh"} -> prepare("SELECT m.*
-                                            FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_maps"}." AS c,
-                                                 ".$self -> {"settings"} -> {"database"} -> {"maps"}." AS m
-                                            WHERE m.id = c.map_id
-                                            AND c.cohort_id = ?");
-    $maph -> execute($user -> {"cohort_id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform map range lookup query: ".$self -> {"dbh"} -> errstr);
+    # Obtain the sort data
+    my $sort = $self -> get_sort_byids($sortid, $user -> {"id"});
+    return $sort unless(ref($sort) eq "HASH");
 
-    my $griddata = {};
-    while(my $maprow = $maph -> fetchrow_hashref()) {
-        $griddata -> {$maprow -> {"flashq_id"}} = { "colour" => $maprow -> {"colour"},
-                                                    "count"  => $maprow -> {"count"} };
-        $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ "", $maprow -> {"flashq_id"} ];
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# TODO:
+# - Fetch and show top 2/ bottom 2
+# - fetch and show summary and edits (use accordion for old versions?)
+# - show summary edit box (use html area?)
 
-        # Work out the range of columns as the rows are processed
-        $griddata -> {"ranges"} -> {"mincol"} = $maprow -> {"flashq_id"}
-            if(!defined($griddata -> {"ranges"} -> {"mincol"} || $maprow -> {"flashq_id"} < $griddata -> {"ranges"} -> {"mincol"}));
-
-        $griddata -> {"ranges"} -> {"maxcol"} = $maprow -> {"flashq_id"}
-            if(!defined($griddata -> {"ranges"} -> {"maxcol"} || $maprow -> {"flashq_id"} > $griddata -> {"ranges"} -> {"maxcol"}));
-
-        $griddata -> {"ranges"} -> {"maxrow"} = $maprow -> {"count"}
-            if(!defined($griddata -> {"ranges"} -> {"maxrow"} || $maprow -> {"count"} > $griddata -> {"ranges"} -> {"maxrow"}));
-    }
-
-    # Bail if there is no map data
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOMAP",
-                                                                                                               {"***cohortid***" => $user -> {"cohort_id"}})
-                                                  })
-        unless(scalar(keys(%{$griddata})));
-
-    # Add the notes for the minimum and maximum columns
-    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] = $self -> {"template"} -> replace_langvar("SORTGRID_LEASTLIKE");
-    $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [0] = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
-
-    # Now get the sort data
-    my $sorth = $self -> {"dbh"} -> prepare("SELECT value FROM ".$self -> {"settings"} -> {"database"} -> {"sortdata"}."
-                                             WHERE name = 'sort'
-                                             AND sort_id = ?");
-    $sorth -> execute($sortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
-
-    my $sortrow = $sorth -> fetchrow_arrayref();
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOSORT",
-                                                                                                               {"***sortid***" => $sortid})
-                                                  })
-        unless($user);
-
-    # Need to be able to pull statements from the database
-    my $statementh = $self -> {"dbh"} -> prepare("SELECT statement FROM ".$self -> {"settings"} -> {"database"} -> {"statements"}."
-                                                  WHERE id = ?");
-
-    # "sort" contains data in the form 'statement id,column id,state|statement id,column id,state|...etc...'
-    my @sortfields = split(/\|/, $sortrow -> [0]);
-    my $pos = 0;
-    my $col = $griddata -> {"ranges"} -> {"mincol"};
-    do {
-        for(my $row = 0; $row < $griddata -> {$col} -> {"count"}; ++$row, ++$pos) {
-            my @celldata = split(/,/, $sortfields[$pos]);
-
-            # Does the cell data column id match the current column?
-            die_log($self -> {"cgi"} -> remote_host(), "FATAL: sort data column mismatch - expected $celldata[1] but got $col")
-                unless($celldata[1] == $col);
-
-            # Get the statement text
-            $statementh -> execute($celldata[0])
-                or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
-
-            my $statement = $statementh -> fetchrow_arrayref();
-            die_log($self -> {"cgi"} -> remote_host(), "FATAL: Request for unknown statement $celldata[0]")
-                unless($statement);
-
-            my $field = { "fulltext"  => $statement -> [0],
-                          "shorttext" => truncate_words($statement -> [0]),
-                          "colour"    => $colours($celldata[2]),
-            };
-
-            # store the field
-            push(@{$griddata -> {$col} -> {"rows"}}, $field);
-        }
-        ++$col;
-    # process sort fields until we have dealt with them all, or run out of columns (the latter should not happen)
-    } while($pos < scalar(@sortfields) && $col <= $griddata -> {"ranges"} -> {"maxcol"});
-
-
+    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***" => $user -> {"username"},
+                                                                             "***time***" => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
+                                                                             "***sortgrid***" => $self -> build_sort_grid($sortid),
+                                                  });
+}
 
 
 # ============================================================================
@@ -158,8 +82,7 @@ sub page_display {
         # Excessive logging enabled? If so, log the user viewing this...
         $self -> log("view", "Summary view, sortid = ".($sortid || "undefined")) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
 
-        $content = $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***sortgrid***" => $self -> build_sort_grid($self -> {"session"} -> {"sessuser"}, $sortid),
-                                                          });
+        $content = $self -> build_summary_view($sortid);
 
     # User has not logged in, force them to
     } else {
