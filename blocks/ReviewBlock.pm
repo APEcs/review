@@ -29,6 +29,243 @@ use base qw(Block); # This class extends Block
 use Logging qw(die_log);
 
 
+## @method $ truncate_words($data, $len)
+# Truncate the specified string to the nearest word boundary less than the specified
+# length. This will take a string and, if it is longer than the specified length (or
+# the default length set in the settings, if the length is not given), it will truncate
+# it to the nearest space, hyphen, or underscore less than the desired length. If the
+# string is truncated, it will have an elipsis ('...') appended to it.
+#
+# @param data The string to truncate.
+# @param len  Optional length in characters. If not specified, this will default to the
+#             Core:truncate_length value set in the configuation. If the config value
+#             is missing, this function does nothing.
+# @return A string that fits into the specified length.
+sub truncate_words {
+    my $self = shift;
+    my $data = shift;
+    my $len  = shift || $self -> {"settings"} -> {"config"} -> {"Core:truncate_length"}; # fall back on the default if not set
+
+    # return the string unmodified if it fits inside the truncation length (or one isn't set)
+    return $data if(!defined($len) || length($data) <= $len);
+
+    # make space for the elipsis
+    $len -= 3;
+
+    my $trunc = substr($data, 0, $len);
+    $trunc =~ s/^(.{0,$len})[-_\s].*$/$1/;
+
+    return $trunc."...";
+}
+
+
+## @fn $ fix_colour($colour)
+# Remove any leading 0x or # from the specified hex colour string.
+#
+# @param colour The colour to remove the leading 0x or # from.
+# @return The processed colour string.
+sub fix_colour {
+    my $colour = shift;
+
+    $colour =~ s/^0x//;
+    $colour =~ s/^#//;
+
+    return $colour;
+}
+
+
+# ============================================================================
+#  Sort grid generation functions
+
+## @method void build_sort_data($sortid, $griddata)
+# Store the sort data for the specified sort in the provided griddata hash. Note
+# that this does not ensure that the current user has permission to access this
+# sort - the caller must verify that this is the case!
+#
+# @param sortid   The ID of the sort to load the data for.
+# @param griddata A reference to the griddata hash to store the sort data in.
+sub build_sort_data {
+    my $self     = shift;
+    my $sortid   = shift;
+    my $griddata = shift;
+    my @colours  = (fix_colour($self -> {"settings"} -> {"config"} -> {"XML::Config:negativeColour"}),
+                    fix_colour($self -> {"settings"} -> {"config"} -> {"XML::Config:neutralColour"}),
+                    fix_colour($self -> {"settings"} -> {"config"} -> {"XML::Config:positiveColour"}));
+
+    # Get the sort data
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT value FROM ".$self -> {"settings"} -> {"database"} -> {"sortdata"}."
+                                             WHERE name = 'sort'
+                                             AND sort_id = ?");
+    $sorth -> execute($sortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
+
+    my $sortrow = $sorth -> fetchrow_arrayref();
+
+    # Need to be able to pull statements from the database
+    my $statementh = $self -> {"dbh"} -> prepare("SELECT s.statement
+                                                  FROM ".$self -> {"settings"} -> {"database"} -> {"statements"}." AS s,
+                                                       ".$self -> {"settings"} -> {"database"} -> {"cohort_states"}." AS c
+                                                  WHERE s.id = c.statement_id
+                                                  AND c.id = ?");
+
+    # "sort" contains data in the form 'statement id,column id,state|statement id,column id,state|...etc...'
+    my @sortfields = split(/\|/, $sortrow -> [0]);
+    my $pos = 0;
+    my $col = $griddata -> {"ranges"} -> {"mincol"};
+    do {
+        for(my $row = 0; $row < $griddata -> {$col} -> {"count"}; ++$row, ++$pos) {
+            my @celldata = split(/,/, $sortfields[$pos]);
+
+            # Does the cell data column id match the current column?
+            die_log($self -> {"cgi"} -> remote_host(), "FATAL: sort data column mismatch - expected $celldata[1] but got $col")
+                unless($celldata[1] == $col);
+
+            # Get the statement text
+            $statementh -> execute($celldata[0])
+                or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
+
+            my $statement = $statementh -> fetchrow_arrayref();
+            die_log($self -> {"cgi"} -> remote_host(), "FATAL: Request for unknown statement $celldata[0]")
+                unless($statement);
+
+            my $field = { "fulltext"  => $statement -> [0],
+                          "shorttext" => $self -> truncate_words($statement -> [0]),
+                          "colour"    => $colours[$celldata[2] - 1],
+            };
+
+            # store the field
+            push(@{$griddata -> {$col} -> {"rows"}}, $field);
+        }
+        ++$col;
+    # process sort fields until we have dealt with them all, or run out of columns (the latter should not happen)
+    } while($pos < scalar(@sortfields) && $col <= $griddata -> {"ranges"} -> {"maxcol"});
+}
+
+
+## @method $ build_sort_grid($sortid)
+# Generate the sort grid table for the specified sort id. This will ensure that the
+# user has permission to view the sort (either the sort owner or an admin user)
+# and then generates the table containing the user's sort data.
+#
+# @param sortid The ID of the sort to generate the table for.
+# @return A string containing the sort table, or an error message.
+sub build_sort_grid {
+    my $self   = shift;
+    my $sortid = shift;
+
+    # Get the sort header to ensure it exists, and we can security check against it
+    my $sort = $self -> get_sort_byids($sortid, 0);
+    return $sort unless(ref($sort) eq "HASH");
+
+    # Get the user so that the cohort can be checked, and permissions can be verified
+    my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($sort -> {"user_id"});
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
+                                                                                                               {"***userid***" => $sort -> {"userid"}})
+                                                  })
+        unless($user);
+
+    # Get the session user so that permissions can be checked
+    my $sessuser = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
+                                                                                                               {"***userid***" => $self -> {"session"} -> {"sessuser"}})
+                                                  })
+        unless($sessuser);
+
+    # Error the user doesn't match the sort, and the session user isn't an admin.
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_BADSORT",
+                                                                                                               {"***userid***" => $sort -> {"userid"},
+                                                                                                                "***sortid***" => $sortid})
+                                                  })
+        unless($sessuser -> {"user_type"} == 3 || $sort -> {"user_id"} == $sessuser -> {"user_id"});
+
+    # pull in the map for the sort user's cohort
+    my $maph = $self -> {"dbh"} -> prepare("SELECT m.*
+                                            FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_maps"}." AS c,
+                                                 ".$self -> {"settings"} -> {"database"} -> {"maps"}." AS m
+                                            WHERE m.id = c.map_id
+                                            AND c.cohort_id = ?");
+    $maph -> execute($user -> {"cohort_id"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform map range lookup query: ".$self -> {"dbh"} -> errstr);
+
+    my $griddata = { "ranges" => {} };
+    while(my $maprow = $maph -> fetchrow_hashref()) {
+        $griddata -> {$maprow -> {"flashq_id"}} = { "count"  => $maprow -> {"count"} };
+        $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ undef,
+                                                                { "colour"    => $maprow -> {"colour"},
+                                                                  "shorttext" => $maprow -> {"flashq_id"} },
+                                                                undef,
+                                                              ];
+
+        # Work out the range of columns as the rows are processed
+        $griddata -> {"ranges"} -> {"mincol"} = $maprow -> {"flashq_id"}
+            if(!defined($griddata -> {"ranges"} -> {"mincol"}) || $maprow -> {"flashq_id"} < $griddata -> {"ranges"} -> {"mincol"});
+
+        $griddata -> {"ranges"} -> {"maxcol"} = $maprow -> {"flashq_id"}
+            if(!defined($griddata -> {"ranges"} -> {"maxcol"}) || $maprow -> {"flashq_id"} > $griddata -> {"ranges"} -> {"maxcol"});
+
+        $griddata -> {"ranges"} -> {"maxrow"} = $maprow -> {"count"}
+            if(!defined($griddata -> {"ranges"} -> {"maxrow"}) || $maprow -> {"count"} > $griddata -> {"ranges"} -> {"maxrow"});
+    }
+
+    # Bail if there is no map data
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOMAP",
+                                                                                                               {"***cohortid***" => $user -> {"cohort_id"}})
+                                                  })
+        unless(scalar(keys(%{$griddata})));
+
+    # Add the notes for the minimum and maximum columns
+    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_LEASTLIKE");
+    $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
+
+    # Pull in the user's sort data
+    my $error = $self -> build_sort_data($sortid, $griddata);
+
+    # Precache templates needed to build the table
+    my $templates = { "label"  => { "set"   => $self -> {"template"} -> load_template("sort/label_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/label_unset.tem") },
+                      "header" => { "set"   => $self -> {"template"} -> load_template("sort/header_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/header_unset.tem") },
+                      "data"   => { "set"   => $self -> {"template"} -> load_template("sort/data_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/data_unset.tem") },
+                      "row"    => $self -> {"template"} -> load_template("sort/row.tem"),
+    };
+
+    # Now start building the table. Rows 0 and 1 are special (0 is the labels, 1 is the headers)
+    # but we should be able to nicely handle that in one loop!
+    my $sortrows = "";
+    for(my $row = 0; $row < ($griddata -> {"ranges"} -> {"maxrow"} + 2); ++$row) {
+        my $sortcols = "";
+
+        for(my ($col, $tem) = ($griddata -> {"ranges"} -> {"mincol"}, ""); $col <= $griddata -> {"ranges"} -> {"maxcol"}; ++$col) {
+            # Pick the template based on the row number (FIXME: Find a less sucky way to do this...)
+            if($row == 0) {
+                $tem = $templates -> {"label"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
+            } elsif($row == 1) {
+                $tem = $templates -> {"header"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
+            } else {
+                $tem = $templates -> {"data"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
+            }
+
+            $sortcols .= $self -> {"template"} -> process_template($tem, {"***data***"     => $griddata -> {$col} -> {"rows"} -> [$row] -> {"shorttext"},
+                                                                          "***fulldata***" => $griddata -> {$col} -> {"rows"} -> [$row] -> {"fulltext"},
+                                                                          "***colour***"   => "#".$griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
+                                                                   });
+        }
+        $sortrows .= $self -> {"template"} -> process_template($templates -> {"row"}, {"***cols***" => $sortcols})
+            if($sortcols);
+    }
+
+    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows,
+                                                                     "***cellwidth***"  => int(100 / (1 + ($griddata -> {"ranges"} -> {"maxcol"} - $griddata -> {"ranges"} -> {"mincol"})))."%",
+                                                                     "***cellheight***" => "5em",
+                                                  });
+}
+
+
 # ============================================================================
 #  Database interaction functions
 
@@ -192,6 +429,47 @@ sub get_user_sorts {
     }
 
     return (\@sorts, $current);
+}
+
+
+## @method $ get_sort_byids($sortid, $userid)
+# Obtain the sort header for the specified sortid. If the userid is provided, this will
+# only return the sort header if the sort exists and the provided userid is the owner
+# of the sort. Note that, if the userid is not specified or is 0, this may be a potential
+# security leak unless the caller checks the current user has access to the sort by other
+# means.
+#
+# @param sortid The ID of the sort to fetch.
+# @param userid The ID of the user performing the lookup.
+# @return A reference to the sort header data on success, an error message on failure.
+sub get_sort_byids {
+    my $self   = shift;
+    my $sortid = shift;
+    my $userid = shift;
+
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
+                                             WHERE id = ?");
+    $sorth -> execute($sortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
+
+    my $sort = $sorth -> fetchrow_hashref();
+
+    # Error if there is no sort data.
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOSORT",
+                                                                                                               {"***sortid***" => $sortid})
+                                                  })
+        if(!$sort);
+
+    # Error if we have a user, but the user doesn't match the sort.
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_BADSORT",
+                                                                                                               {"***userid***" => $userid,
+                                                                                                                "***sortid***" => $sortid})
+                                                  })
+        unless(!$userid || $sort -> {"user_id"} == $userid);
+
+    return $sort;
 }
 
 
