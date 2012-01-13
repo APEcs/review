@@ -516,3 +516,41 @@ input#dosort {
 ul.sorthist {
     list-style: none;
 }
+
+
+table#sort {
+    border-collapse: collapse;
+}
+
+table#sort th.sortlabel {
+    color: #777;
+    text-align: center;
+}
+
+table#sort th.sortheader {
+    border: 1px solid black;
+    text-align: center;
+}
+
+table#sort td.sortbox {
+    vertical-align: top;
+    padding: 2px;
+    font-size: x-small;
+}
+
+table#sort td.set {
+    border: 1px solid #BBB;
+}
+
+div.cellbox {
+    padding: 2px;
+    border: 1px solid black;
+    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    /* This is kinda hacky! */
+    -moz-box-shadow: 1px 1px 2px #999;
+    -webkit-box-shadow: 1px 1px 2px #999;
+    box-shadow: 1px 1px 2px #999;
+}
