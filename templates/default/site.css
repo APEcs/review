@@ -532,15 +532,37 @@ table#sort th.sortheader {
     text-align: center;
 }
 
-table#sort td.sortbox {
+table#sort td.sortbox, table#comments td.sortbox {
     vertical-align: top;
     padding: 2px;
     font-size: x-small;
 }
 
-table#sort td.set {
+table#sort td.set, table#comments td.set {
     border: 1px solid #BBB;
 }
+
+table#comments {
+    border-collapse: collapse;
+    margin: 0.5em auto;
+    width: 100%;
+}
+
+table#comments th {
+    padding: 2px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+table#comments th.noborder {
+    border: 0px;
+    text-align: center;
+}
+
+table#comments td.comment {
+    width: 40%;
+}
+
 
 div.cellbox {
     padding: 2px;

@@ -1,0 +1,9 @@
+<table id="comments">
+<tr>
+    <th colspan="2" style="text-align: left; background-color: #***negcol***">{L_SORTGRID_LEASTLIKE}</th>
+    <th class="noborder">&nbsp;</th>
+    <th colspan="2" style="text-align: right; background-color: #***poscol***">{L_SORTGRID_MOSTLIKE}</th>
+</tr>
+<tr><td></td></tr>
+***rows***
+</table>

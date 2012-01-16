@@ -27,7 +27,8 @@ package ReviewBlock;
 use strict;
 use base qw(Block); # This class extends Block
 use Logging qw(die_log);
-#use Data::Dumper;
+use List::Util qw(max);
+use Data::Dumper;
 
 ## @method $ truncate_words($data, $len)
 # Truncate the specified string to the nearest word boundary less than the specified
@@ -147,10 +148,15 @@ sub _get_sort_data {
         ++$col;
     # process sort fields until we have dealt with them all, or run out of columns (the latter should not happen)
     } while($pos < scalar(@sortfields) && $col <= $griddata -> {"ranges"} -> {"maxcol"});
-
 }
 
 
+## @method void _get_sort_comments($sortid, $griddata)
+# Extract the sort comments entered by the user from the database and store them
+# in the specified grid.
+#
+# @param sortid   The ID of the sort to load the data for.
+# @param griddata A reference to a hash to store the sort data in.
 sub _get_sort_comments {
     my $self     = shift;
     my $sortid   = shift;
@@ -175,7 +181,7 @@ sub _get_sort_comments {
 }
 
 
-## @method $ build_sort_data($sortid, $cohortid)
+## @method $ _build_sort_data($sortid, $cohortid)
 # Store the sort data for the specified sort in the provided griddata hash. Note
 # that this does not ensure that the current user has permission to access this
 # sort - the caller must verify that this is the case!
@@ -183,7 +189,7 @@ sub _get_sort_comments {
 # @param sortid   The ID of the sort to load the data for.
 # @param cohortid The cohort the sort user is in.
 # @return A reference to the sort data hash on success, otherwise an error message.
-sub build_sort_data {
+sub _build_sort_data {
     my $self     = shift;
     my $sortid   = shift;
     my $cohortid = shift;
@@ -282,10 +288,55 @@ sub _build_sort_grid {
             if($sortcols);
     }
 
-    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows,#."<!-- ".Data::Dumper -> Dump([$griddata])." -->",
+    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows."<!-- ".Data::Dumper -> Dump([$griddata])." -->",
                                                                      "***cellwidth***"  => int(100 / (1 + ($griddata -> {"ranges"} -> {"maxcol"} - $griddata -> {"ranges"} -> {"mincol"})))."%",
                                                                      "***cellheight***" => "5em",
                                                   });
+}
+
+
+## @method $ _build_sort_comments($griddata)
+# Generate the html representation of the sort comments contained in the specified grid
+# data hash.
+#
+# @param griddata A reference to a hash containing the sort comments to render as HTML.
+# @return The sort comment string.
+sub _build_sort_comments {
+    my $self     = shift;
+    my $griddata = shift;
+    my $rows     = "";
+
+    # Work out how many comment rows there need to be
+    my $count = max(scalar(@{$griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"}}),
+                    scalar(@{$griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"}}));
+
+    # load the comment templates
+    my $templates = { "data"   => { "set"   => $self -> {"template"} -> load_template("sort/comment_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/comment_unset.tem") },
+                      "row"    => $self -> {"template"} -> load_template("sort/comment_row.tem")
+    };
+
+    for(my $row = 0; $row < $count; ++$row) {
+        my $neg = $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] ? "set" : "unset";
+        my $pos = $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] ? "set" : "unset";
+
+        $rows .= $self -> {"template"} -> process_template($templates -> {"row"},
+                                                           {"***negside***" => $self -> {"template"} -> process_template($templates -> {"data"} -> {$neg},
+                                                                                                                         {"***fulldata***" => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"fulltext"},
+                                                                                                                          "***colour***"   => "#".$griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"colour"},
+                                                                                                                          "***data***"     => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"shorttext"},
+                                                                                                                          "***comment***"  => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"comment"}}),
+                                                            "***posside***" => $self -> {"template"} -> process_template($templates -> {"data"} -> {$pos},
+                                                                                                                         {"***fulldata***" => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"fulltext"},
+                                                                                                                          "***colour***"   => "#".$griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"colour"},
+                                                                                                                          "***data***"     => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"shorttext"},
+                                                                                                                          "***comment***"  => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"comment"}}),
+                                                           });
+    }
+
+    return $self -> {"template"} -> load_template("sort/comment_table.tem", {"***negcol***" => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [1] -> {"colour"},
+                                                                             "***poscol***" => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [1] -> {"colour"},
+                                                                             "***rows***"   => $rows, });
 }
 
 
@@ -329,10 +380,11 @@ sub build_sort_view {
         unless($sessuser -> {"user_type"} == 3 || $sort -> {"user_id"} == $sessuser -> {"user_id"});
 
     # Pull in the user's sort data
-    my $griddata = $self -> build_sort_data($sortid, $user -> {"cohort_id"});
+    my $griddata = $self -> _build_sort_data($sortid, $user -> {"cohort_id"});
     return $griddata if(ref($griddata) ne "HASH");
 
-    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***" => $self -> _build_sort_grid($griddata),
+    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***"     => $self -> _build_sort_grid($griddata),
+                                                                    "***sortcomments***" => $self -> _build_sort_comments($griddata),
                                                   });
 }
 
