@@ -425,7 +425,7 @@ sub build_sort_summaries {
     return $sortuser unless(ref($sortuser) eq "HASH");
 
     # Generate the summary view
-    return $self -> _build_sort_summaries($sortid);
+    return ""#$self -> _build_sort_summaries($sortid);
 }
 
 
