@@ -28,12 +28,11 @@ use strict;
 use base qw(Block); # This class extends Block
 use Logging qw(die_log);
 use List::Util qw(max);
-use Data::Dumper;
 
 ## @method $ truncate_words($data, $len)
 # Truncate the specified string to the nearest word boundary less than the specified
-# length. This will take a string and, if it is longer than the specified length (or
-# the default length set in the settings, if the length is not given), it will truncate
+# length. This will take a string and, if it is longer than the specified length
+# (or the default length set in the settings, if the length is not given), it will truncate
 # it to the nearest space, hyphen, or underscore less than the desired length. If the
 # string is truncated, it will have an elipsis ('...') appended to it.
 #
@@ -288,7 +287,7 @@ sub _build_sort_grid {
             if($sortcols);
     }
 
-    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows."<!-- ".Data::Dumper -> Dump([$griddata])." -->",
+    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows,
                                                                      "***cellwidth***"  => int(100 / (1 + ($griddata -> {"ranges"} -> {"maxcol"} - $griddata -> {"ranges"} -> {"mincol"})))."%",
                                                                      "***cellheight***" => "5em",
                                                   });
@@ -460,8 +459,8 @@ sub user_can_sort {
 # @param periodid The period during which the user should have performed the sort.
 # @param fullsort If this is set, the full sort data is included in the returned hash, otherwise
 #                 only the sort header (user, period, sort date and last update) will be returned.
-# @return A reference to a hash containing the sort data (including a hash of sort answers,
-#         justifications, survey answers, and an array of summary hashes if $fullsort is set)
+# @return A reference to a hash containing the sort data, including a hash of sort answers,
+#         justifications, survey answers, and an array of summary hashes if $fullsort is set.
 sub get_sort_data {
     my $self     = shift;
     my $userid   = shift;
@@ -513,8 +512,8 @@ sub get_sort_data {
 # current-period sort.
 #
 # @param userid The ID of the user to obtain sorts for.
-# @return A reference to an array of hashes for each sort (ordered in reverse chronological
-#         order), and either a reference to a hash for the current period sort, or undef if
+# @return A reference to an array of hashes for each sort, ordered in reverse chronological
+#         order, and either a reference to a hash for the current period sort, or undef if
 #         the user has not done a sort during the current period.
 sub get_user_sorts {
     my $self   = shift;
