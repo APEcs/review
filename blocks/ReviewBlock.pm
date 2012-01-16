@@ -29,6 +29,9 @@ use base qw(Block); # This class extends Block
 use Logging qw(die_log);
 use List::Util qw(max);
 
+# ============================================================================
+#  General utility stuff.
+
 ## @method $ truncate_words($data, $len)
 # Truncate the specified string to the nearest word boundary less than the specified
 # length. This will take a string and, if it is longer than the specified length
@@ -71,6 +74,49 @@ sub fix_colour {
     $colour =~ s/^#//;
 
     return $colour;
+}
+
+
+## @method $ check_sort_permissions($sortid)
+# Determine whether the current session user has access to view the sort with the
+# specified id. This will return an error message if the user does not have access,
+# otherwise it will return a reference to the user data for *THE SORT OWNER*
+#
+# @param sortid The ID of the sort to check permissions for.
+# @return A reference to the sort user's data on success, an error message on failure.
+sub check_sort_permissions {
+    my $self   = shift;
+    my $sortid = shift;
+
+    # Get the sort header to ensure it exists, and we can security check against it
+    my $sort = $self -> get_sort_byids($sortid, 0);
+    return $sort unless(ref($sort) eq "HASH");
+
+    # Get the user so that the cohort can be checked, and permissions can be verified
+    my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($sort -> {"user_id"});
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
+                                                                                                               {"***userid***" => $sort -> {"userid"}})
+                                                  })
+        unless($user);
+
+    # Get the session user so that permissions can be checked
+    my $sessuser = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
+                                                                                                               {"***userid***" => $self -> {"session"} -> {"sessuser"}})
+                                                  })
+        unless($sessuser);
+
+    # Error the user doesn't match the sort, and the session user isn't an admin.
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_BADSORT",
+                                                                                                               {"***userid***" => $sort -> {"userid"},
+                                                                                                                "***sortid***" => $sortid})
+                                                  })
+        unless($sessuser -> {"user_type"} == 3 || $sort -> {"user_id"} == $sessuser -> {"user_id"});
+
+    return $user;
 }
 
 
@@ -192,7 +238,6 @@ sub _build_sort_data {
     my $self     = shift;
     my $sortid   = shift;
     my $cohortid = shift;
-    my $griddata = {};
 
     # pull in the map for the sort user's cohort
     my $maph = $self -> {"dbh"} -> prepare("SELECT m.*
@@ -280,8 +325,10 @@ sub _build_sort_grid {
 
             $sortcols .= $self -> {"template"} -> process_template($tem, {"***data***"     => $griddata -> {$col} -> {"rows"} -> [$row] -> {"shorttext"},
                                                                           "***fulldata***" => $griddata -> {$col} -> {"rows"} -> [$row] -> {"fulltext"},
-                                                                          "***colour***"   => "#".$griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
+                                                                          "***colour***"   => $griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
                                                                    });
+            print STDERR "sort row/col: $row/$col\n";
+
         }
         $sortrows .= $self -> {"template"} -> process_template($templates -> {"row"}, {"***cols***" => $sortcols})
             if($sortcols);
@@ -322,15 +369,16 @@ sub _build_sort_comments {
         $rows .= $self -> {"template"} -> process_template($templates -> {"row"},
                                                            {"***negside***" => $self -> {"template"} -> process_template($templates -> {"data"} -> {$neg},
                                                                                                                          {"***fulldata***" => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"fulltext"},
-                                                                                                                          "***colour***"   => "#".$griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"colour"},
+                                                                                                                          "***colour***"   => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"colour"},
                                                                                                                           "***data***"     => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"shorttext"},
                                                                                                                           "***comment***"  => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"comments"} -> [$row] -> {"comment"}}),
                                                             "***posside***" => $self -> {"template"} -> process_template($templates -> {"data"} -> {$pos},
                                                                                                                          {"***fulldata***" => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"fulltext"},
-                                                                                                                          "***colour***"   => "#".$griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"colour"},
+                                                                                                                          "***colour***"   => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"colour"},
                                                                                                                           "***data***"     => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"shorttext"},
                                                                                                                           "***comment***"  => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"comment"}}),
                                                            });
+        print STDERR "Comment row: $row\n";
     }
 
     return $self -> {"template"} -> load_template("sort/comment_table.tem", {"***negcol***" => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [1] -> {"colour"},
@@ -350,42 +398,36 @@ sub build_sort_view {
     my $self   = shift;
     my $sortid = shift;
 
-    # Get the sort header to ensure it exists, and we can security check against it
-    my $sort = $self -> get_sort_byids($sortid, 0);
-    return $sort unless(ref($sort) eq "HASH");
-
-    # Get the user so that the cohort can be checked, and permissions can be verified
-    my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($sort -> {"user_id"});
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
-                                                                                                               {"***userid***" => $sort -> {"userid"}})
-                                                  })
-        unless($user);
-
-    # Get the session user so that permissions can be checked
-    my $sessuser = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
-                                                                                                               {"***userid***" => $self -> {"session"} -> {"sessuser"}})
-                                                  })
-        unless($sessuser);
-
-    # Error the user doesn't match the sort, and the session user isn't an admin.
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_BADSORT",
-                                                                                                               {"***userid***" => $sort -> {"userid"},
-                                                                                                                "***sortid***" => $sortid})
-                                                  })
-        unless($sessuser -> {"user_type"} == 3 || $sort -> {"user_id"} == $sessuser -> {"user_id"});
+    # Check the permissions, and fall over if we don't have permission to view the sort.
+    my $sortuser = $self -> check_sort_permissions($sortid);
+    return $sortuser unless(ref($sortuser) eq "HASH");
 
     # Pull in the user's sort data
-    my $griddata = $self -> _build_sort_data($sortid, $user -> {"cohort_id"});
-    return $griddata if(ref($griddata) ne "HASH");
+    my $griddata = $self -> _build_sort_data($sortid, $sortuser -> {"cohort_id"});
+    return $griddata unless(ref($griddata) eq "HASH");
 
     return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***"     => $self -> _build_sort_grid($griddata),
                                                                     "***sortcomments***" => $self -> _build_sort_comments($griddata),
                                                   });
 }
+
+
+# ============================================================================
+#  Sort summary generation functions
+
+
+sub build_sort_summaries {
+    my $self = shift;
+    my $sortid = shift;
+
+    # Check the permissions, and fall over if we don't have permission to view the sort.
+    my $sortuser = $self -> check_sort_permissions($sortid);
+    return $sortuser unless(ref($sortuser) eq "HASH");
+
+    # Generate the summary view
+    return $self -> _build_sort_summaries($sortid);
+}
+
 
 
 # ============================================================================
