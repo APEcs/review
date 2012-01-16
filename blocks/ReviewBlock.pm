@@ -237,13 +237,13 @@ sub build_sort_data {
 }
 
 
-## @method $ build_sort_grid($griddata)
+## @method $ _build_sort_grid($griddata)
 # Generate the html representation of the sort contained in the specified grid
 # data hash.
 #
 # @param griddata A reference to a hash containing the sort data to render as HTML.
 # @return The sort grid string.
-sub build_sort_grid {
+sub _build_sort_grid {
     my $self     = shift;
     my $griddata = shift;
 
@@ -332,7 +332,7 @@ sub build_sort_view {
     my $griddata = $self -> build_sort_data($sortid, $user -> {"cohort_id"});
     return $griddata if(ref($griddata) ne "HASH");
 
-    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***" => $self -> build_sort_grid($griddata),
+    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***" => $self -> _build_sort_grid($griddata),
                                                   });
 }
 
