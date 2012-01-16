@@ -57,9 +57,10 @@ sub build_summary_view {
 # - fetch and show summary and edits (use accordion for old versions?)
 # - show summary edit box (use html area?)
 
-    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***" => $user -> {"username"},
-                                                                             "***time***" => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
-                                                                             "***sortgrid***" => $self -> build_sort_grid($sortid),
+    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"   => $user -> {"username"},
+                                                                             "***period***" => $sort -> {"name"},
+                                                                             "***year***"   => $sort -> {"year"},
+                                                                             "***sortgrid***" => $self -> build_sort_view($sortid),
                                                   });
 }
 

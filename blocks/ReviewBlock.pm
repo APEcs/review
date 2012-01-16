@@ -27,7 +27,7 @@ package ReviewBlock;
 use strict;
 use base qw(Block); # This class extends Block
 use Logging qw(die_log);
-
+#use Data::Dumper;
 
 ## @method $ truncate_words($data, $len)
 # Truncate the specified string to the nearest word boundary less than the specified
@@ -77,14 +77,15 @@ sub fix_colour {
 # ============================================================================
 #  Sort grid generation functions
 
-## @method void build_sort_data($sortid, $griddata)
-# Store the sort data for the specified sort in the provided griddata hash. Note
-# that this does not ensure that the current user has permission to access this
-# sort - the caller must verify that this is the case!
+## @method void _get_sort_data($sortid, $griddata)
+# Pull the data for the 'sort' variable for the specified sortid into the grid.
+# This does the work of pulling the 'sort' value from the database for the specified
+# sort, parsing it into individual cell selections, and filling in the griddata
+# with statements and data for each cell.
 #
 # @param sortid   The ID of the sort to load the data for.
-# @param griddata A reference to the griddata hash to store the sort data in.
-sub build_sort_data {
+# @param griddata A reference to a hash to store the sort data in.
+sub _get_sort_data {
     my $self     = shift;
     my $sortid   = shift;
     my $griddata = shift;
@@ -131,25 +132,171 @@ sub build_sort_data {
             my $field = { "fulltext"  => $statement -> [0],
                           "shorttext" => $self -> truncate_words($statement -> [0]),
                           "colour"    => $colours[$celldata[2] - 1],
+                          "col"       => $col,
             };
 
             # store the field
             push(@{$griddata -> {$col} -> {"rows"}}, $field);
+
+            # If this is the first or last column, store comment markers
+            if($col == $griddata -> {"ranges"} -> {"mincol"} || $col == $griddata -> {"ranges"} -> {"maxcol"}) {
+                $griddata -> {"comment"} -> {$celldata[0]} = $field;
+                push(@{$griddata -> {$col} -> {"comments"}}, $field);
+            }
         }
         ++$col;
     # process sort fields until we have dealt with them all, or run out of columns (the latter should not happen)
     } while($pos < scalar(@sortfields) && $col <= $griddata -> {"ranges"} -> {"maxcol"});
+
 }
 
 
-## @method $ build_sort_grid($sortid)
+sub _get_sort_comments {
+    my $self     = shift;
+    my $sortid   = shift;
+    my $griddata = shift;
+
+    # Need a query to fetch the comments
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT value FROM ".$self -> {"settings"} -> {"database"} -> {"sortdata"}."
+                                             WHERE name LIKE 'comment%'
+                                             AND sort_id = ?");
+
+    $sorth -> execute($sortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform comment lookup query: ".$self -> {"dbh"} -> errstr);
+
+    while(my $comment = $sorth -> fetchrow_arrayref()) {
+        my ($id, $data) = $comment -> [0] =~ /^\(s(\d+)\)\s*(.*)$/;
+
+        die_log($self -> {"cgi"} -> remote_host(), "FATAL: malformed comment data for sort $sortid: ".$comment -> [0])
+            if(!$id);
+
+        $griddata -> {"comment"} -> {$id} -> {"comment"} = $data;
+    }
+}
+
+
+## @method $ build_sort_data($sortid, $cohortid)
+# Store the sort data for the specified sort in the provided griddata hash. Note
+# that this does not ensure that the current user has permission to access this
+# sort - the caller must verify that this is the case!
+#
+# @param sortid   The ID of the sort to load the data for.
+# @param cohortid The cohort the sort user is in.
+# @return A reference to the sort data hash on success, otherwise an error message.
+sub build_sort_data {
+    my $self     = shift;
+    my $sortid   = shift;
+    my $cohortid = shift;
+    my $griddata = {};
+
+    # pull in the map for the sort user's cohort
+    my $maph = $self -> {"dbh"} -> prepare("SELECT m.*
+                                            FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_maps"}." AS c,
+                                                 ".$self -> {"settings"} -> {"database"} -> {"maps"}." AS m
+                                            WHERE m.id = c.map_id
+                                            AND c.cohort_id = ?");
+    $maph -> execute($cohortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform map range lookup query: ".$self -> {"dbh"} -> errstr);
+
+    my $griddata = { "ranges" => {} };
+    while(my $maprow = $maph -> fetchrow_hashref()) {
+        $griddata -> {$maprow -> {"flashq_id"}} = { "count"  => $maprow -> {"count"} };
+        $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ undef,
+                                                                { "colour"    => $maprow -> {"colour"},
+                                                                  "shorttext" => $maprow -> {"flashq_id"} },
+                                                                undef,
+                                                              ];
+
+        # Work out the range of columns as the rows are processed
+        $griddata -> {"ranges"} -> {"mincol"} = $maprow -> {"flashq_id"}
+            if(!defined($griddata -> {"ranges"} -> {"mincol"}) || $maprow -> {"flashq_id"} < $griddata -> {"ranges"} -> {"mincol"});
+
+        $griddata -> {"ranges"} -> {"maxcol"} = $maprow -> {"flashq_id"}
+            if(!defined($griddata -> {"ranges"} -> {"maxcol"}) || $maprow -> {"flashq_id"} > $griddata -> {"ranges"} -> {"maxcol"});
+
+        $griddata -> {"ranges"} -> {"maxrow"} = $maprow -> {"count"}
+            if(!defined($griddata -> {"ranges"} -> {"maxrow"}) || $maprow -> {"count"} > $griddata -> {"ranges"} -> {"maxrow"});
+    }
+
+    # Bail if there is no map data
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOMAP",
+                                                                                                               {"***cohortid***" => $cohortid})
+                                                  })
+        unless(scalar(keys(%{$griddata})));
+
+    # Add the notes for the minimum and maximum columns
+    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_LEASTLIKE");
+    $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
+
+    # Pull in the actual data
+    $self -> _get_sort_data($sortid, $griddata);
+    $self -> _get_sort_comments($sortid, $griddata);
+
+    return $griddata;
+}
+
+
+## @method $ build_sort_grid($griddata)
+# Generate the html representation of the sort contained in the specified grid
+# data hash.
+#
+# @param griddata A reference to a hash containing the sort data to render as HTML.
+# @return The sort grid string.
+sub build_sort_grid {
+    my $self     = shift;
+    my $griddata = shift;
+
+    # Precache templates needed to build the table
+    my $templates = { "label"  => { "set"   => $self -> {"template"} -> load_template("sort/label_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/label_unset.tem") },
+                      "header" => { "set"   => $self -> {"template"} -> load_template("sort/header_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/header_unset.tem") },
+                      "data"   => { "set"   => $self -> {"template"} -> load_template("sort/data_set.tem"),
+                                    "unset" => $self -> {"template"} -> load_template("sort/data_unset.tem") },
+                      "row"    => $self -> {"template"} -> load_template("sort/row.tem"),
+    };
+
+    # Now start building the table. Rows 0 and 1 are special (0 is the labels, 1 is the headers)
+    # but we should be able to nicely handle that in one loop!
+    my $sortrows = "";
+    for(my $row = 0; $row <= ($griddata -> {"ranges"} -> {"maxrow"} + 2); ++$row) {
+        my $sortcols = "";
+
+        for(my ($col, $tem) = ($griddata -> {"ranges"} -> {"mincol"}, ""); $col <= $griddata -> {"ranges"} -> {"maxcol"}; ++$col) {
+            # Pick the template based on the row number (FIXME: Find a less sucky way to do this...)
+            if($row == 0) {
+                $tem = $templates -> {"label"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
+            } elsif($row == 1) {
+                $tem = $templates -> {"header"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
+            } else {
+                $tem = $templates -> {"data"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
+            }
+
+            $sortcols .= $self -> {"template"} -> process_template($tem, {"***data***"     => $griddata -> {$col} -> {"rows"} -> [$row] -> {"shorttext"},
+                                                                          "***fulldata***" => $griddata -> {$col} -> {"rows"} -> [$row] -> {"fulltext"},
+                                                                          "***colour***"   => "#".$griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
+                                                                   });
+        }
+        $sortrows .= $self -> {"template"} -> process_template($templates -> {"row"}, {"***cols***" => $sortcols})
+            if($sortcols);
+    }
+
+    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows,#."<!-- ".Data::Dumper -> Dump([$griddata])." -->",
+                                                                     "***cellwidth***"  => int(100 / (1 + ($griddata -> {"ranges"} -> {"maxcol"} - $griddata -> {"ranges"} -> {"mincol"})))."%",
+                                                                     "***cellheight***" => "5em",
+                                                  });
+}
+
+
+## @method $ build_sort_view($sortid)
 # Generate the sort grid table for the specified sort id. This will ensure that the
 # user has permission to view the sort (either the sort owner or an admin user)
 # and then generates the table containing the user's sort data.
 #
 # @param sortid The ID of the sort to generate the table for.
-# @return A string containing the sort table, or an error message.
-sub build_sort_grid {
+# @return A string containing the sort, or an error message.
+sub build_sort_view {
     my $self   = shift;
     my $sortid = shift;
 
@@ -181,87 +328,11 @@ sub build_sort_grid {
                                                   })
         unless($sessuser -> {"user_type"} == 3 || $sort -> {"user_id"} == $sessuser -> {"user_id"});
 
-    # pull in the map for the sort user's cohort
-    my $maph = $self -> {"dbh"} -> prepare("SELECT m.*
-                                            FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_maps"}." AS c,
-                                                 ".$self -> {"settings"} -> {"database"} -> {"maps"}." AS m
-                                            WHERE m.id = c.map_id
-                                            AND c.cohort_id = ?");
-    $maph -> execute($user -> {"cohort_id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform map range lookup query: ".$self -> {"dbh"} -> errstr);
-
-    my $griddata = { "ranges" => {} };
-    while(my $maprow = $maph -> fetchrow_hashref()) {
-        $griddata -> {$maprow -> {"flashq_id"}} = { "count"  => $maprow -> {"count"} };
-        $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ undef,
-                                                                { "colour"    => $maprow -> {"colour"},
-                                                                  "shorttext" => $maprow -> {"flashq_id"} },
-                                                                undef,
-                                                              ];
-
-        # Work out the range of columns as the rows are processed
-        $griddata -> {"ranges"} -> {"mincol"} = $maprow -> {"flashq_id"}
-            if(!defined($griddata -> {"ranges"} -> {"mincol"}) || $maprow -> {"flashq_id"} < $griddata -> {"ranges"} -> {"mincol"});
-
-        $griddata -> {"ranges"} -> {"maxcol"} = $maprow -> {"flashq_id"}
-            if(!defined($griddata -> {"ranges"} -> {"maxcol"}) || $maprow -> {"flashq_id"} > $griddata -> {"ranges"} -> {"maxcol"});
-
-        $griddata -> {"ranges"} -> {"maxrow"} = $maprow -> {"count"}
-            if(!defined($griddata -> {"ranges"} -> {"maxrow"}) || $maprow -> {"count"} > $griddata -> {"ranges"} -> {"maxrow"});
-    }
-
-    # Bail if there is no map data
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOMAP",
-                                                                                                               {"***cohortid***" => $user -> {"cohort_id"}})
-                                                  })
-        unless(scalar(keys(%{$griddata})));
-
-    # Add the notes for the minimum and maximum columns
-    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_LEASTLIKE");
-    $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
-
     # Pull in the user's sort data
-    my $error = $self -> build_sort_data($sortid, $griddata);
+    my $griddata = $self -> build_sort_data($sortid, $user -> {"cohort_id"});
+    return $griddata if(ref($griddata) ne "HASH");
 
-    # Precache templates needed to build the table
-    my $templates = { "label"  => { "set"   => $self -> {"template"} -> load_template("sort/label_set.tem"),
-                                    "unset" => $self -> {"template"} -> load_template("sort/label_unset.tem") },
-                      "header" => { "set"   => $self -> {"template"} -> load_template("sort/header_set.tem"),
-                                    "unset" => $self -> {"template"} -> load_template("sort/header_unset.tem") },
-                      "data"   => { "set"   => $self -> {"template"} -> load_template("sort/data_set.tem"),
-                                    "unset" => $self -> {"template"} -> load_template("sort/data_unset.tem") },
-                      "row"    => $self -> {"template"} -> load_template("sort/row.tem"),
-    };
-
-    # Now start building the table. Rows 0 and 1 are special (0 is the labels, 1 is the headers)
-    # but we should be able to nicely handle that in one loop!
-    my $sortrows = "";
-    for(my $row = 0; $row < ($griddata -> {"ranges"} -> {"maxrow"} + 2); ++$row) {
-        my $sortcols = "";
-
-        for(my ($col, $tem) = ($griddata -> {"ranges"} -> {"mincol"}, ""); $col <= $griddata -> {"ranges"} -> {"maxcol"}; ++$col) {
-            # Pick the template based on the row number (FIXME: Find a less sucky way to do this...)
-            if($row == 0) {
-                $tem = $templates -> {"label"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
-            } elsif($row == 1) {
-                $tem = $templates -> {"header"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
-            } else {
-                $tem = $templates -> {"data"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
-            }
-
-            $sortcols .= $self -> {"template"} -> process_template($tem, {"***data***"     => $griddata -> {$col} -> {"rows"} -> [$row] -> {"shorttext"},
-                                                                          "***fulldata***" => $griddata -> {$col} -> {"rows"} -> [$row] -> {"fulltext"},
-                                                                          "***colour***"   => "#".$griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
-                                                                   });
-        }
-        $sortrows .= $self -> {"template"} -> process_template($templates -> {"row"}, {"***cols***" => $sortcols})
-            if($sortcols);
-    }
-
-    return $self -> {"template"} -> load_template("sort/table.tem", {"***rows***"       => $sortrows,
-                                                                     "***cellwidth***"  => int(100 / (1 + ($griddata -> {"ranges"} -> {"maxcol"} - $griddata -> {"ranges"} -> {"mincol"})))."%",
-                                                                     "***cellheight***" => "5em",
+    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***" => $self -> build_sort_grid($griddata),
                                                   });
 }
 
@@ -447,8 +518,11 @@ sub get_sort_byids {
     my $sortid = shift;
     my $userid = shift;
 
-    my $sorth = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
-                                             WHERE id = ?");
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT s.*, p.name, p.year
+                                             FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}." AS s,
+                                                  ".$self -> {"settings"} -> {"database"} -> {"periods"}." AS p
+                                             WHERE s.period_id = p.id
+                                             AND s.id = ?");
     $sorth -> execute($sortid)
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
 
