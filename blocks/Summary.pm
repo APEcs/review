@@ -53,14 +53,14 @@ sub build_summary_view {
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # TODO:
-# - Fetch and show top 2/ bottom 2
 # - fetch and show summary and edits (use accordion for old versions?)
 # - show summary edit box (use html area?)
 
-    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"   => $user -> {"username"},
-                                                                             "***period***" => $sort -> {"name"},
-                                                                             "***year***"   => $sort -> {"year"},
-                                                                             "***sortgrid***" => $self -> build_sort_view($sortid),
+    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"      => $user -> {"username"},
+                                                                             "***period***"    => $sort -> {"name"},
+                                                                             "***year***"      => $sort -> {"year"},
+                                                                             "***sortgrid***"  => $self -> build_sort_view($sortid),
+                                                                             "***summaries***" => $self -> build_sort_summaries($sortid),
                                                   });
 }
 
