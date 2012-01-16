@@ -7,8 +7,8 @@
         <div class="message">
             <h2>{L_SUMMARYLIST_TITLE}</h2>
             <div class="mbody">
-                <img src="templates/default/images/summary.png" width="48" height="48" alt="summary" class="fltrt" />
-                <div>{L_SUMMARYLIST_INTRO}</div>
+                <img src="templates/default/images/summary.png" width="48" height="48" alt="summary" class="fltrt printhide" />
+                <div class="printhide">{L_SUMMARYLIST_INTRO}</div>
 ***summaries***
             </div>
         </div>
