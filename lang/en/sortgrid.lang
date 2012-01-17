@@ -1,4 +1,4 @@
-SORTGRID_LEASTLIKE  = LEAST LIKE ME
+SORTGRID_LEASTLIKE  = MOST UNLIKE ME
 SORTGRID_MOSTLIKE   = MOST LIKE ME
 
 SORTGRID_ERR_NOUSER  = Unable to locate record for user ***userid***. Please report this error!
