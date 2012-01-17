@@ -51,11 +51,19 @@ sub build_summary_view {
     my $sort = $self -> get_sort_byids($sortid, $user -> {"id"});
     return $sort unless(ref($sort) eq "HASH");
 
+    # And the sort user
+    my $sortuser = $self -> {"session"} -> {"auth"} -> get_user_byid($sort -> {"user_id"});
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
+                                                                                                               {"***userid***" => $sort -> {"user_id"}})
+                                                  })
+        unless($sortuser);
+
     # Try to store the summary if there is one.
     my $storeerr;
     $storeerr = $self -> store_summary($sortid) if($self -> {"cgi"} -> param("summarytext"));
 
-    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"      => $user -> {"username"},
+    return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"      => $sortuser -> {"username"},
                                                                              "***period***"    => $sort -> {"name"},
                                                                              "***year***"      => $sort -> {"year"},
                                                                              "***error***"     => $storeerr,
