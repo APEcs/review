@@ -51,19 +51,51 @@ sub build_summary_view {
     my $sort = $self -> get_sort_byids($sortid, $user -> {"id"});
     return $sort unless(ref($sort) eq "HASH");
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# TODO:
-# - fetch and show summary and edits (use accordion for old versions?)
-# - show summary edit box (use html area?)
+    # Try to store the summary if there is one.
+    my $storeerr;
+    $storeerr = $self -> store_summary($sortid) if($self -> {"cgi"} -> param("summarytext"));
 
     return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"      => $user -> {"username"},
                                                                              "***period***"    => $sort -> {"name"},
                                                                              "***year***"      => $sort -> {"year"},
+                                                                             "***error***"     => $storeerr,
                                                                              "***sortgrid***"  => $self -> build_sort_view($sortid),
                                                                              "***summaries***" => $self -> build_sort_summaries($sortid),
                                                   });
 }
 
+
+## @method $ store_summary($sortid)
+# Store the summary submitted by the user, if present, for the specified
+# sortid.
+#
+sub store_summary {
+    my $self   = shift;
+    my $sortid = shift;
+
+    # Obtain the summary text
+    my ($summary, $errs) = $self -> validate_string("summarytext", {"nicename" => $self -> {"template"} -> replace_langvar("SUMMARYLIST_TITLE"),
+                                                                    "default"  => ""});
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $errs })
+        if($errs);
+
+    # Do nothing if there is no summary
+    return undef if(!$summary);
+
+    # Check that the user has permission to modify the sort
+    my $sortuser = $self -> check_sort_permissions($sortid, 1);
+    return $sortuser unless(ref($sortuser) eq "HASH");
+
+    $self -> log("edit", "Summary edit, sortid = ".($sortid || "undefined")) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
+
+    # Sort update granted, push the new update into the database
+    my $summaryh = $self -> {"dbh"} -> prepare("INSERT INTO ".$self -> {"settings"} -> {"database"} -> {"summaries"}."
+                                                (sort_id, summary, storetime)
+                                                VALUES(?, ?, UNIx_TIMESTAMP())");
+    $summaryh -> execute($sortid, $summary)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary insert query: ".$self -> {"dbh"} -> errstr);
+}
 
 # ============================================================================
 #  Interface functions
@@ -96,7 +128,7 @@ sub page_display {
     # Done generating the page content, return the filled in page template
     return $self -> {"template"} -> load_template("page.tem", {"***title***"     => $title,
                                                                "***topright***"  => $self -> generate_topright(),
-                                                               "***extrahead***" => "",
+                                                               "***extrahead***" => $self -> {"template"} -> load_template("summary/lightface.tem"),
                                                                "***content***"   => $content});
 
 }

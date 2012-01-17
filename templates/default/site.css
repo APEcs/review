@@ -525,6 +525,7 @@ table#sort {
 table#sort th.sortlabel {
     color: #777;
     text-align: center;
+    font-size: x-small;
 }
 
 table#sort th.sortheader {
@@ -588,12 +589,37 @@ div#accordion h2.acc-title {
     text-align: left;
     font-size: 12px;
     font-weight: bold;
+    border: none;
 }
 
 div#accordion h2.acc-title:hover {
-    background-color: #663300;
+    background-color: #ffc000 !important;
 }
 
 div#accordion div.acc-content {
     margin: 3px;
+}
+
+div.editopt {
+    padding: 2px;
+    text-align: right;
+    border-top: 1px dotted #666;
+}
+
+div#summarydata {
+    display: none;
+}
+
+.mask {
+    position: absolute;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    z-index: 999;
+    background: #444;
+}
+
+img.hotimg {
+    border: none;
+    cursor: pointer;
 }

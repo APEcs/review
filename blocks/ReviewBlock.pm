@@ -26,6 +26,7 @@ package ReviewBlock;
 # UI and backend modules.
 use strict;
 use base qw(Block); # This class extends Block
+use HTML::Entities;
 use Logging qw(die_log);
 use List::Util qw(max);
 
@@ -76,17 +77,43 @@ sub fix_colour {
     return $colour;
 }
 
+## @fn $ text_to_html($text, $nobrs)
+# Convert the contents of the specified text to something that can be
+# safely and sanely displayed in a html document. This will nuke *ANY*
+# unsafe characters in the string, and convert newlines to br
+# No formatting features are permitted or preserved - the output is
+# free of html tags save br!
+#
+# @param text    The text to process.
+# @param noparas If set, newlines are not converted to br
+# @return The processed text in a form safe for inclusion in html.
+sub text_to_html {
+    my $text    = shift;
+    my $noparas = shift;
 
-## @method $ check_sort_permissions($sortid)
+    # First decode html entities in the text, and then re-encode them.
+    # This avoid issues with double-encoding, and also ensures that all entities are done.
+    $text = encode_entities(decode_entities($text));
+
+    # Now paragraphise
+    $text =~ s|\n|<br />\n|g unless($noparas);
+
+    return $text;
+}
+
+
+## @method $ check_sort_permissions($sortid, $write)
 # Determine whether the current session user has access to view the sort with the
 # specified id. This will return an error message if the user does not have access,
 # otherwise it will return a reference to the user data for *THE SORT OWNER*
 #
 # @param sortid The ID of the sort to check permissions for.
+# @param write  If set, the user is attempting to update the sort.
 # @return A reference to the sort user's data on success, an error message on failure.
 sub check_sort_permissions {
     my $self   = shift;
     my $sortid = shift;
+    my $write  = shift;
 
     # Get the sort header to ensure it exists, and we can security check against it
     my $sort = $self -> get_sort_byids($sortid, 0);
@@ -114,7 +141,8 @@ sub check_sort_permissions {
                                                                                                                {"***userid***" => $sort -> {"userid"},
                                                                                                                 "***sortid***" => $sortid})
                                                   })
-        unless($sessuser -> {"user_type"} == 3 || $sort -> {"user_id"} == $sessuser -> {"user_id"});
+        # Admin users can read, but not write. Sort owner may read and write
+        unless((!$write && $sessuser -> {"user_type"} == 3) || $sort -> {"user_id"} == $sessuser -> {"user_id"});
 
     return $user;
 }
@@ -415,7 +443,11 @@ sub build_sort_view {
 # ============================================================================
 #  Sort summary generation functions
 
-
+## @method $ build_sort_summaries($sortid)
+# Generate the sort summary view list for the specified sortid.
+#
+# @param sortid The id of the sort to generate the summary list for.
+# @return The summary list html.
 sub build_sort_summaries {
     my $self = shift;
     my $sortid = shift;
@@ -424,10 +456,44 @@ sub build_sort_summaries {
     my $sortuser = $self -> check_sort_permissions($sortid);
     return $sortuser unless(ref($sortuser) eq "HASH");
 
-    # Generate the summary view
-    return ""#$self -> _build_sort_summaries($sortid);
-}
+    # Look up summaries for the specified sort
+    my $summaryh = $self -> {"dbh"} -> prepare("SELECT id, summary, storetime
+                                                FROM ".$self -> {"settings"} -> {"database"} -> {"summaries"}."
+                                                WHERE sort_id = ?
+                                                ORDER BY storetime DESC");
+    $summaryh -> execute($sortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
 
+    # Precache the entry templates for speed
+    my $entrytem = $self -> {"template"} -> load_template("summary/entry.tem");
+    my @titles   = ($self -> {"template"} -> load_template("summary/title_current.tem"),
+                    $self -> {"template"} -> load_template("summary/title_previous.tem"));
+    my @editopt  = ($self -> {"template"} -> load_template("summary/editopt_current.tem"),
+                    $self -> {"template"} -> load_template("summary/editopt_previous.tem"));
+    my @printable = ("", " printhide");
+
+    my $entries   = "";
+    my $donefirst = 0;
+    my $first_summary = "";
+    while(my $summary = $summaryh -> fetchrow_hashref()) {
+        $entries .= $self -> {"template"} -> process_template($entrytem, {"***title***"     => $self -> {"template"} -> process_template($titles[$donefirst], {"***stored***" => $self -> {"template"} -> format_time($summary -> {"storetime"})}),
+                                                                          "***summary***"   => text_to_html($summary -> {"summary"}),
+                                                                          "***editopt***"   => $editopt[$donefirst],
+                                                                          "***printable***" => $printable[$donefirst]});
+
+        if(!$donefirst) {
+            $first_summary = $summary -> {"summary"};
+            $donefirst = 1;
+        }
+    }
+
+    $entries = $self -> {"template"} -> load_template("summary/noentries.tem")
+        if(!$entries);
+
+    return $self -> {"template"} -> load_template("summary/entries.tem", {"***summaries***"    => $entries,
+                                                                          "***id***"           => $sortid,
+                                                                          "***firstsummary***" => text_to_html($first_summary, 1)});
+}
 
 
 # ============================================================================

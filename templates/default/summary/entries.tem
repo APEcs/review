@@ -1,14 +1,27 @@
+<script type="text/javascript">
+var editbox;
+
+window.addEvent('domready', function() {
+    var accordion = new Fx.Accordion($$('.acc-title'),$$('.acc-content'), {
+            onActive: function(toggler) { toggler.setStyles({'background-color': '#d4d4ff',
+                                                             'background-image': 'url(templates/default/images/open.png)'}); },
+        onBackground: function(toggler) { toggler.setStyles({'background-color': '#f7f7ff',
+                                                             'background-image': 'url(templates/default/images/closed.png)'}); },
+
+    });
+
+    editbox = new LightFace({title: '{L_SUMMARYLIST_EDITTITLE}',
+                                 buttons: [
+                                            { title: '{L_SUMMARYLIST_EDIT}', event: function() { $('summaryform').submit(); }, color: 'blue' },
+                                            { title: '{L_SUMMARYLIST_CLOSE}', event: function() { this.close(); } }
+                                          ],
+                                 content: '<p class="left">{L_SUMMARYLIST_EDITTEXT}</p><form id="summaryform" action="index.cgi" method="post"><input type="hidden" name="block" value="summary" /><input type="hidden" name="sortid" value="***id***" /><textarea id="summarytext" name="summarytext" rows="10" cols="76"></textarea></form>'
+    });
+
+    $('summarytext').value = $('summarydata').innerHTML;
+});
+</script>
 <div id="accordion">
 ***summaries***
 </div>
-<script type="text/javascript">
-window.addEvent('domready', function() {
-    var accordion = new Fx.Accordion($$('.acc-title'),$$('.acc-content'), {
-            onActive: function(toggler) { toggler.setStyles({background-color: '#f7f7ff',
-                                                            'background-image': 'url(templates/default/images/open.png)'}); },
-        onBackground: function(toggler) { toggler.setStyles({background-color: '#d4d4ff',
-                                                            'background-image': 'url(templates/default/images/closed.png)'}); },
-
-    });
-});
-</script>
+<div id="summarydata">***firstsummary***</div>

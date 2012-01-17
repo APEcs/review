@@ -20,6 +20,7 @@
     <!-- any site-specific javascriptery and styles -->
     <script type='text/javascript' src="templates/default/site.js"></script>
     <link href="templates/default/site.css" rel="stylesheet" type="text/css" />
+    <link href="templates/default/print.css" rel="stylesheet" type="text/css" media="print"/>
 
     <!--[if IE]>
     <style type="text/css">
@@ -60,7 +61,7 @@
 
     <div class="cleared"></div>
 
-    <div id="footer">
+    <div id="footer" class="printhide">
         <div>
             <div class="small center">
                 {L_PAGE_FOOTER}

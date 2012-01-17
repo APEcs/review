@@ -1,5 +1,5 @@
-<h2 class="acc-title">***title***</h2>
-<div class="acc-content">
+<h2 class="acc-title***printable***">***title***</h2>
+<div class="acc-content***printable***">
 <div class="summary">***summary***</div>
 ***editopt***
 </div>
