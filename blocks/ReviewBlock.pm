@@ -137,7 +137,7 @@ sub check_sort_permissions {
 
     # Error the user doesn't match the sort, and the session user isn't an admin.
     return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_BADSORT",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_PERM",
                                                                                                                {"***userid***" => $sort -> {"userid"},
                                                                                                                 "***sortid***" => $sortid})
                                                   })
@@ -282,7 +282,6 @@ sub _build_sort_data {
         $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ undef,
                                                                 { "colour"    => $maprow -> {"colour"},
                                                                   "shorttext" => $maprow -> {"flashq_id"} },
-                                                                undef,
                                                               ];
 
         # Work out the range of columns as the rows are processed
@@ -338,8 +337,9 @@ sub _build_sort_grid {
     # Now start building the table. Rows 0 and 1 are special (0 is the labels, 1 is the headers)
     # but we should be able to nicely handle that in one loop!
     my $sortrows = "";
-    for(my $row = 0; $row <= ($griddata -> {"ranges"} -> {"maxrow"} + 2); ++$row) {
+    for(my $row = 0; $row <= ($griddata -> {"ranges"} -> {"maxrow"} + 1); ++$row) {
         my $sortcols = "";
+        $sortrows .= $self -> {"template"} -> load_template("sort/emptyrow.tem") if($row == 2);
 
         for(my ($col, $tem) = ($griddata -> {"ranges"} -> {"mincol"}, ""); $col <= $griddata -> {"ranges"} -> {"maxcol"}; ++$col) {
             # Pick the template based on the row number (FIXME: Find a less sucky way to do this...)
