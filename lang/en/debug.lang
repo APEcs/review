@@ -1,0 +1,5 @@
+DEBUG_TIMEUSED         = Execution time
+DEBUG_SECONDS          = seconds
+DEBUG_USER             = User time
+DEBUG_SYSTEM           = System time
+DEBUG_MEMORY           = Memory used
