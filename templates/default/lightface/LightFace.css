@@ -191,6 +191,7 @@
 	color:#fff;
 }
 
+
 .lightface .hiddenButton {
 	visibility: hidden;
 }
@@ -201,6 +202,12 @@
 	top: 0;
 	bottom: 0;
 	right: 0;
+	/*
+	background-image: url(images/spinner.gif);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-color: #fff;
+	*/
 	background:url(images/spinner.gif) center center no-repeat #fff;
 }
 

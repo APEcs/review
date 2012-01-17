@@ -118,7 +118,8 @@ var LightFace = new Class({
 			'class': 'lightfaceMessageBox',
 			html: this.options.content || '',
 			styles: {
-				height: this.options.height
+				height: this.options.height,
+				'z-index': this.options.zIndex + 10,
 			}
 		}).inject(this.contentBox);
 		
@@ -126,29 +127,10 @@ var LightFace = new Class({
 		this.footer = new Element('div',{
 			'class': 'lightfaceFooter',
 			styles: {
-				display: 'none'
+				display: 'none',
 			}
 		}).inject(this.contentBox);
-		
-		//draw overlay
-		this.overlay = new Element('div',{
-			html: '&nbsp;',
-			styles: {
-				opacity: 0
-			},
-			'class': 'lightfaceOverlay',
-			tween: {
-				link: 'chain',
-				duration: this.options.fadeDuration,
-				onComplete: function() {
-					if(this.overlay.getStyle('opacity') == 0) this.box.focus();
-				}.bind(this)
-			}
-		}).inject(this.contentBox);
-		if(!this.options.overlayAll) {
-			this.overlay.setStyle('top',(this.title ? this.title.getSize().y - 1: 0));
-		}
-		
+				
 		//create initial buttons
 		this.buttons = [];
 		if(this.options.buttons.length) {
@@ -160,6 +142,8 @@ var LightFace = new Class({
 		//focus node
 		this.focusNode = this.box;
 		
+        this.mask = new Mask(document.body);
+
 		return this;
 	},
 	
@@ -187,7 +171,10 @@ var LightFace = new Class({
 			value: title,
 			events: {
 				click: (clickEvent || this.close).bind(this)
-			}
+			},
+            styles: {
+                'z-index': this.options.zIndex + 10,
+            }
 		}).inject(label));
 		label.inject(this.footer);
 		return this;
@@ -207,6 +194,7 @@ var LightFace = new Class({
 			this.box[fast ? 'setStyles' : 'tween']('opacity',0);
 			this.fireEvent('close');
 			this._detachEvents();
+            this.mask.hide();
 			this.isOpen = false;
 		}
 		return this;
@@ -214,6 +202,7 @@ var LightFace = new Class({
 	
 	open: function(fast) {
 		if(!this.isOpen) {
+            this.mask.show();
 			this.box[fast ? 'setStyles' : 'tween']('opacity',1);
 			if(this.resizeOnOpen) this._resize();
 			this.fireEvent('open');
