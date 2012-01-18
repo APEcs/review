@@ -1,4 +1,4 @@
-<table id="comments">
+<table class="comments">
 <tr>
     <th colspan="2" style="text-align: left; background-color: #***negcol***">{L_SORTGRID_LEASTLIKE}</th>
     <th class="noborder"></th>

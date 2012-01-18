@@ -1,4 +1,4 @@
-<table id="times">
+<table class="times">
 <tr>
     <th style="background-color: #***neucol***">{L_SORTGRID_TIMES}</th>
 </tr>

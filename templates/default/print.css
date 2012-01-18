@@ -2,10 +2,10 @@
     display: none;
 }
 
-div#summarydate, div#summaryprint {
-    display: block;
+h2.print {
+    font-size: 11pt;
 }
 
-div#summarydate h2 {
-    font-size: 11pt;
+.printonly {
+    display: block;
 }

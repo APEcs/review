@@ -54,7 +54,7 @@ sub build_summary_view {
 
     # Try to store the summary if there is one.
     my $storeerr;                               # Summary update does not work in multiview mode!
-    $storeerr = $self -> store_summary($sortid) if(!$multiview && $self -> {"cgi"} -> param("summarytext"));
+    $storeerr = $self -> store_summary($sortid) if(!$multiview && $self -> {"cgi"} -> param("summarytext$sortid"));
 
     return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"      => $sortuser -> {"username"},
                                                                              "***period***"    => $sort -> {"name"},
@@ -117,8 +117,8 @@ sub store_summary {
     my $sortid = shift;
 
     # Obtain the summary text
-    my ($summary, $errs) = $self -> validate_string("summarytext", {"nicename" => $self -> {"template"} -> replace_langvar("SUMMARYLIST_TITLE"),
-                                                                    "default"  => ""});
+    my ($summary, $errs) = $self -> validate_string("summarytext$sortid", {"nicename" => $self -> {"template"} -> replace_langvar("SUMMARYLIST_TITLE"),
+                                                                           "default"  => ""});
     return $self -> {"template"} -> load_template("blocks/error_box.tem",
                                                   {"***message***" => $errs })
         if($errs);

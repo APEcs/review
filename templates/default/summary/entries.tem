@@ -13,19 +13,19 @@ window.addEvent('domready', function() {
     editbox = new LightFace({title: '{L_SUMMARYLIST_EDITTITLE}',
                              draggable: true,
                              buttons: [
-                                      { title: '{L_SUMMARYLIST_EDIT}', event: function() { $('summaryform').submit(); }, color: 'blue' },
+                                      { title: '{L_SUMMARYLIST_EDIT}', event: function() { $('summaryform***id***').submit(); }, color: 'blue' },
                                       { title: '{L_SUMMARYLIST_CLOSE}', event: function() { this.close(); } }
                                       ],
-                             content: '<p class="left">{L_SUMMARYLIST_EDITTEXT}</p><form id="summaryform" action="index.cgi" method="post"><input type="hidden" name="block" value="summary" /><input type="hidden" name="sortid" value="***id***" /><textarea id="summarytext" name="summarytext" rows="10" cols="76"></textarea></form>'
+                             content: '<p class="left">{L_SUMMARYLIST_EDITTEXT}</p><form id="summaryform***id***" action="index.cgi" method="post"><input type="hidden" name="block" value="summary" /><input type="hidden" name="sortid" value="***id***" /><textarea id="summarytext***id***" name="summarytext***id***" rows="10" cols="76"></textarea></form>'
     });
 
-    $('summarytext').value = $('summarydata').innerHTML;
+    $('summarytext***id***').value = $('summarydata***id***').innerHTML;
 });
 </script>
-<div id="accordion" class="printhide">
+<div class="accordion printhide">
 ***summaries***
 </div>
-<div id="summarydate"><h2>***firstdate***</h2></div>
-<div id="summaryprint">***firstprint***</div>
-<div id="summarydata">***firstsummary***</div>
+<div id="summarydate***id***" class="printonly"><h2 class="print">***firstdate***</h2></div>
+<div id="summaryprint***id***" class="printonly">***firstprint***</div>
+<div id="summarydata***id***" style="display: none;">***firstsummary***</div>
 
