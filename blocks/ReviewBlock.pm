@@ -537,14 +537,16 @@ sub build_sort_view {
 # ============================================================================
 #  Sort summary generation functions
 
-## @method $ build_sort_summaries($sortid)
+## @method $ build_sort_summaries($sortid, $firstonly)
 # Generate the sort summary view list for the specified sortid.
 #
-# @param sortid The id of the sort to generate the summary list for.
+# @param sortid    The id of the sort to generate the summary list for.
+# @param firstonly Show only the first summary, and do not include edit features.
 # @return The summary list html.
 sub build_sort_summaries {
-    my $self = shift;
-    my $sortid = shift;
+    my $self      = shift;
+    my $sortid    = shift;
+    my $firstonly = shift;
 
     # Check the permissions, and fall over if we don't have permission to view the sort.
     my $sortuser = $self -> check_sort_permissions($sortid);
@@ -562,7 +564,7 @@ sub build_sort_summaries {
     my $entrytem = $self -> {"template"} -> load_template("summary/entry.tem");
     my @titles   = ($self -> {"template"} -> load_template("summary/title_current.tem"),
                     $self -> {"template"} -> load_template("summary/title_previous.tem"));
-    my @editopt  = ($self -> {"template"} -> load_template("summary/editopt_current.tem"),
+    my @editopt  = ($self -> {"template"} -> load_template("summary/editopt_current_".($firstonly ? "noedit" : "edit").".tem"),
                     $self -> {"template"} -> load_template("summary/editopt_previous.tem"));
     my @printable = ("", " printhide");
 
@@ -581,10 +583,11 @@ sub build_sort_summaries {
             $first -> {"printable"} = text_to_html($summary -> {"summary"});
             $first -> {"date"}      = $self -> {"template"} -> process_template($titles[$donefirst], {"***stored***" => $self -> {"template"} -> format_time($summary -> {"storetime"})});
             $donefirst = 1;
+            last if($firstonly);
         }
     }
 
-    $entries = $self -> {"template"} -> load_template("summary/noentries.tem")
+    $entries = $self -> {"template"} -> load_template("summary/noentries_".($firstonly ? "noedit" : "edit").".tem")
         if(!$entries);
 
     return $self -> {"template"} -> load_template("summary/entries.tem", {"***summaries***"    => $entries,
