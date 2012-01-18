@@ -1,0 +1,14 @@
+<table id="times">
+<tr>
+    <th style="background-color: #***neucol***">{L_SORTGRID_TIMES}</th>
+</tr>
+<tr><td></td></tr>
+<tr><td class="databox" style="background-color: #***neucol***">
+    <table id="innertimes" class="formtable">
+    <tr><td class="label">{L_TIMES_TAKEN}:</td><td class="field">***sorttime*** ({L_TIMES_UPDATED}: ***updated***)</td></tr>
+    <tr><td class="label top">{L_TIMES_STAGES}:</td><td class="field">***stages***</td></tr>
+    <tr><td class="label">{L_TIMES_TOTAL}:</td><td class="field">***totaltime***</td></tr>
+    </table>
+    </td>
+</tr>
+</table>
