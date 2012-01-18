@@ -1,7 +1,24 @@
 SORTGRID_LEASTLIKE  = MOST UNLIKE ME
 SORTGRID_MOSTLIKE   = MOST LIKE ME
+SORTGRID_TIMES      = Time info
 
 SORTGRID_ERR_NOUSER  = Unable to locate record for user ***userid***. Please report this error!
 SORTGRID_ERR_NOMAP   = No map definition found for cohort ***cohortid***. Please report this error!
 SORTGRID_ERR_NOSORT  = No sort data has been recorded for the specified sort (id ***sortid***). Please report this error!
 SORTGRID_ERR_PERM    = You do not have permission to perform the requested operation on this sort.
+
+TIMES_TAKEN   = Finished
+TIMES_UPDATED = Last updated
+TIMES_STAGES  = Stage times
+TIMES_TOTAL   = Total time
+
+TIMES_STAGE1_TITLE = Stage 1
+TIMES_STAGE1_DESC  = Time spent on stage 1 (sorting into piles)
+TIMES_STAGE2_TITLE = Stage 2
+TIMES_STAGE2_DESC  = Time spent on stage 2 (sorting into grid)
+TIMES_STAGE3_TITLE = Stage 3
+TIMES_STAGE3_DESC  = Time spent on stage 3 (review grid placement)
+TIMES_STAGE4_TITLE = Stage 4
+TIMES_STAGE4_DESC  = Time spent on stage 4 (commentry form)
+TIMES_STAGE5_TITLE = Stage 5
+TIMES_STAGE5_DESC  = Time spent on stage 5 (details form)
