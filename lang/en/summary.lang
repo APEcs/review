@@ -10,5 +10,8 @@ SUMMARYLIST_CURTITLE  = Current summary
 SUMMARYLIST_OLDTITLE  = Previous edit
 SUMMARYLIST_EDITTITLE = Edit Reflective Summary
 SUMMARYLIST_EDITTEXT  = Enter your reflective summary here. Note that newlines will be preserved, but any HTML formatting will be stripped.
+SUMMARYLIST_EDITBTN   = Edit summary
 SUMMARYLIST_EDIT      = Save
 SUMMARYLIST_CLOSE     = Cancel
+
+SUMMARYLIST_NOTITLE   = No summary stored.
