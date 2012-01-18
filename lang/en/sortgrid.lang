@@ -2,10 +2,11 @@ SORTGRID_LEASTLIKE  = MOST UNLIKE ME
 SORTGRID_MOSTLIKE   = MOST LIKE ME
 SORTGRID_TIMES      = Time info
 
-SORTGRID_ERR_NOUSER  = Unable to locate record for user ***userid***. Please report this error!
-SORTGRID_ERR_NOMAP   = No map definition found for cohort ***cohortid***. Please report this error!
-SORTGRID_ERR_NOSORT  = No sort data has been recorded for the specified sort (id ***sortid***). Please report this error!
-SORTGRID_ERR_PERM    = You do not have permission to perform the requested operation on this sort.
+SORTGRID_ERR_NOUSER   = Unable to locate record for user ***userid***. Please report this error!
+SORTGRID_ERR_NOMAP    = No map definition found for cohort ***cohortid***. Please report this error!
+SORTGRID_ERR_NOSORTID = No sort id specified. Unable to continue without a sort id!
+SORTGRID_ERR_NOSORT   = No sort data has been recorded for the specified sort (id ***sortid***). Please report this error!
+SORTGRID_ERR_PERM     = You do not have permission to perform the requested operation on this sort.
 
 TIMES_TAKEN   = Finished
 TIMES_UPDATED = Last updated

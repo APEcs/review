@@ -39,25 +39,16 @@ sub build_summary_view {
     my $self   = shift;
     my $sortid = shift;
 
-    # Obtain the logged-in user's record
-    my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
     return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
-                                                                                                               {"***userid***" => $self -> {"session"} -> {"sessuser"}})
-                                                  })
-        unless($user);
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOSORTID")})
+        if(!$sortid);
+
+    my $sortuser = $self -> check_sort_permissions($sortid);
+    return $sortuser unless(ref($sortuser) eq "HASH");
 
     # Obtain the sort data
-    my $sort = $self -> get_sort_byids($sortid, $user -> {"id"});
+    my $sort = $self -> get_sort_byids($sortid);
     return $sort unless(ref($sort) eq "HASH");
-
-    # And the sort user
-    my $sortuser = $self -> {"session"} -> {"auth"} -> get_user_byid($sort -> {"user_id"});
-    return $self -> {"template"} -> load_template("blocks/error_box.tem",
-                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOUSER",
-                                                                                                               {"***userid***" => $sort -> {"user_id"}})
-                                                  })
-        unless($sortuser);
 
     # Try to store the summary if there is one.
     my $storeerr;
@@ -125,13 +116,25 @@ sub page_display {
 
     # User must be logged in before we can do anything else
     if($self -> {"session"} -> {"sessuser"} && $self -> {"session"} -> {"sessuser"} != $self -> {"session"} -> {"auth"} -> {"ANONYMOUS"}) {
-        my $sortid = is_defined_numeric($self -> {"cgi"}, "sortid");
+        # Singular sortid specified?
+        my @sortids = $self -> {"cgi"} -> param("sortid");
 
-        # Excessive logging enabled? If so, log the user viewing this...
-        $self -> log("view", "Summary view, sortid = ".($sortid || "undefined")) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
+        if(scalar(@sortids) == 0) {
+            $self -> log("view", "Summary view, sortid undefined") if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
 
-        $content = $self -> build_summary_view($sortid);
+            $content = $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                              {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOSORTID")});
+        } elsif(scalar(@sortids) == 1) {
+            my $sortid = is_defined_numeric($self -> {"cgi"}, "sortid");
 
+            $self -> log("view", "Summary view, sortid = ".($sortid || "undefined")) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
+
+            $content = $self -> build_summary_view($sortid);
+        } else {
+            $self -> log("view", "Summary miltiview, sortids = ".join(",", @sortids)) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
+
+            $content = $self -> build_summary_multiview(\@sortids);
+        }
     # User has not logged in, force them to
     } else {
         my $url = "index.cgi?block=login&amp;back=".$self -> {"session"} -> encode_querystring($self -> {"cgi"} -> query_string());
