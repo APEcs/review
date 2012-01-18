@@ -1,1 +1,1 @@
-<div class="editopt printhide"><img onclick="editbox.open();" class="hotimg" src="templates/default/images/editsummary.png" width="97" height="27" alt="edit" title="{L_SUMMARYLIST_EDIT}" /></div>
+<div class="editopt printhide"><img onclick="editbox.open();" class="hotimg" src="templates/default/images/editsummary.png" width="97" height="27" alt="edit" title="{L_SUMMARYLIST_EDITBTN}" /></div>

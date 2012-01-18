@@ -1,2 +1,2 @@
 <p>{L_SUMMARYLIST_NOSUM}</p>
-<div class="center"><img class="hotimg" onclick="editbox.open();" src="templates/default/images/editsummary.png" width="97" height="27" alt="edit" title="{L_SUMMARYLIST_EDIT}" /></div>
+<div class="center"><img class="hotimg" onclick="editbox.open();" src="templates/default/images/editsummary.png" width="97" height="27" alt="edit" title="{L_SUMMARYLIST_EDITBTN}" /></div>
