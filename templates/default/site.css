@@ -209,7 +209,7 @@ table.formtable td.label {
     font-weight: bold;
     text-align: right;
     min-width: 10em;
-    white-space: nowrap;
+    white-space: nowrap !important;
 }
 
 table.formtable td.field {
@@ -555,6 +555,22 @@ table#comments th {
     text-align: center;
 }
 
+table#times {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table#times th {
+    padding: 2px;
+    border: 1px solid black;
+    text-align: left;
+}
+
+table#times td.databox {
+    padding: 2px;
+    border: 1px solid #BBB;
+}
+
 table#comments th.noborder {
     border: 0px;
     text-align: center;
@@ -606,15 +622,15 @@ div.editopt {
     border-top: 1px dotted #666;
 }
 
-div#summarydata {
+div#summarydata, div#summarydate, div#summaryprint {
     display: none;
 }
 
 .mask {
     position: absolute;
-    opacity: 0.5;
-    filter: alpha(opacity=50);
-    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=30);
     z-index: 999;
     background: #444;
 }
