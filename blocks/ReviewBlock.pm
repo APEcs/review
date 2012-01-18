@@ -29,6 +29,8 @@ use base qw(Block); # This class extends Block
 use HTML::Entities;
 use Logging qw(die_log);
 use List::Util qw(max);
+use MIME::Base64;   # Needed for base64 encoding of popup bodies.
+use Utils qw(superchomp);
 
 # ============================================================================
 #  General utility stuff.
@@ -254,6 +256,43 @@ sub _get_sort_comments {
 }
 
 
+## @method void _get_sort_times($sortid, $griddata)
+# Obtain the sort timings for the specified sort.
+#
+# @param sortid   The ID of the sort to load the data for.
+# @param griddata A reference to a hash to store the sort timings in.
+sub _get_sort_times {
+    my $self     = shift;
+    my $sortid   = shift;
+    my $griddata = shift;
+
+    my $sortheader = $self -> get_sort_byids($sortid);
+    $griddata -> {"times"} -> {"sortdate"} = $sortheader -> {"sortdate"};
+    $griddata -> {"times"} -> {"updated"}  = $sortheader -> {"updated"};
+
+    # Query to fetch the durations
+    my $timeh = $self -> {"dbh"} -> prepare("SELECT value FROM ".$self -> {"settings"} -> {"database"} -> {"sortdata"}."
+                                             WHERE name = ?
+                                             AND sort_id = ?");
+    # The durations to fetch:
+    my @durations = ("dur0", # Total time taken from start of stage 1 to immediately before submitting
+                     "dur1", # Time spent on stage 1 (sorting into piles)
+                     "dur2", # Time spent on stage 2 (sorting into grid)
+                     "dur3", # Time spent on stage 3 (review grid placement)
+                     "dur4", # Time spent on stage 4 (commentry form)
+                     "dur5", # Time spent on stage 5 (details form)
+                    );
+    foreach my $dur (@durations) {
+        $timeh -> execute($dur, $sortid)
+            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
+
+        my $timer = $timeh -> fetchrow_arrayref();
+
+        $griddata -> {"times"} -> {$dur} = $timer ? $timer -> [0] : "Unknown";
+    }
+}
+
+
 ## @method $ _build_sort_data($sortid, $cohortid)
 # Store the sort data for the specified sort in the provided griddata hash. Note
 # that this does not ensure that the current user has permission to access this
@@ -309,6 +348,7 @@ sub _build_sort_data {
     # Pull in the actual data
     $self -> _get_sort_data($sortid, $griddata);
     $self -> _get_sort_comments($sortid, $griddata);
+    $self -> _get_sort_times($sortid, $griddata);
 
     return $griddata;
 }
@@ -415,6 +455,59 @@ sub _build_sort_comments {
 }
 
 
+## @method $ _build_sort_times($griddata)
+# Generate the html representation of the sort times contained in the specified grid
+# data hash.
+#
+# @param griddata A reference to a hash containing the sort times to render as HTML.
+# @return The sort times string.
+sub _build_sort_times {
+    my $self      = shift;
+    my $griddata  = shift;
+    my $stagelist = "";
+
+    # Grab some templates..
+    my $popuptem   = $self -> {"template"} -> load_template("popup.tem");
+    my $stagetem   = $self -> {"template"} -> load_template("sort/stage.tem");
+    my $dividertem = $self -> {"template"} -> load_template("sort/stagediv.tem");
+
+    # Remove trailing whitespace
+    superchomp($popuptem);
+    superchomp($stagetem);
+
+    # Stages...
+    my @stages = ({"name"  => "dur1",
+                   "title" => $self -> {"template"} -> replace_langvar("TIMES_STAGE1_TITLE"),
+                   "desc"  => $self -> {"template"} -> replace_langvar("TIMES_STAGE1_DESC")},
+                  {"name"  => "dur2",
+                   "title" => $self -> {"template"} -> replace_langvar("TIMES_STAGE2_TITLE"),
+                   "desc"  => $self -> {"template"} -> replace_langvar("TIMES_STAGE2_DESC")},
+                  {"name"  => "dur3",
+                   "title" => $self -> {"template"} -> replace_langvar("TIMES_STAGE3_TITLE"),
+                   "desc"  => $self -> {"template"} -> replace_langvar("TIMES_STAGE3_DESC")},
+                  {"name"  => "dur4",
+                   "title" => $self -> {"template"} -> replace_langvar("TIMES_STAGE4_TITLE"),
+                   "desc"  => $self -> {"template"} -> replace_langvar("TIMES_STAGE4_DESC")},
+                  {"name"  => "dur5",
+                   "title" => $self -> {"template"} -> replace_langvar("TIMES_STAGE5_TITLE"),
+                   "desc"  => $self -> {"template"} -> replace_langvar("TIMES_STAGE5_DESC")},
+        );
+    foreach my $stage (@stages) {
+        $stagelist .= $dividertem if($stagelist);
+
+        $stagelist .= $self -> {"template"} -> process_template($stagetem, {"***time***"  => $self -> {"template"} -> humanise_seconds($griddata -> {"times"} -> {$stage -> {"name"}}),
+                                                                            "***popup***" => $self -> {"template"} -> process_template($popuptem, {"***title***"   => $stage -> {"title"},
+                                                                                                                                                   "***b64body***" => encode_base64($stage -> {"desc"})})});
+    }
+
+    return $self -> {"template"} -> load_template("sort/times.tem", {"***neucol***"    => fix_colour($self -> {"settings"} -> {"config"} -> {"XML::Config:neutralColour"}),
+                                                                     "***sorttime***"  => $self -> {"template"} -> format_time($griddata -> {"times"} -> {"sortdate"}),
+                                                                     "***updated***"   => $self -> {"template"} -> format_time($griddata -> {"times"} -> {"updated"}),
+                                                                     "***totaltime***" => $self -> {"template"} -> humanise_seconds($griddata -> {"times"} -> {"dur0"}),
+                                                                     "***stages***"    => $stagelist});
+}
+
+
 ## @method $ build_sort_view($sortid)
 # Generate the sort grid table for the specified sort id. This will ensure that the
 # user has permission to view the sort (either the sort owner or an admin user)
@@ -436,6 +529,7 @@ sub build_sort_view {
 
     return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***"     => $self -> _build_sort_grid($griddata),
                                                                     "***sortcomments***" => $self -> _build_sort_comments($griddata),
+                                                                    "***sorttimes***"    => $self -> _build_sort_times($griddata),
                                                   });
 }
 
@@ -474,7 +568,8 @@ sub build_sort_summaries {
 
     my $entries   = "";
     my $donefirst = 0;
-    my $first_summary = "";
+    my $first     = {"date"      => $self -> {"template"} -> replace_langvar("SUMMARYLIST_NOTITLE"),
+                     "printable" => $self -> {"template"} -> replace_langvar("SUMMARYLIST_NOSUM")};
     while(my $summary = $summaryh -> fetchrow_hashref()) {
         $entries .= $self -> {"template"} -> process_template($entrytem, {"***title***"     => $self -> {"template"} -> process_template($titles[$donefirst], {"***stored***" => $self -> {"template"} -> format_time($summary -> {"storetime"})}),
                                                                           "***summary***"   => text_to_html($summary -> {"summary"}),
@@ -482,7 +577,9 @@ sub build_sort_summaries {
                                                                           "***printable***" => $printable[$donefirst]});
 
         if(!$donefirst) {
-            $first_summary = $summary -> {"summary"};
+            $first -> {"summary"}   = text_to_html($summary -> {"summary"}, 1);
+            $first -> {"printable"} = text_to_html($summary -> {"summary"});
+            $first -> {"date"}      = $self -> {"template"} -> process_template($titles[$donefirst], {"***stored***" => $self -> {"template"} -> format_time($summary -> {"storetime"})});
             $donefirst = 1;
         }
     }
@@ -492,7 +589,9 @@ sub build_sort_summaries {
 
     return $self -> {"template"} -> load_template("summary/entries.tem", {"***summaries***"    => $entries,
                                                                           "***id***"           => $sortid,
-                                                                          "***firstsummary***" => text_to_html($first_summary, 1)});
+                                                                          "***firstsummary***" => $first -> {"summary"},
+                                                                          "***firstprint***"   => $first -> {"printable"},
+                                                                          "***firstdate***"    => $first -> {"date"}});
 }
 
 
