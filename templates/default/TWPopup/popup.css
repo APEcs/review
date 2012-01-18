@@ -1,13 +1,9 @@
 span.twpopup
 {
     color: #008800;
-    background-repeat: no-repeat;
-    background-image: url(images/twpopup/popup.png);
-    background-position: 100% 50%;
-    background-color: transparent;
     padding-top: 0px;
-    padding-right: 20px;
     padding-bottom: 0px;
+    cursor: pointer;
 }
 
 span.twpopup-sys
@@ -17,7 +13,7 @@ span.twpopup-sys
 
 div.twpopup
 {
-    visibility: hidden; 
+    visibility: hidden;
     opacity: 0;
     display: block;
     position: absolute;
@@ -32,13 +28,13 @@ div.twpopup div.twpopup-body
     color: #ccc;
 }
 
-table.twpopup 
+table.twpopup
 {
     background-color: #333;
     color: #ccc;
 }
 
-div.twpopup div.twpopup-body div.twpopup-core 
+div.twpopup div.twpopup-body div.twpopup-core
 {
     background-color: #333;
     padding: 5px 5px 5px 11px;
@@ -159,4 +155,8 @@ div.twpopup-title
 div.twpopup-controls
 {
     padding-top: 5px;
+}
+
+textarea#summarytext {
+    width: 100%;
 }
