@@ -59,14 +59,15 @@ sub build_sort_list {
             my $title      = $self -> {"template"} -> replace_langvar($isactive ? "SORTHIST_CURRENT" : "SORTHIST_PAST");
 
             # Dumb append, this should just be a series of consecutive entries anyway
-            $sortlist .= $self -> {"template"} -> process_template($sorttem, {"***id***"         => $sort -> {"id"},
-                                                                              "***state***"      => $isactive ? "active" : "inactive",
-                                                                              "***name***"       => $sort -> {"name"},
-                                                                              "***year***"       => $sort -> {"year"},
-                                                                              "***taken***"      => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
-                                                                              "***updated***"    => $self -> {"template"} -> format_time($sort -> {"updated"}),
-                                                                              "***hassummary***" => $hassummary,
-                                                                              "***title***"      => $title});
+            $sortlist .= $self -> {"template"} -> process_template($sorttem, {"***id***"          => $sort -> {"id"},
+                                                                              "***state***"       => $isactive ? "active" : "inactive",
+                                                                              "***name***"        => $sort -> {"name"},
+                                                                              "***year***"        => $sort -> {"year"},
+                                                                              "***taken***"       => $self -> {"template"} -> format_time($sort -> {"sortdate"}),
+                                                                              "***updated***"     => $self -> {"template"} -> format_time($sort -> {"updated"}),
+                                                                              "***hassummary***"  => $hassummary,
+                                                                              "***summaryicon***" => $sort -> {"summary_count"} ? "tick" : "warn",
+                                                                              "***title***"       => $title});
         }
     }
 
