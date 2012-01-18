@@ -103,6 +103,13 @@ sub store_summary {
                                                 VALUES(?, ?, UNIx_TIMESTAMP())");
     $summaryh -> execute($sortid, $summary)
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary insert query: ".$self -> {"dbh"} -> errstr);
+
+    # Update the sort header updated timestamp
+    my $updateh = $self -> {"dbh"} -> prepare("UPDATE ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
+                                               SET updated = UNIX_TIMESTAMP()
+                                               WHERE id = ?");
+    $updateh -> execute($sortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header update query: ".$self -> {"dbh"} -> errstr);
 }
 
 # ============================================================================
