@@ -29,15 +29,17 @@ use base qw(ReviewBlock); # This class extends ReviewBlock
 use Logging qw(die_log);
 use Utils qw(is_defined_numeric);
 
-## @method $ build_summary_view($sortid)
+## @method $ build_summary_view($sortid, $multiview)
 # Generate the summary view for the specified sortid, or an error if the user
 # requesting the view is not logged in or is not the user who did the sort.
 #
-# @param sortid The ID of the sort to show.
+# @param sortid    The ID of the sort to show.
+# @param multiview Set to true if calling this function as part of a multiview.
 # @return The summary view, or an error message.
 sub build_summary_view {
-    my $self   = shift;
-    my $sortid = shift;
+    my $self      = shift;
+    my $sortid    = shift;
+    my $multiview = shift;
 
     return $self -> {"template"} -> load_template("blocks/error_box.tem",
                                                   {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOSORTID")})
@@ -51,16 +53,56 @@ sub build_summary_view {
     return $sort unless(ref($sort) eq "HASH");
 
     # Try to store the summary if there is one.
-    my $storeerr;
-    $storeerr = $self -> store_summary($sortid) if($self -> {"cgi"} -> param("summarytext"));
+    my $storeerr;                               # Summary update does not work in multiview mode!
+    $storeerr = $self -> store_summary($sortid) if(!$multiview && $self -> {"cgi"} -> param("summarytext"));
 
     return $self -> {"template"} -> load_template("blocks/summaryview.tem", {"***user***"      => $sortuser -> {"username"},
                                                                              "***period***"    => $sort -> {"name"},
                                                                              "***year***"      => $sort -> {"year"},
                                                                              "***error***"     => $storeerr,
                                                                              "***sortgrid***"  => $self -> build_sort_view($sortid),
-                                                                             "***summaries***" => $self -> build_sort_summaries($sortid),
+                                                                             "***summaries***" => $self -> build_sort_summaries($sortid, $multiview),
                                                   });
+}
+
+
+## @method $ build_summary_multiview($sortids)
+# Generate a page containing on or more summaries. This allows several
+# sorts to be viewed on a single page for comparison (note that all
+# summary editing id disabled, and only the latest reflective summary
+# is shown for each sort).
+#
+# @param sortids A reference to an array of sort ids.
+# @return A string containing the sort summaries.
+sub build_summary_multiview {
+    my $self    = shift;
+    my $sortids = shift;
+
+    # Discard non-numeric sort ids
+    my @valid_ids = grep /^\d+$/, @{$sortids};
+
+    # Bomb if there are no ids left
+    return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                  {"***message***" => $self -> {"template"} -> replace_langvar("SORTGRID_ERR_NOSORTID")})
+        if(!scalar(@valid_ids));
+
+    # get the ordering, if specified
+    my $order = "DESC";
+    $order = "ASC" if($self -> {"cgi"} -> param("order") eq "asc");
+
+    # sortids /should/ track sortdate order, but we want to be sure...
+    my $sorth = $self -> {"dbh"} -> prepare("SELECT id FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
+                                             WHERE id IN (".join(",", @valid_ids).")
+                                             ORDER BY sortdate $order");
+    $sorth -> execute()
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header query: ".$self -> {"dbh"} -> errstr);
+
+    my $summaries = "";
+    while(my $sort = $sorth -> fetchrow_arrayref()) {
+        $summaries .= $self -> build_summary_view($sort -> [0], 1);
+    }
+
+    return $summaries;
 }
 
 
@@ -68,6 +110,8 @@ sub build_summary_view {
 # Store the summary submitted by the user, if present, for the specified
 # sortid.
 #
+# @param sortid The ID of the sort to store the summary for.
+# @return An error message if the summary can not be stored, undef otherwise.
 sub store_summary {
     my $self   = shift;
     my $sortid = shift;
@@ -101,6 +145,8 @@ sub store_summary {
                                                WHERE id = ?");
     $updateh -> execute($sortid)
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header update query: ".$self -> {"dbh"} -> errstr);
+
+    return undef;
 }
 
 # ============================================================================
