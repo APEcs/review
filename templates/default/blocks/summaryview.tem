@@ -10,6 +10,7 @@
             <div class="mbody">
                 <img src="templates/default/images/summary.png" width="48" height="48" alt="summary" class="fltrt printhide" />
                 <div class="printhide">{L_SUMMARYLIST_INTRO}</div>
+                <div class="cleared"></div>
 ***summaries***
             </div>
         </div>
