@@ -175,7 +175,7 @@ sub page_display {
 
             $self -> log("view", "Summary view, sortid = ".($sortid || "undefined")) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
 
-            $content = $self -> build_summary_view($sortid);
+            $content = $self -> build_summary_view($sortid, 0);
         } else {
             $self -> log("view", "Summary miltiview, sortids = ".join(",", @sortids)) if($self -> {"settings"} -> {"config"} -> {"Log:all_the_things"});
 
