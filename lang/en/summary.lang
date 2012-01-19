@@ -5,7 +5,6 @@ SUMMARYLIST_TITLE   = Reflective Summary
 SUMMARYLIST_INTRO   = Here you can view and edit your reflective summary of the progress review sort shown on this page. If you have edited your summary before, previous edits can be seen below the current version by clicking on the appropriate header. You may edit your summary at any time, but old edits can not be deleted.
 SUMMARYLIST_NOSUM   = You do not have a reflective summary stored for this progress review sort. Please click on the 'edit summary' button to enter a reflective summary.
 SUMMARYLIST_NOSUMNE = No reflective summary stored for this progress review sort.
-SUMMARYLIST_EDIT    = Edit reflective summary
 
 SUMMARYLIST_CURTITLE  = Current summary
 SUMMARYLIST_OLDTITLE  = Previous edit
