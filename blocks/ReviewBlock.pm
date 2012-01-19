@@ -824,7 +824,12 @@ sub generate_topright {
         # We need the user's details
         my $user = $self -> {"session"} -> {"auth"} -> get_user_byid($self -> {"session"} -> {"sessuser"});
 
-        return $self -> {"template"} -> load_template("topright_loggedin.tem", {"***user***" => $user -> {"username"}});
+        # Quick and dirty admin check, go...
+        my $admin = "";
+        $admin = $self -> {"template"} -> load_template("topright_admin.tem") if($user -> {"user_type"} == $self -> {"session"} -> {"auth"} -> {"ADMINTYPE"});
+
+        return $self -> {"template"} -> load_template("topright_loggedin.tem", {"***user***"  => $user -> {"username"},
+                                                                                "***admin***" => $admin});
     }
 
     # User hasn't logged in, return the basic login stuff

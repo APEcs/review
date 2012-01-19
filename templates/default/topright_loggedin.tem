@@ -1,2 +1,3 @@
 <li>{L_TOPRIGHT_LOGGEDIN}: ***user***</li>
+***admin***
 <li><a href="index.cgi?block={B_[login]}&amp;logout">{L_TOPRIGHT_LOGOUT}</a></li>

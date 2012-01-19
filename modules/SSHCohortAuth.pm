@@ -60,6 +60,7 @@ sub new {
     return set_error("settings object not set") unless($self -> {"settings"});
 
     $self -> {"ANONYMOUS"} = $self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:anonymous"};
+    $self -> {"ADMINTYPE"} = $self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:admintype"};
 
     return bless $self, $class;
 }
