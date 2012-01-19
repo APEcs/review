@@ -1,0 +1,29 @@
+[database]
+database = DBI:mysql:<DATABASE>
+username = <USERNAME>
+password = <PASSWORD>
+
+# Webperl standard tables
+settings       = rev_settings
+sessions       = rev_sessions
+keys           = rev_session_keys
+blocks         = rev_blocks
+modules        = rev_modules
+
+# Review tables
+adminblocks    = rev_admin_blocks
+cohorts        = rev_cohorts
+cohort_fields  = rev_cohorts_formfields
+cohort_maps    = rev_cohorts_maps
+cohort_states  = rev_cohorts_statements
+formfields     = rev_formfields
+maps           = rev_maps
+logging        = rev_log
+periods        = rev_sort_periods
+sorts          = rev_sorts
+sortdata       = rev_sorts_data
+summaries      = rev_sorts_summaries
+statements     = rev_statements
+users          = rev_users
+yearcache      = rev_useryear_cache
+
