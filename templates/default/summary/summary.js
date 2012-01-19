@@ -9,13 +9,13 @@ window.addEvent('domready', function() {
 
     });
 
-    editbox = new LightFace({title: '{L_SUMMARYLIST_EDITTITLE}',
+    editbox = new LightFace({title: 'Edit Reflective Summary',
                              draggable: true,
                              buttons: [
-                                      { title: '{L_SUMMARYLIST_EDIT}', event: function() { $('summaryform***id***').submit(); }, color: 'blue' },
-                                      { title: '{L_SUMMARYLIST_CLOSE}', event: function() { this.close(); } }
+                                      { title: 'Save', event: function() { $('summaryform***id***').submit(); }, color: 'blue' },
+                                      { title: 'Cancel', event: function() { this.close(); } }
                                       ],
-                             content: '<p class="left">{L_SUMMARYLIST_EDITTEXT}</p><form id="summaryform***id***" action="index.cgi" method="post"><input type="hidden" name="block" value="summary" /><input type="hidden" name="sortid" value="***id***" /><textarea id="summarytext***id***" name="summarytext***id***" rows="10" cols="76"></textarea></form>'
+                             content: '<p class="left">Enter your reflective summary here. Note that newlines will be preserved, but any HTML formatting will be stripped.</p><form id="summaryform***id***" action="index.cgi" method="post"><input type="hidden" name="block" value="summary" /><input type="hidden" name="sortid" value="***id***" /><textarea id="summarytext***id***" name="summarytext***id***" rows="10" cols="76"></textarea></form>'
     });
 
     $('summarytext***id***').value = $('summarydata***id***').innerHTML;
