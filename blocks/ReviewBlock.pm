@@ -395,7 +395,6 @@ sub _build_sort_grid {
                                                                           "***fulldata***" => $griddata -> {$col} -> {"rows"} -> [$row] -> {"fulltext"},
                                                                           "***colour***"   => $griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
                                                                    });
-            print STDERR "sort row/col: $row/$col\n";
 
         }
         $sortrows .= $self -> {"template"} -> process_template($templates -> {"row"}, {"***cols***" => $sortcols})
@@ -446,7 +445,6 @@ sub _build_sort_comments {
                                                                                                                           "***data***"     => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"shorttext"},
                                                                                                                           "***comment***"  => $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"comments"} -> [$row] -> {"comment"}}),
                                                            });
-        print STDERR "Comment row: $row\n";
     }
 
     return $self -> {"template"} -> load_template("sort/comment_table.tem", {"***negcol***" => $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [1] -> {"colour"},
