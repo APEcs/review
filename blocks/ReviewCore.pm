@@ -40,6 +40,7 @@ use Logging qw(die_log);
 sub build_sort_list {
     my $self     = shift;
     my $sortlist = "";
+    my $compare  = "";
 
     # Fetch the list of sorts to process into html...
     my ($sorts, $current) = $self -> get_user_sorts($self -> {"session"} -> {"sessuser"});
@@ -69,9 +70,12 @@ sub build_sort_list {
                                                                               "***summaryicon***" => $sort -> {"summary_count"} ? "tick" : "warn",
                                                                               "***title***"       => $title});
         }
+
+        $compare = $self -> {"template"} -> load_template("blocks/sort_history_compare.tem");
     }
 
-    return $self -> {"template"} -> load_template("blocks/sort_history.tem", {"***sorthist***" => $sortlist});
+    return $self -> {"template"} -> load_template("blocks/sort_history.tem", {"***sorthist***" => $sortlist,
+                                                                              "***compare***"  => $compare});
 }
 
 

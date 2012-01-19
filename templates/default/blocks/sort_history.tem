@@ -3,9 +3,33 @@
             <div class="mbody">
                 <img src="templates/default/images/history.png" width="48" height="48" alt="history" class="fltrt" />
                 <div>{L_SORTHIST_INTRO}</div>
+                <form action="index.cgi" method="post">
+                <input type="hidden" name="block" value="summary" />
                 <table class="zebra" style="margin-top: 0.5em;">
-                <tr><th>&nbsp;</th><th>{L_SORTHIST_PERIOD}</th><th>{L_SORTHIST_ACYEAR}</th><th>{L_SORTHIST_TAKEN}</th><th>{L_SORTHIST_UPDATED}</th><th>&nbsp;</th></tr>
+                <tr><th>&nbsp;</th><th>{L_SORTHIST_PERIOD}</th><th>{L_SORTHIST_ACYEAR}</th><th>{L_SORTHIST_TAKEN}</th><th>{L_SORTHIST_UPDATED}</th><th>{L_SORTHIST_SUMMARY}</th><th>&nbsp;</th></tr>
                 ***sorthist***
+                ***compare***
                 </table>
+                </form>
             </div>
         </div>
+<script type="text/javascript">
+function controlCompare()
+{
+    var selCount = 0;
+
+    $$('input.compare').each(function(element, index) {
+        if(element.checked) ++selCount;
+    });
+
+    if($('compare')) $('compare').disabled = (selCount < 2);
+}
+
+window.addEvent('domready', function() {
+    $$('input.compare').each(function(element, index) {
+        element.addEvent('click', function() { controlCompare() });
+    });
+
+    controlCompare();
+});
+</script>
