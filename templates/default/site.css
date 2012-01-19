@@ -202,13 +202,11 @@ table.notebox-warning {
 
 table.formtable {
     width: 100%;
-    padding-right: 48px;
 }
 
 table.formtable td.label {
     font-weight: bold;
     text-align: right;
-    min-width: 10em;
     white-space: nowrap !important;
 }
 

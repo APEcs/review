@@ -1,0 +1,30 @@
+        <div class="message">
+            <h2>{L_ADMIN_STATS_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/stats.png" width="48" height="48" alt="stats" class="fltrt" />
+                <div>{L_ADMIN_STATS_INTRO}</div>
+                <div class="cleared"></div>
+<table id="stats">
+    <tr>
+        <td class="datatable">
+            <table class="formtable zebra" id="definedstats">
+                <tr><th colspan="2">{L_ADMIN_DEFINEDSTATS}</th></tr>
+                <tr><td class="label">{L_ADMIN_PERIODS}:</td><td class="field">***periods***</td></tr>
+                <tr><td class="label">{L_ADMIN_COHORTS}:</td><td class="field">***cohorts***</td></tr>
+                <tr><td class="label">{L_ADMIN_STATEMENTS}:</td><td class="field">***statements***</td></tr>
+                <tr><td class="label">{L_ADMIN_MAPS}:</td><td class="field">***maps***</td></tr>
+                <tr><td class="label">{L_ADMIN_FORMFIELDS}:</td><td class="field">***formfields***</td></tr>
+            </table>
+        </td>
+        <td class="datatable">
+            <table class="formtable zebra" id="genstats">
+                <tr><th colspan="2">{L_ADMIN_GENSTATS}</th></tr>
+                <tr><td class="label">{L_ADMIN_USERS}:</td><td class="field">***users***</td></tr>
+                <tr><td class="label">{L_ADMIN_SORTS}:</td><td class="field">***sorts***</td></tr>
+                <tr><td class="label">{L_ADMIN_SUMMARIES}:</td><td class="field">***summaries***</td></tr>
+                <tr><td class="label">{L_ADMIN_NOSUMS}:</td><td class="field">***nosums***</td></tr>
+                <tr><td class="label">{L_ADMIN_LOGS}:</td><td class="field">***logging***</td></tr>
+            </table>
+        </td>
+    </tr>
+</table>

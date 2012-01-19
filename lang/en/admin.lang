@@ -1,1 +1,18 @@
 ADMIN_ERR_NOPERMISSION = You do not have permission to access this resource.
+
+ADMIN_STATS_TITLE      = Overall Statistics
+ADMIN_STATS_INTRO      = The following tables contain current statistics for the PR Reflection system installation.
+
+ADMIN_DEFINEDSTATS     = Defined data
+ADMIN_PERIODS          = Sort periods
+ADMIN_COHORTS          = Cohorts
+ADMIN_STATEMENTS       = Statements
+ADMIN_MAPS             = Map columns
+ADMIN_FORMFIELDS       = Form fields
+
+ADMIN_GENSTATS         = Dynamic data
+ADMIN_USERS            = Users
+ADMIN_SORTS            = Sorts
+ADMIN_SUMMARIES        = Reflective summaries
+ADMIN_NOSUMS           = Sorts without summaries
+ADMIN_LOGS             = Log entries

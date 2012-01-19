@@ -1,0 +1,43 @@
+div#adminbar {
+    border-bottom: 1px solid #adb9cc;
+    padding-bottom: 3px;
+    margin-bottom: 5px;
+}
+
+div#adminbar span.adminbar {
+    padding: 3px 10px;
+    border: 1px solid #d4d4ff
+    margin-right: 3px;
+    background-color: #f7f7ff;
+}
+
+div#adminbar span.adminbar a:hover {
+    text-decoration: none;
+}
+
+div#adminbar span.adminbar:hover {
+    background-color: #d5fcdc;
+}
+
+div#adminbar span.current {
+    background-color: #d4d4ff;
+    border: 1px solid #adb9cc;
+}
+
+table#stats {
+    width: 100%;
+}
+
+table#stats td.datatable {
+    width: 50%;
+    padding: 0px 10px;
+    vertical-align: top;
+}
+
+table#definedstats, table#genstats {
+    width: 100%;
+}
+
+table.formtable td.field {
+    width: 60%;
+}
