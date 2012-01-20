@@ -2,6 +2,8 @@ ADMIN_ERR_NOPERMISSION = You do not have permission to access this resource.
 
 ADMIN_STATS_TITLE      = Overall Statistics
 ADMIN_STATS_INTRO      = The following tables contain current statistics for the PR Reflection system installation.
+ADMIN_SHORTLOG_TITLE   = Latest log entries
+ADMIN_SHORTLOG_INTRO   = These are the latest entries in the Review system log. You may see a more complete, filterable version of this data via the "Log" tab above.
 
 ADMIN_DEFINEDSTATS     = Defined data
 ADMIN_PERIODS          = Sort periods
@@ -16,3 +18,9 @@ ADMIN_SORTS            = Sorts
 ADMIN_SUMMARIES        = Reflective summaries
 ADMIN_NOSUMS           = Sorts without summaries
 ADMIN_LOGS             = Log entries
+
+ADMIN_LOGTIME          = Time
+ADMIN_LOGUSER          = Username
+ADMIN_LOGIP            = IP Addr
+ADMIN_LOGTYPE          = Type
+ADMIN_LOGDATA          = Data

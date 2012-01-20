@@ -28,3 +28,17 @@
         </td>
     </tr>
 </table>
+            </div>
+        </div>
+        <div class="message">
+            <h2>{L_ADMIN_SHORTLOG_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/log.png" width="48" height="48" alt="log" class="fltrt" />
+                <div>{L_ADMIN_SHORTLOG_INTRO}</div>
+                <div class="cleared"></div>
+<table class="zebra" id="toplog">
+   <tr><th>{L_ADMIN_LOGTIME}</th><th>{L_ADMIN_LOGUSER}</th><th>{L_ADMIN_LOGIP}</th><th>{L_ADMIN_LOGTYPE}</th><th>{L_ADMIN_LOGDATA}</th></tr>
+   ***loglines***
+</table>
+            </div>
+        </div>

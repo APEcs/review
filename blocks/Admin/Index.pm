@@ -70,7 +70,7 @@ sub build_admin_index {
                                               WHERE id NOT IN (SELECT DISTINCT(sort_id) FROM ".$self -> {"settings"} -> {"database"} -> {"summaries"}.")");
 
     $counth -> execute()
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute missing summary count query: ".$self -> {"dbh"} -> errstr);
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute missing summary count query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -78,6 +78,26 @@ sub build_admin_index {
 
     # Fix the 'anonymous' user
     --$stats -> {"***users***"};
+
+    # Pull in the last N log entries (where N is Admin:shortlog_count in the settings)
+    my $logh = $self -> {"dbh"} -> prepare("SELECT l.*, u.username
+                                            FROM ".$self -> {"settings"} -> {"database"} -> {"logging"}." AS l,
+                                                 ".$self -> {"settings"} -> {"database"} -> {"users"}." AS u
+                                            WHERE u.user_id = l.user_id
+                                            ORDER BY logtime DESC
+                                            LIMIT ".$self -> {"settings"} -> {"config"} -> {"Admin:shortlog_count"});
+    $logh -> execute()
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute log query: ".$self -> {"dbh"} -> errstr);
+
+    my $logrow = $self -> {"template"} -> load_template("admin/index_logline.tem");
+    $stats -> {"***loglines***"} = "";
+    while(my $log = $logh -> fetchrow_hashref()) {
+        $stats -> {"***loglines***"} .= $self -> {"template"} -> process_template($logrow, {"***time***" => $self -> {"template"} -> format_time($log -> {"logtime"}),
+                                                                                            "***user***" => $log -> {"username"},
+                                                                                            "***ip***"   => $log -> {"ipaddr"},
+                                                                                            "***type***" => $log -> {"logtype"},
+                                                                                            "***data***" => $log -> {"logdata"}});
+    }
 
     return $self -> {"template"} -> load_template("admin/index_content.tem", $stats);
 }
