@@ -127,7 +127,7 @@ sub page_display {
         }
 
         # Show the admin page
-        $content = $self -> {"template"} -> load_template("admin/index.tem", {"***tabbar***" => $self -> generate_admin_tabbar("admin"),
+        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("admin"),
                                                                               "***body***"   => $self -> build_admin_index()})
 
     # User has not logged in, force them to
