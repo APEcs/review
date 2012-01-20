@@ -29,8 +29,9 @@ use base qw(Block); # This class extends Block
 use HTML::Entities;
 use Logging qw(die_log);
 use List::Util qw(max);
-use MIME::Base64;   # Needed for base64 encoding of popup bodies.
-use Utils qw(superchomp);
+use MIME::Base64;               # Needed for base64 encoding of popup bodies.
+use URI::Encode qw(uri_encode); # Needed when composing query strings
+use Utils qw(superchomp trimspace);
 
 # ============================================================================
 #  General utility stuff.
@@ -593,6 +594,77 @@ sub build_sort_summaries {
                                                                           "***firstsummary***" => $first -> {"summary"},
                                                                           "***firstprint***"   => $first -> {"printable"},
                                                                           "***firstdate***"    => $first -> {"date"}});
+}
+
+
+# ============================================================================
+#  Pagination/navigation functions
+
+## @method $ build_pagination($block, $maxpage, $pagenum, $args)
+# Generate a block of html to use as a pagination display. This produces a box
+# containing navigation controls for multi-page data.
+#
+# @param block   The id or name of the block to handle the pages.
+# @param maxpage The last page number (first is page 0).
+# @param pagenum The selected page (first is page 0!!)
+# @param args    An optional reference to a hash of additional arguments
+#                to include in generated query strings.
+# @return A string containing the pagination block.
+sub build_pagination {
+    my $self    = shift;
+    my $block   = shift;
+    my $maxpage = shift;
+    my $pagenum = shift;
+    my $args    = shift || {};
+
+    # Convert the extra args to a string
+    my $arglist = "";
+    if(scalar(keys(%{$args}))) {
+        my @argflat;
+        foreach my $arg (keys(%{$args})) {
+            push(@argflat, uri_encode($arg)."=".uri_encode($args -> {$arg}));
+        }
+        $arglist = '&amp;'.join('&amp;', @argflat);
+    }
+
+    # If there is more than one page, generate a full set of page controls
+    if($maxpage > 0) {
+        my $pagelist = "";
+
+        # If the user is not on the first page, we need to add the left jump controls
+        $pagelist .= trimspace($self -> {"template"} -> load_template("paginate/jumpleft.tem", {"***block***" => $block,
+                                                                                                "***args***"  => $arglist,
+                                                                                                "***prev***"  => $pagenum - 1}))
+            if($pagenum > 0);
+
+        # load some templates to speed up page list generation...
+        my $pagetem = trimspace($self -> {"template"} -> load_template("paginate/jumppage.tem", {"***block***" => $block,
+                                                                                                    "***args***"  => $arglist}));
+        my $pageacttem = trimspace($self -> {"template"} -> load_template("paginate/activepage.tem"));
+
+        # Generate the list of pages
+        for(my $pnum = 0; $pnum <= $maxpage; ++$pnum) {
+            $pagelist .= $self -> {"template"} -> process_template(($pagenum == $pnum) ? $pageacttem : $pagetem,
+                                                                   {"***pagenum***" => $pnum + 1,
+                                                                    "***pageid***"  => $pnum});
+        }
+
+        # Append the right jump controls if we're not on the last page
+        $pagelist .= trimspace($self -> {"template"} -> load_template("paginate/jumpright.tem", {"***block***" => $block,
+                                                                                                 "***args***"  => $arglist,
+                                                                                                 "***next***"  => $pagenum + 1,
+                                                                                                 "***last***"  => $maxpage}))
+            if($pagenum < $maxpage);
+
+        return $self -> {"template"} -> load_template("paginate/paginate.tem", {"***pagenum***" => $pagenum + 1,
+                                                                                "***maxpage***" => $maxpage + 1,
+                                                                                "***pages***"   => $pagelist});
+    # If there's only one page, a simple "Page 1 of 1" will do the trick.
+    } else { # if($maxpage > 0)
+        return $self -> {"template"} -> load_template("paginate/paginate.tem", {"***pagenum***" => 1,
+                                                                                "***maxpage***" => 1,
+                                                                                "***pages***"   => ""});
+    }
 }
 
 

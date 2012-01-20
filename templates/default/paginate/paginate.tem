@@ -1,0 +1,4 @@
+<div class="paginate">
+<span class="fltrt"><span class="pagebox">{L_PAGINATE_PAGE} ***pagenum*** {L_PAGINATE_PAGEOF} ***maxpage***</span>***pages***</span>
+</div>
+<div class="cleared"></div>
