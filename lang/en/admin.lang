@@ -15,7 +15,7 @@ ADMIN_FORMFIELDS       = Form fields
 ADMIN_GENSTATS         = Dynamic data
 ADMIN_USERS            = Users
 ADMIN_SORTS            = Sorts
-ADMIN_SUMMARIES        = Reflective summaries
+ADMIN_SUMMARIES        = Summary edits
 ADMIN_NOSUMS           = Sorts without summaries
 ADMIN_LOGS             = Log entries
 
@@ -39,3 +39,11 @@ ADMIN_PERIOD_DELETE    = Delete this period
 ADMIN_PERIOD_CANSORT   = Users may perform sorts during this period
 ADMIN_PERIOD_NOSORT    = Users may not perform sorts during this period
 ADMIN_PERIOD_NOEDIT    = One or more sorts have been performed during this period, so it may not be edited.
+
+ADMIN_PERIOD_ERR_NOID  = No period id has been specified. Unable to continue with the requested operation.
+ADMIN_PERIOD_ERR_BADID = The specified period id does not correspond to a valid period.
+
+ADMIN_ADDPERIOD_TITLE  = Add a period
+ADMIN_ADDPERIOD_INTRO  = This form allows you to add a new period to the system. Note that periods must not overlap (you will be warned if you select a date within an existing period), and users may only perform sorts during periods that specifically allow sorting - any other time (during periods that disallow sorting, or outside defined periods) users can not perform sorts.
+ADMIN_ADDPERIOD_ADD    = Add period
+ADMIN_ADDPERIOD_CANCEL = Cancel

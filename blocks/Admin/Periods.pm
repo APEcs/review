@@ -118,8 +118,88 @@ sub get_sort_direction {
 
 
 # ============================================================================
+#  Period editing
+
+## @method $ get_editable_period()
+# Pull the id of the period the user is attempting to edit from the query string,
+# and determine whether or not it is ediable.
+#
+# @return A reference to a hash containing the period data if it is editable, an
+#         error message otherwise.
+sub get_editable_period {
+    my $self = shift;
+
+    # Get the period id
+    my $periodid = is_defined_numeric($self -> {"cgi"}, "id");
+    $self -> log("admin edit", "Request delete of period ".($periodid || "undefined"));
+    return $self -> {"template"} -> replace_langvar("ADMIN_PERIOD_ERR_NOID")
+        unless($periodid);
+
+    # Is the period valid?
+    my $periodh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
+                                               WHERE id = ?");
+    $periodh -> execute($periodid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+
+    my $period = $periodh -> fetchrow_hashref();
+    return $self -> {"template"} -> replace_langvar("ADMIN_PERIOD_ERR_BADID")
+        unless($period);
+
+    # Is the period ediable?
+    return $self -> {"template"} -> replace_langvar("ADMIN_PERIOD_NOEDIT")
+        unless($self -> can_modify_period($periodid));
+
+    return $period;
+}
+
+
+## @method $ delete_period()
+# Delete the period the user has selected from the database. This will check that
+# the period is safe to delete before doing so.
+#
+# @return An error message on failure, undef on success.
+sub delete_period {
+    my $self = shift;
+
+    # Is the period editable?
+    my $period = $self -> get_editable_period();
+    if(ref($period) ne "HASH") {
+        $self -> log("admin edit", "Delete failed: $period");
+        return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                      {"***message***" => $period});
+    }
+
+    # Yes; delete it
+    my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
+                                             WHERE id = ?");
+    $nukeh -> execute($period -> {"id"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period delete query: ".$self -> {"dbh"} -> errstr);
+
+    $self -> log("admin edit", "Deleted period ".$period -> {"id"}." (".$period -> {"name"}.", ".$period -> {"year"}.")");
+
+    return undef;
+}
+
+
+sub build_add_period {
+    my $self  = shift;
+    my $args  = shift;
+    my $error = shift;
+
+
+}
+
+
+# ============================================================================
 #  Period listing
 
+## @method $ build_periods_sort_headers($field, $way, $page)
+# Generate the sort control icons and links to show in the period list table header.
+#
+# @param field The current sort field.
+# @param way   The sorting direction.
+# @param page  The current page number.
+# @return A hash containing the table sort strings to pass to Template::load_template().
 sub build_periods_sort_headers {
     my $self  = shift;
     my $field = shift;
@@ -144,12 +224,14 @@ sub build_periods_sort_headers {
 }
 
 
-## @method $ build_admin_periods()
+## @method $ build_admin_periods($error)
 # Generate the admin periods list page.
 #
+# @param error An error message to show at the top of the page.
 # @return A string containing the period list page.
 sub build_admin_periods {
     my $self    = shift;
+    my $error   = shift;
     my $periods = "";
 
     # precache some templates needed later
@@ -201,6 +283,7 @@ sub build_admin_periods {
     $datafields -> {"***paginate***"} = $self -> build_pagination("periods", $maxpage, $page, {"sort" => $sortfield,
                                                                                                "way"  => lc($sortdir)});
     $datafields -> {"***periods***"}  = $periods;
+    $datafields -> {"***error***"}    = $error;
 
     return $self -> {"template"} -> load_template("admin/periods/periods.tem", $datafields);
 }
@@ -227,12 +310,27 @@ sub page_display {
             return $sessuser;
         }
 
-        # Admin operations are always logged
-        $self -> log("admin view", "Periods");
+        my $body;
+        if(defined($self -> {"cgi"} -> param("addperiod"))) {
+
+            # Admin operations are always logged
+            $self -> log("admin edit", "Add period");
+
+            $body = $self -> build_admin_addperiod();
+        } elsif(defined($self -> {"cgi"} -> param("delete"))) {
+            $self -> log("admin edit", "Delete period");
+
+            $body = $self -> build_admin_periods($self -> delete_period());
+        } else {
+            # Admin operations are always logged
+            $self -> log("admin view", "Periods");
+
+            $body = $self -> build_admin_periods();
+        }
 
         # Show the admin page
         $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("admin"),
-                                                                              "***body***"   => $self -> build_admin_periods()})
+                                                                              "***body***"   => $body})
 
     # User has not logged in, force them to
     } else {
