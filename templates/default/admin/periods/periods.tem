@@ -1,0 +1,29 @@
+        <div class="message">
+            <h2>{L_ADMIN_PERIOD_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/periods.png" width="48" height="48" alt="periods" class="fltrt" />
+                <div>{L_ADMIN_PERIOD_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+***paginate***
+                <table class="zebra fullwidth" id="periods">
+                    <tr>
+                        <th class="nowrap">{L_ADMIN_ACYEAR}&nbsp;***year***</th>
+                        <th class="nowrap">{L_ADMIN_START}&nbsp;***startdate***</th>
+                        <th class="nowrap">{L_ADMIN_END}&nbsp;***enddate***</th>
+                        <th class="nowrap fullwidth">{L_ADMIN_NAME}&nbsp;***name***</th>
+                        <th class="nowrap">{L_ADMIN_DOSORT}&nbsp;***allow_sort***</th>
+                        <th>&nbsp;</td>
+                    </tr>
+***periods***
+                    <tr>
+                        <th colspan="6" style="text-align: right">
+                            <input type="submit" name="addperiod" value="{L_ADMIN_PERIOD_ADD}" />
+                            <input type="hidden" name="block" value="periods" />
+                        </th>
+                    </tr>
+                </table>
+***paginate***
+                </form>
+            </div>
+        </div>

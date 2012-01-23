@@ -24,3 +24,18 @@ ADMIN_LOGUSER          = Username
 ADMIN_LOGIP            = IP Addr
 ADMIN_LOGTYPE          = Type
 ADMIN_LOGDATA          = Data
+
+ADMIN_ACYEAR           = Academic Year
+ADMIN_START            = Start date
+ADMIN_END              = End date
+ADMIN_NAME             = Name
+ADMIN_DOSORT           = Allow sorts?
+
+ADMIN_PERIOD_TITLE     = Sort periods
+ADMIN_PERIOD_INTRO     = Here you can see and edit the sort periods set up in the system. Each period corresponds to a distinct timeframe during which users may (or may not) perform sorts. Note that periods may not overlap, and users may only perform sorts during periods that specifically allow it (the user can not perform sorts during periods that disallow it, or at any time outside a defined sort period). If a user has performed a sort during a period, you will not be able to edit that period through this interface for safety.
+ADMIN_PERIOD_ADD       = Add a period
+ADMIN_PERIOD_EDIT      = Edit this period
+ADMIN_PERIOD_DELETE    = Delete this period
+ADMIN_PERIOD_CANSORT   = Users may perform sorts during this period
+ADMIN_PERIOD_NOSORT    = Users may not perform sorts during this period
+ADMIN_PERIOD_NOEDIT    = One or more sorts have been performed during this period, so it may not be edited.
