@@ -671,6 +671,27 @@ sub build_pagination {
 # ============================================================================
 #  Database interaction functions
 
+## @method $ get_period($time)
+# Obtain the record for the period that the specified time falls within.
+#
+# @param time The unix timestamp to look for a period for.
+# @return A reference to a hash containing the data for a period that the specfied
+#         time falls within, or undef if the time does not fall within a defined period.
+sub get_period {
+    my $self = shift;
+    my $time = shift;
+
+    # Ask the database whether a period exists that includes this time...
+    my $periodh = $self -> {"dbh"} -> prepare("SELECT id FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
+                                               WHERE startdate <= ?
+                                               AND enddate >= ?");
+    $periodh -> execute($time, $time)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+
+    return $periodh -> fetchrow_hashref();
+}
+
+
 ## @method $ get_current_period($allow_sort)
 # Obtain the data for the current time period as given in the sort_periods table.
 # This will look in the sort_periods table for a period that the current day and
