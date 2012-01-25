@@ -87,8 +87,8 @@ sub fix_colour {
 # No formatting features are permitted or preserved - the output is
 # free of html tags save br!
 #
-# @param text    The text to process.
-# @param noparas If set, newlines are not converted to br
+# @param text  The text to process.
+# @param nobrs If set, newlines are not converted to br
 # @return The processed text in a form safe for inclusion in html.
 sub text_to_html {
     my $text    = shift;

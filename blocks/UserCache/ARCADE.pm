@@ -27,7 +27,7 @@
 package UserCache::ARCADE;
 
 use strict;
-use base qw(ReviewBlock); # This class extends ReviewBlock
+use base qw(UserCache); # This class extends ReviewBlock
 use Date::Calc qw(Today Add_Delta_YM);
 use Logging qw(die_log);
 use Time::Local;

@@ -26,7 +26,7 @@ package XML::Statements;
 # to determine which set of statements should be sent to the flashq
 # application.
 use strict;
-use base qw(ReviewBlock); # This class extends ReviewBlock
+use base qw(XML); # This class extends XML
 use Logging qw(die_log);
 
 
