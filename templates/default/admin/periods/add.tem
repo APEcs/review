@@ -1,4 +1,5 @@
 ***error***
+        <script type="text/javascript" src="templates/default/admin/periods/add.js"></script>
         <div class="message">
             <h2>{L_ADMIN_ADDPERIOD_TITLE}</h2>
             <div class="mbody">
@@ -8,17 +9,16 @@
                 <form action="index.cgi" method="post">
                 <table class="formtable">
                 <tr><td class="label">{L_ADMIN_ACYEAR}:</td>
-                    <td class="field"><input class="datepick" type="text" name="year_pick" id="year_pick" size="5" maxlength="5" value="***year_fmt***" />
-                                      <input type="hidden" name="year" id="year" value="***year***" />
+                    <td class="field"><input class="datepick" type="text" name="year" id="year" size="5" maxlength="5" value="***year***" />
                     </td>
                 </tr>
                 <tr><td class="label">{L_ADMIN_START}:</td>
-                    <td class="field"><input class="datepick" type="text" name="start_pick" id="year_pick" size="25" maxlength="30" value="***startdate_fmt***" />
+                    <td class="field"><input class="datepick" type="text" name="start_pick" id="start_pick" size="25" maxlength="30" value="***startdate_fmt***" /> <span id="startvalid"></span>
                                       <input type="hidden" name="startdate" id="startdate" value="***startdate***" />
                     </td>
                 </tr>
                 <tr><td class="label">{L_ADMIN_END}:</td>
-                    <td class="field"><input class="datepick" type="text" name="end_pick" id="end_pick" size="25" maxlength="30" value="***enddate_fmt***" />
+                    <td class="field"><input class="datepick" type="text" name="end_pick" id="end_pick" size="25" maxlength="30" value="***enddate_fmt***" /> <span id="endvalid"></span>
                                       <input type="hidden" name="enddate" id="enddate" value="***enddate***" />
                     </td>
                 </tr>
