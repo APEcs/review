@@ -22,7 +22,7 @@
                         <td class="field"><input name="login" id="login" type="submit" value="{L_LOGIN_TITLE}" /></td>
                     </tr>
                 </table>
-                <table class="notebox notebox-warning hide" id="persistwarn">
+                <table class="notebox notebox-warning hide" id="persistwarn" style="display: none;">
                     <tr>
                         <td class="nbox-image"><img src="templates/default/images/important.png" width="48" height="48" alt="important" /></td>
                         <td class="nbox-text">{L_PERSIST_WARNING}</td>
