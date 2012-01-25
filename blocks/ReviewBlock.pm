@@ -704,21 +704,21 @@ sub get_period {
 #       sanity here. Long story short: don't define overlapping periods in the
 #       sort_periods table!
 #
-# @param allow_sort Only return sort periods that allow users to perform sorts.
+# @param allow_sort If set, this will only return the sort period if the user is
+#                   allowed to perform a sort during the current period.
 # @return A reference to a hash containing the sort period data, or undef if no
 #         suitable sort period exists.
 sub get_current_period {
     my $self       = shift;
     my $allow_sort = shift;
 
-    my $periodh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
-                                               WHERE startdate <= UNIX_TIMESTAMP()
-                                               AND enddate >= UNIX_TIMESTAMP()
-                                              ".($allow_sort ? "AND allow_sort = 1" : ""));
-    $periodh -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+    # fetch the period for the current time, return undef if we have no period
+    # or the hash if there's no need to enforce sort allowance.
+    my $period = $self -> get_period(time());
+    return $period if(!$period || !$allow_sort);
 
-    return $periodh -> fetchrow_hashref();
+    # Get here and allow_sort is set and a period has been found. Does it allow sorts?
+    return $period -> {"allow_sort"} ? $period : undef;
 }
 
 
