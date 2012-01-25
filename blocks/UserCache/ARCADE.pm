@@ -77,7 +77,7 @@ sub arcade_lookup {
     my $self   = shift;
     my $course = shift;
     my $cohort = shift;
-    my $progress = "<h2>Adding users on $course to the cache...</h2>\n";
+    my $progress = "<h2>Adding users on $course to the cache with cohort ".$cohort -> {"id"}." (".$cohort -> {"name"}.")...</h2>\n";
 
     my $users = $self -> arcade_command($self -> {"settings"} -> {"config"} -> {"UserCache::ARCADE:ARCADE_command"}, $course);
     return "<h2>ARCADE returned an empty list for $course</h2>\n"
