@@ -199,7 +199,7 @@ sub valid_user {
 # ============================================================================
 #  Internal stuff, do not use from elsewhere
 
-## @method $ _get_user_byusername($username)
+## @method private $ _get_user_byusername($username)
 # Obtain the user with the specified username from the database. This will return the
 # user's record in the database if they are found, undef otherwise.
 #
@@ -218,7 +218,7 @@ sub _get_user_byusername {
 }
 
 
-## @method $ _ssh_valid_user($username, $password)
+## @method private $ _ssh_valid_user($username, $password)
 # Attempt to authenticate the user against the ssh server. This will check the user's
 # login against the configured ssh server, and return true if the login is valid.
 #
@@ -270,7 +270,7 @@ sub _ssh_valid_user {
 }
 
 
-## @method $ _set_user_cohort($user)
+## @method private $ _set_user_cohort($user)
 # Determine which cohort the user is is in, and set it if needed. This will check whether
 # the specified user has been placed into a cohort, and if they have not it will attempt
 # to add them to the appropriate one.
