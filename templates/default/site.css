@@ -137,7 +137,7 @@ body  {
 }
 
 .warn {
-    color: yellow;
+    color: orange;
     font-weight: bold;
 }
 
@@ -178,7 +178,15 @@ table.notebox {
     border: 1px solid #aaa;
     border-left: 10px solid #1e90ff;    /* Default "notice" blue */
     background: #fbfbfb;
+    display: block;
 }
+table.ienotebox {
+    margin: 0px 10%;   /* 10% = Will not overlap with other elements */
+    border: 1px solid #aaa;
+    border-left: 10px solid #1e90ff;    /* Default "notice" blue */
+    background: #fbfbfb;
+}
+
 table.notebox + table.notebox {   /* Single border between stacked boxes. */
     margin-top: -1px;
 }

@@ -39,11 +39,25 @@ ADMIN_PERIOD_DELETE    = Delete this period
 ADMIN_PERIOD_CANSORT   = Users may perform sorts during this period
 ADMIN_PERIOD_NOSORT    = Users may not perform sorts during this period
 ADMIN_PERIOD_NOEDIT    = One or more sorts have been performed during this period, so it may not be edited.
+ADMIN_PERIOD_CLASH     = Invalid selection: a period already exists that covers this date and time.
+ADMIN_PERIOD_NOCLASH   = The selected date and time are valid.
 
 ADMIN_PERIOD_ERR_NOID  = No period id has been specified. Unable to continue with the requested operation.
 ADMIN_PERIOD_ERR_BADID = The specified period id does not correspond to a valid period.
+
+ADMIN_ERR_ONLYDIGITS   = This field can only contain numbers.
+ADMIN_ERR_ACYEAR_RANGE = The academic year is out of range (only values in the range ***min*** to ***max*** inclusive are allowed).
+ADMIN_ERR_PERIOD_CLASH = The selected '***name***' is invalid: a period already exists that covers this date and time.
+ADMIN_ERR_SUBMIT_FAIL  = The selected operation has failed because submitted data is invalid. Please correct the following errors and try again.
+ADMIN_ERR_PERIOD_FLIP  = The end date must be later than the start date.
 
 ADMIN_ADDPERIOD_TITLE  = Add a period
 ADMIN_ADDPERIOD_INTRO  = This form allows you to add a new period to the system. Note that periods must not overlap (you will be warned if you select a date within an existing period), and users may only perform sorts during periods that specifically allow sorting - any other time (during periods that disallow sorting, or outside defined periods) users can not perform sorts.
 ADMIN_ADDPERIOD_ADD    = Add period
 ADMIN_ADDPERIOD_CANCEL = Cancel
+ADMIN_ADDPERIOD_DONE   = Period added successfully.
+
+ADMIN_EDITPERIOD_TITLE  = Edit a period
+ADMIN_EDITPERIOD_INTRO  = This form allows you to edit an existing period in the system. Note that periods must not overlap (you will be warned if you select a date within an existing period other than the one you are editing), and users may only perform sorts during periods that specifically allow sorting - any other time (during periods that disallow sorting, or outside defined periods) users can not perform sorts.
+ADMIN_EDITPERIOD_EDIT   = Edit period
+ADMIN_EDITPERIOD_DONE   = Period edited successfully.
