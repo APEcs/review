@@ -2,7 +2,7 @@
 
 <config version="1.0" htmlParse="false">
   <!-- configuration files -->
-  <item id="xmlLanguageFile">lang/en/language.xml</item>
+  <item id="xmlLanguageFile">supportfiles/language.xml</item>
   <item id="xmlMapFile">index.cgi?block=map</item>
   <item id="xmlStatementsFile">index.cgi?block=statements</item>
 
