@@ -284,14 +284,12 @@ sub _set_user_cohort {
     # If the user already has a cohort id, just return the user hash...
     return $user if($user -> {"cohort_id"});
 
-    # No cohort set, check the user to year mapping to get a cohort
-    my $cohorth = $self -> {"dbh"} -> prepare("SELECT c.id
-                                               FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}." AS c,
-                                                    ".$self -> {"settings"} -> {"database"} -> {"yearcache"}." AS y
-                                               WHERE c.start_year = y.year
-                                               AND y.username = ?");
+    # No cohort set, check the user cohort cache to get a cohort
+    my $cohorth = $self -> {"dbh"} -> prepare("SELECT cohort_id
+                                               FROM ".$self -> {"settings"} -> {"database"} -> {"usercache"}."
+                                               WHERE username = ?");
     $cohorth -> execute($user -> {"username"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform yearcache query: ".$self -> {"dbh"} -> errstr);
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache query: ".$self -> {"dbh"} -> errstr);
 
     my $cohortrow = $cohorth -> fetchrow_arrayref();
 
@@ -305,28 +303,27 @@ sub _set_user_cohort {
     if($cohortrow) {
         $user -> {"cohort_id"} = $cohortrow -> [0];
 
-    # No cohort, obtain the current academic year, and thus cohort, from the period
+    # No cohort, put them into the current one if possible
     } else {
-        my $acyearh = $self -> {"dbh"} -> prepare("SELECT c.id,c.name
-                                                   FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}." AS c,
-                                                        ".$self -> {"settings"} -> {"database"} -> {"periods"}." AS p
-                                                   WHERE c.start_year = p.year
-                                                   AND p.startdate <= UNIX_TIMESTAMP()
-                                                   AND p.enddate >= UNIX_TIMESTAMP()");
-        $acyearh -> execute()
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+        # Find the cohort the current time falls in
+        my $cohorth = $self -> {"dbh"} -> prepare("SELECT id, name
+                                                   FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}."
+                                                   WHERE startdate <= UNIX_TIMESTAMP()
+                                                   AND enddate >= UNIX_TIMESTAMP()");
+        $cohorth -> execute()
+            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
 
-        my $acyearrow = $acyearh -> fetchrow_hashref();
+        my $cohort = $cohorth -> fetchrow_hashref();
 
         # Did we get a cohort id and name? If not, give up with an error
-        if(!$acyearrow) {
-            $self -> {"lasterr"} = "Unable to determine cohort for user, or obtain a fallback cohort. Please contact ".$self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:strict_assignment"}." for assistance, giving your username and this error.";
+        if(!$cohort) {
+            $self -> {"lasterr"} = "Unable to determine cohort for user, or obtain a fallback cohort. Please contact ".$self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:support_email"}." for assistance, giving your username and this error.";
             return undef;
         }
 
         # set the id in the user's data and possibly set the warning message
-        $user -> {"cohort_id"} = $acyearrow -> {"id"};
-        $self -> {"lasterr"} = "Warning: the system has fallen back on using the current year cohort as your cohort as it could not determine your cohort by other means. If this is incorrect, please stop at this point and contact ".$self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:strict_assignment"}." for assistance, giving your username and this warning."
+        $user -> {"cohort_id"} = $cohort -> {"id"};
+        $self -> {"lasterr"} = "Warning: the system has fallen back on using the current cohort (".$cohort -> {"name"}.") as your cohort as it could not determine your cohort by other means. If this is incorrect, please stop at this point and contact ".$self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:support_email"}." for assistance, giving your username and this warning."
             if($self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:fallback_warning"});
     }
 

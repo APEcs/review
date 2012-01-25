@@ -3,6 +3,7 @@
             <div class="mbody">
                 <img src="templates/default/images/password.png" width="48" height="48" alt="login" class="fltrt" />
                 <div>{L_LOGIN_DONE}</div>
+                ***warning***
                 ***return***
             </div>
         </div>

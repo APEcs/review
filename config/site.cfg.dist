@@ -25,5 +25,5 @@ sortdata       = rev_sorts_data
 summaries      = rev_sorts_summaries
 statements     = rev_statements
 users          = rev_users
-yearcache      = rev_useryear_cache
+usercache      = rev_usercohort_cache
 

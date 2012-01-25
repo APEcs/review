@@ -170,14 +170,20 @@ sub generate_loggedin {
     my $self = shift;
 
     my $url = "index.cgi?".$self -> get_back(1);
+    my $warning = "";
 
-    my $content = $self -> {"template"} -> load_template("blocks/login_done.tem", {"***url***"    => $url,
-                                                                                   "***return***" => $self -> {"template"} -> replace_langvar("LOGIN_REDIRECT", {"***url***" => $url})});
+    # The user validation might have thrown up warning, so check that.
+    $warning = $self -> {"template"} -> load_template("blocks/login_warning.tem", {"***message***" => $self -> {"session"} -> {"lasterr"}})
+        if($self -> {"session"} -> {"lasterr"});
 
-    # return the title, content, and extraheader
+    my $content = $self -> {"template"} -> load_template("blocks/login_done.tem", {"***url***"     => $url,
+                                                                                   "***warning***" => $warning,
+                                                                                   "***return***"  => $self -> {"template"} -> replace_langvar("LOGIN_REDIRECT", {"***url***" => $url})});
+
+    # return the title, content, and extraheader. If the warning is set, do not include an autoredirect.
     return ($self -> {"template"} -> replace_langvar("LOGIN_TITLE"),
             $content,
-            $self -> {"template"} -> load_template("refreshmeta.tem", {"***url***" => $url}));
+            $warning ? "" : $self -> {"template"} -> load_template("refreshmeta.tem", {"***url***" => $url}));
 }
 
 
