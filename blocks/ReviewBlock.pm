@@ -671,6 +671,27 @@ sub build_pagination {
 # ============================================================================
 #  Database interaction functions
 
+## @method $ get_cohort_bytime($time)
+# Obtain the record for the cohort that the specified time falls within.
+#
+# @param time The unix timestamp to look for a cohort for.
+# @return A reference to a hash containing the data for a cohort that the specfied
+#         time falls within, or undef if the time does not fall within a defined cohort.
+sub get_cohort_bytime {
+    my $self = shift;
+    my $time = shift;
+
+    # Ask the database whether a cohort exists that includes this time...
+    my $cohorth = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}."
+                                               WHERE startdate <= ?
+                                               AND enddate >= ?");
+    $cohorth -> execute($time, $time)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
+
+    return $cohorth -> fetchrow_hashref();
+}
+
+
 ## @method $ get_period($time)
 # Obtain the record for the period that the specified time falls within.
 #
@@ -682,7 +703,7 @@ sub get_period {
     my $time = shift;
 
     # Ask the database whether a period exists that includes this time...
-    my $periodh = $self -> {"dbh"} -> prepare("SELECT id FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
+    my $periodh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
                                                WHERE startdate <= ?
                                                AND enddate >= ?");
     $periodh -> execute($time, $time)
