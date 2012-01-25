@@ -1,5 +1,5 @@
 ## @file
-# This file contains the implementation of the admin 'index' view.
+# This file contains the implementation of the admin period management interface.
 #
 # @author  Chris Page &lt;chris@starforge.co.uk&gt;
 # @version 1.0
@@ -20,15 +20,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Admin::Periods;
 
-## @class Admin::Index
-# Implementation of the basic 'index and status' page for the Review webapp
-# admin interface. This shows basic stats about the system, and links to
-# modules to manage periods, maps, statements, and so on.
+## @class Admin::Periods
+# Implementation of the sort period management interface. This code allows
+# admin users to add, edit, and remove the periods that determine when
+# students may perform sorts.
 use strict;
 use base qw(Admin); # This class extends Admin
 use Logging qw(die_log);
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
+use Data::Dumper;
 
 # ============================================================================
 #  General utility stuff.
@@ -181,12 +182,212 @@ sub delete_period {
 }
 
 
-sub build_add_period {
+## @method $ build_admin_editperiod($isadd, $args, $error)
+# Construct the page containing the period edit/addition form. This will create
+# the period addition or edit form, prepopulating the fields with the contents of
+# the args hash if provided.
+#
+# @param isadd If true, this generates an addition form rather than edit form.
+# @param args  A reference to a hash of values to set the form fields to.
+# @param error An error box to show before the form.
+# @return A string containing the period addition or edit form.
+sub build_admin_editperiod {
     my $self  = shift;
+    my $isadd = shift;
     my $args  = shift;
     my $error = shift;
 
+    # If we have an edit, but no args, fetch the selected period for editing
+    if(!$isadd && !defined($args)) {
+        $args = $self -> get_editable_period();
+        return $args unless(ref($args) eq "HASH");
+    }
 
+    # Fix up formatting for the user-visible input boxes.
+    # FIXME: This only works provided the locale is set to en-GB. Can datepicker be set to do this
+    #        automagically based on the current locale?
+    my $format_start = $self -> {"template"} -> format_time($args -> {"startdate"}, "%d/%m/%Y %H:%M")
+        if($args -> {"startdate"});
+
+    my $format_end = $self -> {"template"} -> format_time($args -> {"enddate"}, "%d/%m/%Y %H:%M")
+        if($args -> {"enddate"});
+
+    return $self -> {"template"} -> load_template("admin/periods/".($isadd ? "add" : "edit").".tem",
+                                                  {"***error***"         => $error,
+                                                   "***id***"            => $args -> {"id"},
+                                                   "***year***"          => $args -> {"year"},
+                                                   "***startdate***"     => $args -> {"startdate"},
+                                                   "***startdate_fmt***" => $format_start,
+                                                   "***enddate***"       => $args -> {"enddate"},
+                                                   "***enddate_fmt***"   => $format_end,
+                                                   "***name***"          => $args -> {"name"},
+                                                   "***dosort***"        => $args -> {"allow_sort"} ? 'checked="checked"' : '',
+                                                  });
+}
+
+
+## @method @ validate_edit_period($isadd)
+# Determine whether the value specified by the user in a period add/edit
+# form are valid.
+#
+# @param isadd Set to true when called as part of an add process. Checks
+#              that the period is valid and ediable are skipped if set.
+# @return A reference to a hash of values submitted by the user, and a
+#         string containing any error messages.
+sub validate_edit_period {
+    my $self  = shift;
+    my $isadd = shift;
+    my $args  = {};
+    my ($error, $errors, $period);
+
+    my $errtem = $self -> {"template"} -> load_template("error_entry.tem");
+
+    # If this isn't an add, check that the period is valid and editable
+    if(!$isadd) {
+        $period = $self -> get_editable_period();
+        return ($args, $period) unless(ref($period) eq "HASH");
+
+        # Store the id for use later
+        $args -> {"id"} = $period -> {"id"};
+    }
+
+    # year field should be pretty easy to deal with...
+    ($args -> {"year"}, $error) = $self -> validate_string("year", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_ACYEAR"),
+                                                                    "required" => 1,
+                                                                    "minlen"   => 4,
+                                                                    "maxlen"   => 4,
+                                                                    "formattest" => '^\d+$',
+                                                                    "formatdesc" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_ONLYDIGITS")});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # Is the year in a sane range?
+    $errors .= $self -> {"template"} -> process_template($errtem,
+                                                         { "***error***" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_ACYEAR_RANGE",
+                                                                                                                     { "***min***" => $self -> {"settings"} -> {"config"} -> {"Admin:period_minyear"},
+                                                                                                                       "***max***" => $self -> {"settings"} -> {"config"} -> {"Admin:period_maxyear"}})
+                                                         })
+        if($args -> {"year"} && ( $args -> {"year"} < $self -> {"settings"} -> {"config"} -> {"Admin:period_minyear"} ||
+                                  $args -> {"year"} > $self -> {"settings"} -> {"config"} -> {"Admin:period_maxyear"}));
+
+    ($args -> {"startdate"}, $error) = $self -> validate_string("startdate", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_START"),
+                                                                              "required" => 1,
+                                                                              "formattest" => '^\d+$',
+                                                                              "formatdesc" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_ONLYDIGITS")});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # Does the start date clash with another period?
+    if($args -> {"startdate"}) {
+        my $clashperiod = $self -> get_period($args -> {"startdate"});
+
+        # If we have a clash, and either the clash doesn't match the currently edited period
+        # or we don't have a current edit period, white at the user about a clash.
+        $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_PERIOD_CLASH", {"***name***" => $self -> {"template"} -> replace_langvar("ADMIN_START")})})
+            if($clashperiod && (!$period || $clashperiod -> {"id"} != $period -> {"id"}));
+    }
+
+    ($args -> {"enddate"}, $error) = $self -> validate_string("enddate", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_END"),
+                                                                          "required" => 1,
+                                                                          "formattest" => '^\d+$',
+                                                                          "formatdesc" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_ONLYDIGITS")});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # Does the end date clash with another period?
+    if($args -> {"enddate"}) {
+        my $clashperiod = $self -> get_period($args -> {"enddate"});
+
+        # If we have a clash, and either the clash doesn't match the currently edited period
+        # or we don't have a current edit period, white at the user about a clash.
+        $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_PERIOD_CLASH", {"***name***" => $self -> {"template"} -> replace_langvar("ADMIN_END")})})
+            if($clashperiod && (!$period || $clashperiod -> {"id"} != $period -> {"id"}));
+    }
+
+    # Start date must fall before the end date!
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_PERIOD_FLIP")})
+        unless($args -> {"startdate"} < $args -> {"enddate"});
+
+    # Title needs no faffing...
+    ($args -> {"name"}, $error) = $self -> validate_string("name", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_NAME"),
+                                                                    "required" => 1,
+                                                                    "maxlen"   => 80});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # sort allowance even less so...
+    $args -> {"allow_sort"} = $self -> {"cgi"} -> param("allow_sort") ? 1 : 0;
+
+    # Wrap the errors if needed
+    $errors = $self -> {"template"} -> load_template("error_list.tem", {"***message***" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_SUBMIT_FAIL"),
+                                                                        "***errors***"  => $errors})
+        if($errors);
+
+    return ($args, $errors);
+}
+
+
+## @method $ add_period()
+# Attempt to add a period to the system.
+#
+# @return A string containing the page content to return to the user.
+sub add_period {
+    my $self = shift;
+
+    # Determine whether the submission is valid
+    my ($args, $errors) = $self -> validate_edit_period(1);
+
+    # If there are any errors, report them and send the form back.
+    return $self -> build_admin_addperiod($args, $errors)
+        if($errors);
+
+    local $Data::Dumper::Terse = 1;
+    $self -> log("admin edit", "Adding new period: ".Dumper($args));
+
+    # No errors - do the insert...
+    my $newh = $self -> {"dbh"} -> prepare("INSERT INTO ".$self -> {"settings"} -> {"database"} -> {"periods"}."
+                                            (year, startdate, enddate, name, allow_sort)
+                                            VALUES(?, ?, ?, ?, ?)");
+    $newh -> execute($args -> {"year"},
+                     $args -> {"startdate"},
+                     $args -> {"enddate"},
+                     $args -> {"name"},
+                     $args -> {"allow_sort"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period insert query: ".$self -> {"dbh"} -> errstr);
+
+    return $self -> build_admin_periods($self -> {"template"} -> load_template("admin/periods/add_done.tem"));
+}
+
+
+## @method $ edit_period()
+# Attempt to edit a period to the system.
+#
+# @return A string containing the page content to return to the user.
+sub edit_period {
+    my $self = shift;
+
+    # Determine whether the submission is valid
+    my ($args, $errors) = $self -> validate_edit_period();
+
+    # If there are any errors, report them and send the form back.
+    return $self -> build_admin_addperiod($args, $errors)
+        if($errors);
+
+    local $Data::Dumper::Terse = 1;
+    $self -> log("admin edit", "Editing period: ".Dumper($args));
+
+    my $edith = $self -> {"dbh"} -> prepare("UPDATE ".$self -> {"settings"} -> {"database"} -> {"periods"}."
+                                             SET year = ?, startdate = ?, enddate = ?, name = ?, allow_sort = ?
+                                             WHERE id = ?");
+    $edith -> execute($args -> {"year"},
+                      $args -> {"startdate"},
+                      $args -> {"enddate"},
+                      $args -> {"name"},
+                      $args -> {"allow_sort"},
+                      $args -> {"id"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period edit query: ".$self -> {"dbh"} -> errstr);
+
+    return $self -> build_admin_periods($self -> {"template"} -> load_template("admin/periods/edit_done.tem"));
 }
 
 
@@ -311,25 +512,34 @@ sub page_display {
         }
 
         my $body;
+        # Dispatch based on selected operation, if any
         if(defined($self -> {"cgi"} -> param("addperiod"))) {
-
-            # Admin operations are always logged
             $self -> log("admin edit", "Add period");
+            $body = $self -> build_admin_editperiod(1);
 
-            $body = $self -> build_admin_addperiod();
+        } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
+            $self -> log("admin edit", "Do add period");
+            $body = $self -> add_period();
+
+        } elsif(defined($self -> {"cgi"} -> param("edit"))) {
+            $self -> log("admin edit", "Edit period");
+            $body = $self -> build_admin_editperiod();
+
+        } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
+            $self -> log("admin edit", "Do edit period");
+            $body = $self -> edit_period();
+
         } elsif(defined($self -> {"cgi"} -> param("delete"))) {
             $self -> log("admin edit", "Delete period");
-
             $body = $self -> build_admin_periods($self -> delete_period());
-        } else {
-            # Admin operations are always logged
-            $self -> log("admin view", "Periods");
 
+        } else {
+            $self -> log("admin view", "Periods");
             $body = $self -> build_admin_periods();
         }
 
         # Show the admin page
-        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("admin"),
+        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("periods"),
                                                                               "***body***"   => $body})
 
     # User has not logged in, force them to
@@ -343,7 +553,8 @@ sub page_display {
     # Done generating the page content, return the filled in page template
     return $self -> {"template"} -> load_template("page.tem", {"***title***"     => $title,
                                                                "***topright***"  => $self -> generate_topright(),
-                                                               "***extrahead***" => '<link href="templates/default/admin/admin.css" rel="stylesheet" type="text/css" />',
+                                                               "***extrahead***" => '<link href="templates/default/admin/admin.css" rel="stylesheet" type="text/css" />'.
+                                                                   $self -> {"template"} -> load_template("admin/datepicker_head.tem"),
                                                                "***content***"   => $content});
 
 }
