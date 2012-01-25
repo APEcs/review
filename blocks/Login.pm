@@ -173,8 +173,8 @@ sub generate_loggedin {
     my $warning = "";
 
     # The user validation might have thrown up warning, so check that.
-    $warning = $self -> {"template"} -> load_template("blocks/login_warning.tem", {"***message***" => $self -> {"session"} -> {"lasterr"}})
-        if($self -> {"session"} -> {"lasterr"});
+    $warning = $self -> {"template"} -> load_template("blocks/login_warning.tem", {"***message***" => $self -> {"session"} -> {"auth"} -> {"lasterr"}})
+        if($self -> {"session"} -> {"auth"} -> {"lasterr"});
 
     my $content = $self -> {"template"} -> load_template("blocks/login_done.tem", {"***url***"     => $url,
                                                                                    "***warning***" => $warning,
