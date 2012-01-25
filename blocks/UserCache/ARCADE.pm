@@ -57,7 +57,7 @@ sub cache_user {
     my $userh = $self -> {"dbh"} -> prepare("INSERT INTO ".$self -> {"settings"} -> {"database"} -> {"usercache"}."
                                              (username, cohort_id)
                                              VALUES(?, ?)");
-    $checkh -> execute($username, $cohortid)
+    $userh -> execute($username, $cohortid)
         or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache insert query: ".$self -> {"dbh"} -> errstr);
 
     return "user added to cache";
