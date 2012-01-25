@@ -28,6 +28,7 @@ package UserCache::ARCADE;
 
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
+use Date::Calc qw(Today Add_Delta_YM);
 use Logging qw(die_log);
 use Time::Local;
 use Socket;
@@ -114,11 +115,12 @@ sub populate_usercache {
 
     # First work out which cohorts apply to this year, last year, and the year before that
     my $cohorts;
-    my $thisyear = 1900 + (localtime)[5];
-    my ($day, $month) = (8, 9); # A day and month well into the academic year (my birthday!)
+    my ($year, $month, $day) = Today();
     foreach my $yearoffset (0, -1, -2) {
-        $cohorts -> {$yearoffset} = $self -> get_cohort_bytime(timelocal(0, 0, 0, $day, $month, $thisyear + $yearoffset))
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to obtain a cohort for offset $yearoffset (".timelocal(0, 0, 0, $day, $month, $thisyear + $yearoffset).")");
+        my ($tyear, $tmonth, $tday) = Add_Delta_YM($year, $month, $day, $yearoffset, 0);
+
+        $cohorts -> {$yearoffset} = $self -> get_cohort_bytime(timelocal(0, 0, 0, $tday, $tmonth, $tyear))
+            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to obtain a cohort for offset $yearoffset (".timelocal(0, 0, 0, $tday, $tmonth, $tyear).")");
     }
 
     # Now the fun starts - ask the database for which courses we need to ask ARCADE for
