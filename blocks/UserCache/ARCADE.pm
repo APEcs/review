@@ -118,7 +118,7 @@ sub populate_usercache {
     my ($day, $month) = (8, 9); # A day and month well into the academic year (my birthday!)
     foreach my $yearoffset (0, -1, -2) {
         $cohorts -> {$yearoffset} = $self -> get_cohort_bytime(timelocal(0, 0, 0, $day, $month, $thisyear + $yearoffset))
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to obtain a cohort for offset $yearoffset (".$thisyear + $yearoffset.")");
+            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to obtain a cohort for offset $yearoffset (".($thisyear + $yearoffset).")");
     }
 
     # Now the fun starts - ask the database for which courses we need to ask ARCADE for
