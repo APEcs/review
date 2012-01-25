@@ -1,0 +1,6 @@
+                <table class="notebox notebox-notice" id="notebox">
+                    <tr>
+                        <td class="nbox-image"><img src="templates/default/images/info.png" width="48" height="48" alt="information" /></td>
+                        <td class="nbox-text">***message***</td>
+                    </tr>
+                </table>
