@@ -22,7 +22,7 @@ package UserCache;
 
 ## @class UserCache
 # This class is the base class for all UserCache modules. It provides functions
-# common to all Admin modules.
+# common to all UserCache modules.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
 use Logging qw(die_log);

@@ -22,7 +22,7 @@ package XML;
 
 ## @class XML
 # This class is the base class for all XML modules. It provides functions
-# common to all Admin modules.
+# common to all XML modules.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
 use Logging qw(die_log);
