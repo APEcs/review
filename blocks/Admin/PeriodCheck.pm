@@ -23,13 +23,12 @@ package Admin::PeriodCheck;
 ## @class Admin::PeriodCheck
 # Implementation of the sort period checker. This is a simple module
 # that checks whether a user-specified date falls within an already
-# defined period. The script requires the user to be logged in, and
-# an admin, before it will return a useful value. The caller must also
-# supply a 'time' value containing a unix timestamp to check against
-# the period table. The caller may optionally provide an 'id' value,
-# containing the id of the period being edited - if the user sets a
-# data within the currently edited period, the system will accept it
-# as valid.
+# defined period. The script requires the user to be logged in before
+# it will return a useful value. The caller must also supply a 'time'
+# value containing a unix timestamp to check against the period table.
+# The caller may optionally provide an 'id' value, containing the id
+# of the period being edited - if the user sets a date within the
+# currently edited period, the system will accept it as valid.
 use strict;
 use base qw(Admin); # This class extends Admin
 use Logging qw(die_log);
