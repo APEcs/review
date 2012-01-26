@@ -132,7 +132,7 @@ sub get_editable_period {
 
     # Get the period id
     my $periodid = is_defined_numeric($self -> {"cgi"}, "id");
-    $self -> log("admin edit", "Request delete of period ".($periodid || "undefined"));
+    $self -> log("admin edit", "Request modification of period ".($periodid || "undefined"));
     return $self -> {"template"} -> replace_langvar("ADMIN_PERIOD_ERR_NOID")
         unless($periodid);
 
@@ -200,7 +200,9 @@ sub build_admin_editperiod {
     # If we have an edit, but no args, fetch the selected period for editing
     if(!$isadd && !defined($args)) {
         $args = $self -> get_editable_period();
-        return $args unless(ref($args) eq "HASH");
+        return $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                      {"***message***" => $args})
+            unless(ref($args) eq "HASH");
     }
 
     # Fix up formatting for the user-visible input boxes.
@@ -245,7 +247,9 @@ sub validate_edit_period {
     # If this isn't an add, check that the period is valid and editable
     if(!$isadd) {
         $period = $self -> get_editable_period();
-        return ($args, $period) unless(ref($period) eq "HASH");
+        return ($args, $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                              {"***message***" => $period}))
+                unless(ref($period) eq "HASH");
 
         # Store the id for use later
         $args -> {"id"} = $period -> {"id"};
