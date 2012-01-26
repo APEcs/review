@@ -1,0 +1,1 @@
+<a href="index.cgi?block=cohorts&id=***id***&edit"><img src="templates/default/admin/images/edit.png" width="16" height="16" alt="edit" title="{L_ADMIN_COHORT_EDIT}" /></a>&nbsp;<a href="index.cgi?block=cohorts&id=***id***&delete"><img src="templates/default/admin/images/editdelete.png" width="16" height="16" alt="delete" title="{L_ADMIN_COHORT_DELETE}" /></a>

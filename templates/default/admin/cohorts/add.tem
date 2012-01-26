@@ -1,0 +1,33 @@
+***error***
+        <script type="text/javascript" src="templates/default/admin/cohorts/add.js"></script>
+        <div class="message">
+            <h2>{L_ADMIN_ADDCOHORT_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/addcohort.png" width="48" height="48" alt="addcohort" class="fltrt" />
+                <div>{L_ADMIN_ADDCOHORT_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+                <table class="formtable">
+                <tr><td class="label">{L_ADMIN_START}:</td>
+                    <td class="field"><input class="datepick" type="text" name="start_pick" id="start_pick" size="25" maxlength="30" value="***startdate_fmt***" /> <span id="startvalid"></span>
+                                      <input type="hidden" name="startdate" id="startdate" value="***startdate***" />
+                    </td>
+                </tr>
+                <tr><td class="label">{L_ADMIN_END}:</td>
+                    <td class="field"><input class="datepick" type="text" name="end_pick" id="end_pick" size="25" maxlength="30" value="***enddate_fmt***" /> <span id="endvalid"></span>
+                                      <input type="hidden" name="enddate" id="enddate" value="***enddate***" />
+                    </td>
+                </tr>
+                <tr><td class="label">{L_ADMIN_NAME}:</td>
+                    <td class="field"><input type="text" name="name" id="name" size="80" maxlength="80" value="***name***" />
+                    </td>
+                </tr>
+                <tr><td colspan="2" style="text-align: right"><input type="submit" name="doadd" value="{L_ADMIN_ADDCOHORT_ADD}" />&nbsp;<input type="submit" name="cancel" value="{L_ADMIN_ADDCOHORT_CANCEL}" />
+                    <input type="hidden" name="block" value="cohorts" />
+                    </td>
+                </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+

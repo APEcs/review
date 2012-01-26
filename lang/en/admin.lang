@@ -57,7 +57,30 @@ ADMIN_ADDPERIOD_ADD    = Add period
 ADMIN_ADDPERIOD_CANCEL = Cancel
 ADMIN_ADDPERIOD_DONE   = Period added successfully.
 
-ADMIN_EDITPERIOD_TITLE  = Edit a period
-ADMIN_EDITPERIOD_INTRO  = This form allows you to edit an existing period in the system. Note that periods must not overlap (you will be warned if you select a date within an existing period other than the one you are editing), and users may only perform sorts during periods that specifically allow sorting - any other time (during periods that disallow sorting, or outside defined periods) users can not perform sorts.
-ADMIN_EDITPERIOD_EDIT   = Edit period
-ADMIN_EDITPERIOD_DONE   = Period edited successfully.
+ADMIN_EDITPERIOD_TITLE = Edit a period
+ADMIN_EDITPERIOD_INTRO = This form allows you to edit an existing period in the system. Note that periods must not overlap (you will be warned if you select a date within an existing period other than the one you are editing), and users may only perform sorts during periods that specifically allow sorting - any other time (during periods that disallow sorting, or outside defined periods) users can not perform sorts.
+ADMIN_EDITPERIOD_EDIT  = Edit period
+ADMIN_EDITPERIOD_DONE  = Period edited successfully.
+
+ADMIN_COHORT_TITLE     = Cohorts
+ADMIN_COHORT_INTRO     = On this page you can view the cohorts defined in the system. Each cohort corresponds to a distinct group of students (intake in a given year, for example), and is defined by an open date and a close date. The two dates define the period during which students can be added to that cohort, so if the start date is the beginning of the first semester in the 2012 academic year, and the end date is the end of the second semester in the 2012 year, then the cohort will contain all the new intake for the 2012 academic year.
+ADMIN_COHORT_ADD       = Add a cohort
+ADMIN_COHORT_EDIT      = Edit this cohort
+ADMIN_COHORT_DELETE    = Delete this cohort
+ADMIN_COHORT_NODEL     = One or more users are members of this cohort, so it may not be deleted.
+ADMIN_COHORT_CLASH     = Invalid selection: a cohort already exists that covers this date and time.
+ADMIN_COHORT_NOCLASH   = The selected date and time are valid.
+
+ADMIN_COHORT_ERR_NOID  = No cohort id has been specified. Unable to continue with the requested operation.
+ADMIN_COHORT_ERR_BADID = The specified cohort id does not correspond to a valid cohort.
+
+ADMIN_ADDCOHORT_TITLE  = Add a cohort
+ADMIN_ADDCOHORT_INTRO  = This form allows you to add a new cohort to the system. Cohorts are specified as a name, a start date, and an end date - the two dates define the period during which students can be added to that cohort, so if the start date is the beginning of the first semester in the 2012 academic year, and the end date is the end of the second semester in the 2012 year, then the cohort will contain all the new intake for the 2012 academic year. Note that cohorts must not overlap (you will be warned if you select a date within an existing cohort).
+ADMIN_ADDCOHORT_ADD    = Add cohort
+ADMIN_ADDCOHORT_CANCEL = Cancel
+ADMIN_ADDCOHORT_DONE   = Cohort added successfully.
+
+ADMIN_EDITCOHORT_TITLE = Edit a cohort
+ADMIN_EDITCOHORT_INTRO = This form allows you to edit an existing cohort in the system. Note that cohorts must not overlap (you will be warned if you select a date within an existing cohort other than the one you are editing).
+ADMIN_EDITCOHORT_EDIT  = Edit cohort
+ADMIN_EDITCOHORT_DONE  = Cohort edited successfully.

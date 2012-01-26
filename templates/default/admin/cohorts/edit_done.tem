@@ -1,0 +1,7 @@
+                <table class="notebox notebox-notice" id="notebox">
+                    <tr>
+                        <td class="nbox-image"><img src="templates/default/images/info.png" width="48" height="48" alt="information" /></td>
+                        <td class="nbox-text">{L_ADMIN_EDITCOHORT_DONE}</td>
+                    </tr>
+                </table>
+                <script type="text/javascript">setTimeout(function() { $('notebox').dissolve() }, 3000);</script>

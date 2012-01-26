@@ -1,0 +1,28 @@
+***error***
+        <div class="message">
+            <h2>{L_ADMIN_COHORT_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/cohorts.png" width="48" height="48" alt="cohorts" class="fltrt" />
+                <div>{L_ADMIN_COHORT_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+***paginate***
+                <table class="zebra fullwidth" id="cohorts">
+                    <tr>
+                        <th class="nowrap">{L_ADMIN_START}&nbsp;***startdate***</th>
+                        <th class="nowrap">{L_ADMIN_END}&nbsp;***enddate***</th>
+                        <th class="nowrap fullwidth">{L_ADMIN_NAME}&nbsp;***name***</th>
+                        <th>&nbsp;</td>
+                    </tr>
+***cohorts***
+                    <tr>
+                        <th colspan="6" style="text-align: right">
+                            <input type="submit" name="addcohort" value="{L_ADMIN_COHORT_ADD}" />
+                            <input type="hidden" name="block" value="cohorts" />
+                        </th>
+                    </tr>
+                </table>
+***paginate***
+                </form>
+            </div>
+        </div>

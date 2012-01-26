@@ -1,0 +1,1 @@
+<img src="templates/default/images/markers/warn.png" width="16" height="16" alt="warnign" title="{L_ADMIN_COHORT_CLASH}" />&nbsp;<span class="warn small">{L_ADMIN_COHORT_CLASH}</span>
