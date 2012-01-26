@@ -30,7 +30,7 @@ use base qw(ReviewBlock); # This class extends ReviewBlock
 # ============================================================================
 #  Query string handling
 
-## @method $ get_back($decode)
+## @method private $ get_back($decode)
 # Obtain the contents of the back argument, if it is present. This will determine whether
 # the back cgi argument is set, and if it is whether it only contains base64 data. If
 # both of these are true, this will return the string (optionally decoding it before
@@ -61,7 +61,7 @@ sub get_back {
 # ============================================================================
 #  Validation functions
 
-## @method @ validate_login()
+## @method private @ validate_login()
 # Determine whether the username and password provided by the user are valid. If
 # they are, return the user's data.
 #
@@ -109,7 +109,7 @@ sub validate_login {
 # ============================================================================
 #  Content generation functions
 
-## @method $generate_login($error)
+## @method private $ generate_login($error)
 # Generate the 'login' block to send to the user. This will not pre-populate the form fields, even
 # after the user has submitted and received an error - the user must fill in the details each time.
 #
@@ -139,7 +139,7 @@ sub generate_login {
 }
 
 
-## @method $ generate_login_form($login_errors)
+## @method private $ generate_login_form($login_errors)
 # Generate the content of the login form.
 #
 # @param login_errors A string containing errors related to logging in, or undef.
@@ -161,7 +161,7 @@ sub generate_login_form {
 }
 
 
-## @method @ generate_loggedin()
+## @method private @ generate_loggedin()
 # Generate the contents of a page telling the user that they have successfully logged in.
 #
 # @return An array of three values: the page title string, the 'logged in' message, and
@@ -187,7 +187,7 @@ sub generate_loggedin {
 }
 
 
-## @method @ generate_loggedout()
+## @method private @ generate_loggedout()
 # Generate the contents of a page telling the user that they have successfully logged out.
 #
 # @return An array of three values: the page title string, the 'logged out' message, and

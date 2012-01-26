@@ -29,7 +29,7 @@ use base qw(ReviewBlock); # This class extends ReviewBlock
 use Logging qw(die_log);
 use Utils qw(is_defined_numeric);
 
-## @method $ build_summary_view($sortid, $multiview)
+## @method private $ build_summary_view($sortid, $multiview)
 # Generate the summary view for the specified sortid, or an error if the user
 # requesting the view is not logged in or is not the user who did the sort.
 #
@@ -66,7 +66,7 @@ sub build_summary_view {
 }
 
 
-## @method $ build_summary_multiview($sortids)
+## @method private $ build_summary_multiview($sortids)
 # Generate a page containing on or more summaries. This allows several
 # sorts to be viewed on a single page for comparison (note that all
 # summary editing id disabled, and only the latest reflective summary
@@ -106,7 +106,7 @@ sub build_summary_multiview {
 }
 
 
-## @method $ store_summary($sortid)
+## @method private $ store_summary($sortid)
 # Store the summary submitted by the user, if present, for the specified
 # sortid.
 #

@@ -34,7 +34,7 @@ use Data::Dumper;
 # ============================================================================
 #  General utility stuff.
 
-## @method $ can_modify_period($periodid)
+## @method private $ can_modify_period($periodid)
 # Determine whether the user can modify the period specified. This will check
 # whether any sorts have been performed during the period specified, and if
 # so it will return false. If no sorts have been performed, this will return
@@ -58,7 +58,7 @@ sub can_modify_period {
 }
 
 
-## @method $ get_period_count()
+## @method private $ get_period_count()
 # Count how many periods are currently defined in the database.
 #
 # @return The number of defined periods.
@@ -75,7 +75,7 @@ sub get_period_count {
 }
 
 
-## @method $ get_sort_field()
+## @method private $ get_sort_field()
 # Obtain the name of the field the period table should be sorted on. This checks
 # whether the user has selected a sort field via the query string, and if so
 # whether the selection is valid.
@@ -101,7 +101,7 @@ sub get_sort_field {
 }
 
 
-## @method $ get_sort_direction()
+## @method private $ get_sort_direction()
 # Obtain the direction in which the table contents should be ordered. This checks
 # the query string to determine whether the user has specified a sort direction,
 # and if so whether that direction is valid.
@@ -121,7 +121,7 @@ sub get_sort_direction {
 # ============================================================================
 #  Period editing
 
-## @method $ get_editable_period()
+## @method private $ get_editable_period()
 # Pull the id of the period the user is attempting to edit from the query string,
 # and determine whether or not it is ediable.
 #
@@ -154,7 +154,7 @@ sub get_editable_period {
 }
 
 
-## @method $ delete_period()
+## @method private $ delete_period()
 # Delete the period the user has selected from the database. This will check that
 # the period is safe to delete before doing so.
 #
@@ -182,7 +182,7 @@ sub delete_period {
 }
 
 
-## @method $ build_admin_editperiod($isadd, $args, $error)
+## @method private $ build_admin_editperiod($isadd, $args, $error)
 # Construct the page containing the period edit/addition form. This will create
 # the period addition or edit form, prepopulating the fields with the contents of
 # the args hash if provided.
@@ -226,7 +226,7 @@ sub build_admin_editperiod {
 }
 
 
-## @method @ validate_edit_period($isadd)
+## @method private @ validate_edit_period($isadd)
 # Determine whether the value specified by the user in a period add/edit
 # form are valid.
 #
@@ -327,7 +327,7 @@ sub validate_edit_period {
 }
 
 
-## @method $ add_period()
+## @method private $ add_period()
 # Attempt to add a period to the system.
 #
 # @return A string containing the page content to return to the user.
@@ -359,8 +359,8 @@ sub add_period {
 }
 
 
-## @method $ edit_period()
-# Attempt to edit a period to the system.
+## @method private $ edit_period()
+# Attempt to edit a period in the system.
 #
 # @return A string containing the page content to return to the user.
 sub edit_period {
@@ -394,7 +394,7 @@ sub edit_period {
 # ============================================================================
 #  Period listing
 
-## @method $ build_periods_sort_headers($field, $way, $page)
+## @method private $ build_periods_sort_headers($field, $way, $page)
 # Generate the sort control icons and links to show in the period list table header.
 #
 # @param field The current sort field.
@@ -425,7 +425,7 @@ sub build_periods_sort_headers {
 }
 
 
-## @method $ build_admin_periods($error)
+## @method private $ build_admin_periods($error)
 # Generate the admin periods list page.
 #
 # @param error An error message to show at the top of the page.

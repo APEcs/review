@@ -30,7 +30,7 @@ use base qw(XML); # This class extends XML
 use Logging qw(die_log);
 
 
-## @method $ build_formfields($userid)
+## @method private $ build_formfields($userid)
 # Build the list of form fields set for the cohort the specified user is in. This
 # will attempt to look up the form fields set for the user's cohort, and return
 # a string containing an xml representation of the fields in a form that

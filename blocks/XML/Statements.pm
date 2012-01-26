@@ -30,7 +30,7 @@ use base qw(XML); # This class extends XML
 use Logging qw(die_log);
 
 
-## @method $ build_statement_tree($userid)
+## @method private $ build_statement_tree($userid)
 # Build the list of statements set for the cohort the specified user is in. This
 # will attempt to look up the statements set for the user's cohort, and return
 # a string containing an xml representation of those statements in a form that

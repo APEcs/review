@@ -29,7 +29,7 @@ use Logging qw(die_log);
 use Encode;
 
 
-## @method $ save_sort($userid)
+## @method private $ save_sort($userid)
 # Store the data submitted by flashq in the database. This will create the appropriate
 # sort header for the user's submission, and store the data from flashq in the sort
 # data table with the appropriate sortid.

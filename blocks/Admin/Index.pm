@@ -28,7 +28,7 @@ use strict;
 use base qw(Admin); # This class extends Admin
 use Logging qw(die_log);
 
-## @method $ admin_table_count($table)
+## @method private $ admin_table_count($table)
 # Count the number of rows in the specified table. This will return a dumb
 # count of all the rows in the specified table, with the assumption that
 # there are no duplicate rows.
@@ -49,7 +49,7 @@ sub admin_table_count {
 }
 
 
-## @method $ build_admin_index()
+## @method private $ build_admin_index()
 # Generate the contents of the admin index page proper. This creates the actual
 # content of the page to show between the admin tab bar and the footer.
 #

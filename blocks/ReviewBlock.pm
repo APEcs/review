@@ -80,6 +80,7 @@ sub fix_colour {
     return $colour;
 }
 
+
 ## @fn $ text_to_html($text, $nobrs)
 # Convert the contents of the specified text to something that can be
 # safely and sanely displayed in a html document. This will nuke *ANY*
@@ -154,7 +155,7 @@ sub check_sort_permissions {
 # ============================================================================
 #  Sort grid generation functions
 
-## @method void _get_sort_data($sortid, $griddata)
+## @method private void get_sort_data($sortid, $griddata)
 # Pull the data for the 'sort' variable for the specified sortid into the grid.
 # This does the work of pulling the 'sort' value from the database for the specified
 # sort, parsing it into individual cell selections, and filling in the griddata
@@ -162,7 +163,7 @@ sub check_sort_permissions {
 #
 # @param sortid   The ID of the sort to load the data for.
 # @param griddata A reference to a hash to store the sort data in.
-sub _get_sort_data {
+sub get_sort_data {
     my $self     = shift;
     my $sortid   = shift;
     my $griddata = shift;
@@ -227,13 +228,13 @@ sub _get_sort_data {
 }
 
 
-## @method void _get_sort_comments($sortid, $griddata)
+## @method private void get_sort_comments($sortid, $griddata)
 # Extract the sort comments entered by the user from the database and store them
 # in the specified grid.
 #
 # @param sortid   The ID of the sort to load the data for.
 # @param griddata A reference to a hash to store the sort data in.
-sub _get_sort_comments {
+sub get_sort_comments {
     my $self     = shift;
     my $sortid   = shift;
     my $griddata = shift;
@@ -257,12 +258,12 @@ sub _get_sort_comments {
 }
 
 
-## @method void _get_sort_times($sortid, $griddata)
+## @method private void get_sort_times($sortid, $griddata)
 # Obtain the sort timings for the specified sort.
 #
 # @param sortid   The ID of the sort to load the data for.
 # @param griddata A reference to a hash to store the sort timings in.
-sub _get_sort_times {
+sub get_sort_times {
     my $self     = shift;
     my $sortid   = shift;
     my $griddata = shift;
@@ -294,7 +295,7 @@ sub _get_sort_times {
 }
 
 
-## @method $ _build_sort_data($sortid, $cohortid)
+## @method private $ build_sort_data($sortid, $cohortid)
 # Store the sort data for the specified sort in the provided griddata hash. Note
 # that this does not ensure that the current user has permission to access this
 # sort - the caller must verify that this is the case!
@@ -302,7 +303,7 @@ sub _get_sort_times {
 # @param sortid   The ID of the sort to load the data for.
 # @param cohortid The cohort the sort user is in.
 # @return A reference to the sort data hash on success, otherwise an error message.
-sub _build_sort_data {
+sub build_sort_data {
     my $self     = shift;
     my $sortid   = shift;
     my $cohortid = shift;
@@ -347,21 +348,21 @@ sub _build_sort_data {
     $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
 
     # Pull in the actual data
-    $self -> _get_sort_data($sortid, $griddata);
-    $self -> _get_sort_comments($sortid, $griddata);
-    $self -> _get_sort_times($sortid, $griddata);
+    $self -> get_sort_data($sortid, $griddata);
+    $self -> get_sort_comments($sortid, $griddata);
+    $self -> get_sort_times($sortid, $griddata);
 
     return $griddata;
 }
 
 
-## @method $ _build_sort_grid($griddata)
+## @method private $ build_sort_grid($griddata)
 # Generate the html representation of the sort contained in the specified grid
 # data hash.
 #
 # @param griddata A reference to a hash containing the sort data to render as HTML.
 # @return The sort grid string.
-sub _build_sort_grid {
+sub build_sort_grid {
     my $self     = shift;
     my $griddata = shift;
 
@@ -409,13 +410,13 @@ sub _build_sort_grid {
 }
 
 
-## @method $ _build_sort_comments($griddata)
+## @method private $ build_sort_comments($griddata)
 # Generate the html representation of the sort comments contained in the specified grid
 # data hash.
 #
 # @param griddata A reference to a hash containing the sort comments to render as HTML.
 # @return The sort comment string.
-sub _build_sort_comments {
+sub build_sort_comments {
     my $self     = shift;
     my $griddata = shift;
     my $rows     = "";
@@ -454,13 +455,13 @@ sub _build_sort_comments {
 }
 
 
-## @method $ _build_sort_times($griddata)
+## @method private $ build_sort_times($griddata)
 # Generate the html representation of the sort times contained in the specified grid
 # data hash.
 #
 # @param griddata A reference to a hash containing the sort times to render as HTML.
 # @return The sort times string.
-sub _build_sort_times {
+sub build_sort_times {
     my $self      = shift;
     my $griddata  = shift;
     my $stagelist = "";
@@ -523,12 +524,12 @@ sub build_sort_view {
     return $sortuser unless(ref($sortuser) eq "HASH");
 
     # Pull in the user's sort data
-    my $griddata = $self -> _build_sort_data($sortid, $sortuser -> {"cohort_id"});
+    my $griddata = $self -> build_sort_data($sortid, $sortuser -> {"cohort_id"});
     return $griddata unless(ref($griddata) eq "HASH");
 
-    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***"     => $self -> _build_sort_grid($griddata),
-                                                                    "***sortcomments***" => $self -> _build_sort_comments($griddata),
-                                                                    "***sorttimes***"    => $self -> _build_sort_times($griddata),
+    return $self -> {"template"} -> load_template("sort/view.tem", {"***sortgrid***"     => $self -> build_sort_grid($griddata),
+                                                                    "***sortcomments***" => $self -> build_sort_comments($griddata),
+                                                                    "***sorttimes***"    => $self -> build_sort_times($griddata),
                                                   });
 }
 
@@ -763,7 +764,7 @@ sub user_can_sort {
         if(!$period);
 
     # Has the user already submitted a sort for this period?
-    my $sort = $self -> get_sort_data($self -> {"session"} -> {"sessuser"}, $period -> {"id"});
+    my $sort = $self -> get_sortdata($self -> {"session"} -> {"sessuser"}, $period -> {"id"});
 
     return $self -> {"template"} -> replace_langvar("SORT_HAVEDONE")
         if($sort);
@@ -773,7 +774,7 @@ sub user_can_sort {
 }
 
 
-## @method $ get_sort_data($userid, $periodid, $fullsort)
+## @method $ get_sortdata($userid, $periodid, $fullsort)
 # Obtain the sort data submitted by the user during the specified period. Each user may perform a
 # sort exactly once during any period, so this method can only return at most one sort of data.
 #
@@ -783,7 +784,7 @@ sub user_can_sort {
 #                 only the sort header (user, period, sort date and last update) will be returned.
 # @return A reference to a hash containing the sort data, including a hash of sort answers,
 #         justifications, survey answers, and an array of summary hashes if $fullsort is set.
-sub get_sort_data {
+sub get_sortdata {
     my $self     = shift;
     my $userid   = shift;
     my $periodid = shift;

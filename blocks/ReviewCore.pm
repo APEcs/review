@@ -32,7 +32,7 @@ use Logging qw(die_log);
 # ============================================================================
 #  Content generation functions
 
-## @method $ build_sort_list()
+## @method private $ build_sort_list()
 # Generate a list of sorts the current user has performed, with links to view the
 # sort and edit the sort summary text.
 #
@@ -79,7 +79,7 @@ sub build_sort_list {
 }
 
 
-## @method $ build_sort_option()
+## @method private $ build_sort_option()
 # Create the sort option box to send back to the user. This will put together the
 # sort status message and form based on the user's ability to perform a sort in the
 # current period. If the user can not sort, this returns a block stating that and

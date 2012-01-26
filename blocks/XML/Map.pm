@@ -30,7 +30,7 @@ use base qw(XML); # This class extends XML
 use Logging qw(die_log);
 
 
-## @method $ build_map_tree($userid)
+## @method private $ build_map_tree($userid)
 # Build the list of map entries set for the cohort the specified user is in. This
 # will attempt to look up the map data set for the user's cohort, and return
 # a string containing an xml representation of the map in a form that

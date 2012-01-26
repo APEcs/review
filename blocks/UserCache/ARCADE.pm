@@ -33,7 +33,7 @@ use Logging qw(die_log);
 use Time::Local;
 use Socket;
 
-## @method $ cache_user($username, $cohortid)
+## @method private $ cache_user($username, $cohortid)
 # Store the specified user in the user cohort cache, if they are
 # not already in the table.
 #
@@ -65,7 +65,7 @@ sub cache_user {
 }
 
 
-## @method $ arcade_lookup($course, $cohort)
+## @method private $ arcade_lookup($course, $cohort)
 # Query ARCADE for a list of all students on the specified course, and
 # store entries for each user in the user cohort cache if needed.
 #
@@ -105,7 +105,7 @@ sub arcade_lookup {
 }
 
 
-## @method $ populate_usercache()
+## @method private $ populate_usercache()
 # Populate the user cache based on course/year information obtained
 # from ARCADE.
 #
