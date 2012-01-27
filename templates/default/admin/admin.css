@@ -38,10 +38,6 @@ table#definedstats, table#genstats {
     width: 100%;
 }
 
-table.formtable td.field {
-    width: 60%;
-}
-
 table#toplog {
     width: 100%;
 }
