@@ -319,7 +319,7 @@ sub add_cohort {
     my ($args, $errors) = $self -> validate_edit_cohort(1);
 
     # If there are any errors, report them and send the form back.
-    return $self -> build_admin_addcohort($args, $errors)
+    return $self -> build_admin_editcohort(1, $args, $errors)
         if($errors);
 
     local $Data::Dumper::Terse = 1;
@@ -349,7 +349,7 @@ sub edit_cohort {
     my ($args, $errors) = $self -> validate_edit_cohort();
 
     # If there are any errors, report them and send the form back.
-    return $self -> build_admin_addcohort($args, $errors)
+    return $self -> build_admin_editcohort(0, $args, $errors)
         if($errors);
 
     local $Data::Dumper::Terse = 1;
