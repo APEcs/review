@@ -342,7 +342,7 @@ sub add_period {
     my ($args, $errors) = $self -> validate_edit_period(1);
 
     # If there are any errors, report them and send the form back.
-    return $self -> build_admin_addperiod($args, $errors)
+    return $self -> build_admin_editperiod(1, $args, $errors)
         if($errors);
 
     local $Data::Dumper::Terse = 1;
@@ -374,7 +374,7 @@ sub edit_period {
     my ($args, $errors) = $self -> validate_edit_period();
 
     # If there are any errors, report them and send the form back.
-    return $self -> build_admin_addperiod($args, $errors)
+    return $self -> build_admin_editperiod(0, $args, $errors)
         if($errors);
 
     local $Data::Dumper::Terse = 1;
