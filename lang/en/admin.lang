@@ -30,6 +30,7 @@ ADMIN_START            = Start date
 ADMIN_END              = End date
 ADMIN_NAME             = Name
 ADMIN_DOSORT           = Allow sorts?
+ADMIN_STATE            = Statement
 
 ADMIN_PERIOD_TITLE     = Sort periods
 ADMIN_PERIOD_INTRO     = Here you can see and edit the sort periods set up in the system. Each period corresponds to a distinct timeframe during which users may (or may not) perform sorts. Note that periods may not overlap, and users may only perform sorts during periods that specifically allow it (the user can not perform sorts during periods that disallow it, or at any time outside a defined sort period). If a user has performed a sort during a period, you will not be able to edit that period through this interface for safety.
@@ -84,3 +85,25 @@ ADMIN_EDITCOHORT_TITLE = Edit a cohort
 ADMIN_EDITCOHORT_INTRO = This form allows you to edit an existing cohort in the system. Note that cohorts must not overlap (you will be warned if you select a date within an existing cohort other than the one you are editing).
 ADMIN_EDITCOHORT_EDIT  = Edit cohort
 ADMIN_EDITCOHORT_DONE  = Cohort edited successfully.
+
+
+ADMIN_STATE_TITLE      = Statements
+ADMIN_STATE_INTRO      = On this page you can view the statements defined in the system. This is the 'statement pool', each cohort of students can have any number of these statements associated with it, and only the statements associated with a user's cohort will be presented to that user when they are performing a sort. Statements that have been used in one or more sorts <i>can not be edited or removed</i> - they must remain intact and unaltered to allow for meaningful comparative analysis of sorts over time.<br /><br />To edit the statements associated with each cohort, use the "Cohort &lt;&gt; Statements" tab above.
+ADMIN_STATE_ADD        = Add a statement
+ADMIN_STATE_EDIT       = Edit this statement
+ADMIN_STATE_DELETE     = Delete this statement
+ADMIN_STATE_NOEDIT     = One or more sorts have been performed that include this statement, so it may not be edited.
+
+ADMIN_STATE_ERR_NOID   = No statement id has been specified. Unable to continue with the requested operation.
+ADMIN_STATE_ERR_BADID  = The specified statement id does not correspond to a valid statement.
+
+ADMIN_ADDSTATE_TITLE   = Add a statement
+ADMIN_ADDSTATE_INTRO   = This form allows you to add a new statement to the system. Before a statement may be presented to a user, it must be associated with a cohort - this form merely adds a statement to the available statements pool.<br /><br />Note that you may include basic HTML in your statements (&lt;i&gt;&lt;/i&gt;, &lt;b&gt;&lt;/b&gt;, and so on), but the escaped HTML will be shown in the statments list for security - FlashQ will load and parse the HTML as you would expect, however.
+ADMIN_ADDSTATE_ADD     = Add statement
+ADMIN_ADDSTATE_CANCEL  = Cancel
+ADMIN_ADDSTATE_DONE    = Statement added successfully.
+
+ADMIN_EDITSTATE_TITLE  = Edit a statement
+ADMIN_EDITSTATE_INTRO  = This form allows you to edit an existing statement in the system. Before a statement may be presented to a user, it must be associated with a cohort.<br /><br />Note that you may include basic HTML in your statements (&lt;i&gt;&lt;/i&gt;, &lt;b&gt;&lt;/b&gt;, and so on), but escaped HTML will be shown in the statments list for security - FlashQ will load and parse the HTML as you would expect, however.
+ADMIN_EDITSTATE_EDIT   = Edit statement
+ADMIN_EDITSTATE_DONE   = Statement edited successfully.

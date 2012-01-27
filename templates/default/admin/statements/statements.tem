@@ -1,0 +1,26 @@
+***error***
+        <div class="message">
+            <h2>{L_ADMIN_STATE_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/statements.png" width="48" height="48" alt="statements" class="fltrt" />
+                <div>{L_ADMIN_STATE_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+***paginate***
+                <table class="zebra fullwidth" id="statements">
+                    <tr>
+                        <th class="nowrap fullwidth">{L_ADMIN_STATE}&nbsp;***statesort***</th>
+                        <th>&nbsp;</td>
+                    </tr>
+***statements***
+                    <tr>
+                        <th colspan="6" style="text-align: right">
+                            <input type="submit" name="addstatement" value="{L_ADMIN_STATE_ADD}" />
+                            <input type="hidden" name="block" value="stateadmin" />
+                        </th>
+                    </tr>
+                </table>
+***paginate***
+                </form>
+            </div>
+        </div>

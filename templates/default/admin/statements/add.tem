@@ -1,0 +1,24 @@
+***error***
+        <div class="message">
+            <h2>{L_ADMIN_ADDSTATE_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/addstatement.png" width="48" height="48" alt="addstatement" class="fltrt" />
+                <div>{L_ADMIN_ADDSTATE_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+                <table class="formtable padover">
+                <tr><td class="label">{L_ADMIN_STATE}:</td>
+                    <td class="field fullwidth"><input type="text" name="statement" id="statement" size="120" value="***statement***" />
+                    </td>
+                </tr>
+                <tr><td colspan="2" style="text-align: right"><input type="submit" name="doadd" value="{L_ADMIN_ADDSTATE_ADD}" />&nbsp;<input type="submit" name="cancel" value="{L_ADMIN_ADDSTATE_CANCEL}" />
+                    <input type="hidden" name="page"  value="***page***" />
+                    <input type="hidden" name="way"   value="***way***" />
+                    <input type="hidden" name="block" value="stateadmin" />
+                    </td>
+                </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+
