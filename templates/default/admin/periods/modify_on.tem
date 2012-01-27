@@ -1,2 +1,1 @@
-<a href="index.cgi?block=periods&id=***id***&edit"><img src="templates/default/admin/images/edit.png" width="16" height="16" alt="edit" title="{L_ADMIN_PERIOD_EDIT}" /></a>
-<a href="index.cgi?block=periods&id=***id***&delete"><img src="templates/default/admin/images/editdelete.png" width="16" height="16" alt="delete" title="{L_ADMIN_PERIOD_DELETE}" /></a>
+<a href="index.cgi?block=periods&amp;id=***id***&amp;edit"><img src="templates/default/admin/images/edit.png" width="16" height="16" alt="edit" title="{L_ADMIN_PERIOD_EDIT}" /></a>&nbsp;<a href="index.cgi?block=periods&amp;id=***id***&amp;delete"><img src="templates/default/admin/images/editdelete.png" width="16" height="16" alt="delete" title="{L_ADMIN_PERIOD_DELETE}" /></a>
