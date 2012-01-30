@@ -39,7 +39,7 @@ use Utils qw(is_defined_numeric);
 sub page_display {
     my $self = shift;
 
-    my $content = $self -> {"template"} -> load_template("admin/periods/period_invalid.tem");
+    my $content = $self -> {"template"} -> load_template("admin/periods/invalid.tem");
 
     # User must be logged in before we can do anything else
     if($self -> {"session"} -> {"sessuser"} && $self -> {"session"} -> {"sessuser"} != $self -> {"session"} -> {"auth"} -> {"ANONYMOUS"}) {
@@ -52,7 +52,7 @@ sub page_display {
             my $period = $self -> get_period($time);
 
             # If we do not have period here, or the period matches the current edited one, the date does not clash
-            $content = $self -> {"template"} -> load_template("admin/periods/period_valid.tem")
+            $content = $self -> {"template"} -> load_template("admin/periods/valid.tem")
                 if(!$period || $period -> {"id"} == $id);
         }
     }
