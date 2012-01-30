@@ -88,4 +88,31 @@ sub generate_admin_tabbar {
 }
 
 
+## @method $ cohort_has_sorts($cohortid)
+# Determine whether any of the members of the specified cohort have performed
+# sorts.
+#
+# @param cohortid The id of the cohort to check for member sorts.
+# @return true if any of the members of the cohort have performed a sort, false
+#         otherwise.
+sub can_modify_cohort {
+    my $self     = shift;
+    my $cohortid = shift;
+
+    # Note the limit here - it doesn't matter if there is more than one sort, this really just
+    # cares whether there are zero or one, as one is enough to determine that the cohort has
+    # sorts recorded.
+    my $checkh = $self -> {"dbh"} -> prepare("SELECT u.user_id
+                                              FROM ".$self -> {"settings"} -> {"database"} -> {"users"}." AS u,
+                                                   ".$self -> {"settings"} -> {"database"} -> {"sorts"}." AS s
+                                              WHERE s.user_id = u.user_id
+                                              AND u.cohort_id = ?
+                                              LIMIT 1");
+    $checkh -> execute($cohortid)
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort check query: ".$self -> {"dbh"} -> errstr);
+
+    # If the row fetch was successful, one or more sorts have been peformed
+    return $checkh -> fetchrow_arrayref();
+}
+
 1;
