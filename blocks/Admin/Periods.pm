@@ -512,39 +512,40 @@ sub page_display {
         my $sessuser = $self -> check_admin_permission($self -> {"session"} -> {"sessuser"});
         if(ref($sessuser) ne "HASH") {
             $self -> log("admin view", "Permission denied");
-            return $sessuser;
-        }
-
-        my $body;
-        # Dispatch based on selected operation, if any
-        if(defined($self -> {"cgi"} -> param("addperiod"))) {
-            $self -> log("admin edit", "Add period");
-            $body = $self -> build_admin_editperiod(1);
-
-        } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
-            $self -> log("admin edit", "Do add period");
-            $body = $self -> add_period();
-
-        } elsif(defined($self -> {"cgi"} -> param("edit"))) {
-            $self -> log("admin edit", "Edit period");
-            $body = $self -> build_admin_editperiod();
-
-        } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
-            $self -> log("admin edit", "Do edit period");
-            $body = $self -> edit_period();
-
-        } elsif(defined($self -> {"cgi"} -> param("delete"))) {
-            $self -> log("admin edit", "Delete period");
-            $body = $self -> build_admin_periods($self -> delete_period());
-
+            $content = $sessuser;
         } else {
-            $self -> log("admin view", "Periods");
-            $body = $self -> build_admin_periods();
-        }
 
-        # Show the admin page
-        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("periods"),
-                                                                              "***body***"   => $body})
+            my $body;
+            # Dispatch based on selected operation, if any
+            if(defined($self -> {"cgi"} -> param("addperiod"))) {
+                $self -> log("admin edit", "Add period");
+                $body = $self -> build_admin_editperiod(1);
+
+            } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
+                $self -> log("admin edit", "Do add period");
+                $body = $self -> add_period();
+
+            } elsif(defined($self -> {"cgi"} -> param("edit"))) {
+                $self -> log("admin edit", "Edit period");
+                $body = $self -> build_admin_editperiod();
+
+            } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
+                $self -> log("admin edit", "Do edit period");
+                $body = $self -> edit_period();
+
+            } elsif(defined($self -> {"cgi"} -> param("delete"))) {
+                $self -> log("admin edit", "Delete period");
+                $body = $self -> build_admin_periods($self -> delete_period());
+
+            } else {
+                $self -> log("admin view", "Periods");
+                $body = $self -> build_admin_periods();
+            }
+
+            # Show the admin page
+            $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("periods"),
+                                                                                  "***body***"   => $body})
+        }
 
     # User has not logged in, force them to
     } else {

@@ -481,39 +481,40 @@ sub page_display {
         my $sessuser = $self -> check_admin_permission($self -> {"session"} -> {"sessuser"});
         if(ref($sessuser) ne "HASH") {
             $self -> log("admin view", "Permission denied");
-            return $sessuser;
-        }
-
-        my $body;
-        # Dispatch based on selected operation, if any
-        if(defined($self -> {"cgi"} -> param("addcohort"))) {
-            $self -> log("admin edit", "Add cohort");
-            $body = $self -> build_admin_editcohort(1);
-
-        } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
-            $self -> log("admin edit", "Do add cohort");
-            $body = $self -> add_cohort();
-
-        } elsif(defined($self -> {"cgi"} -> param("edit"))) {
-            $self -> log("admin edit", "Edit cohort");
-            $body = $self -> build_admin_editcohort();
-
-        } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
-            $self -> log("admin edit", "Do edit cohort");
-            $body = $self -> edit_cohort();
-
-        } elsif(defined($self -> {"cgi"} -> param("delete"))) {
-            $self -> log("admin edit", "Delete cohort");
-            $body = $self -> build_admin_cohorts($self -> delete_cohort());
-
+            $content = $sessuser;
         } else {
-            $self -> log("admin view", "Cohorts");
-            $body = $self -> build_admin_cohorts();
-        }
 
-        # Show the admin page
-        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("cohorts"),
-                                                                              "***body***"   => $body})
+            my $body;
+            # Dispatch based on selected operation, if any
+            if(defined($self -> {"cgi"} -> param("addcohort"))) {
+                $self -> log("admin edit", "Add cohort");
+                $body = $self -> build_admin_editcohort(1);
+
+            } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
+                $self -> log("admin edit", "Do add cohort");
+                $body = $self -> add_cohort();
+
+            } elsif(defined($self -> {"cgi"} -> param("edit"))) {
+                $self -> log("admin edit", "Edit cohort");
+                $body = $self -> build_admin_editcohort();
+
+            } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
+                $self -> log("admin edit", "Do edit cohort");
+                $body = $self -> edit_cohort();
+
+            } elsif(defined($self -> {"cgi"} -> param("delete"))) {
+                $self -> log("admin edit", "Delete cohort");
+                $body = $self -> build_admin_cohorts($self -> delete_cohort());
+
+            } else {
+                $self -> log("admin view", "Cohorts");
+                $body = $self -> build_admin_cohorts();
+            }
+
+            # Show the admin page
+            $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("cohorts"),
+                                                                                  "***body***"   => $body})
+        }
 
     # User has not logged in, force them to
     } else {

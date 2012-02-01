@@ -123,12 +123,13 @@ sub page_display {
         my $sessuser = $self -> check_admin_permission($self -> {"session"} -> {"sessuser"});
         if(ref($sessuser) ne "HASH") {
             $self -> log("admin view", "Permission denied");
-            return $sessuser;
-        }
+            $content = $sessuser;
+        } else {
 
-        # Show the admin page
-        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("admin"),
-                                                                              "***body***"   => $self -> build_admin_index()})
+            # Show the admin page
+            $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("admin"),
+                                                                                  "***body***"   => $self -> build_admin_index()})
+        }
 
     # User has not logged in, force them to
     } else {

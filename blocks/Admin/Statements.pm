@@ -410,39 +410,40 @@ sub page_display {
         my $sessuser = $self -> check_admin_permission($self -> {"session"} -> {"sessuser"});
         if(ref($sessuser) ne "HASH") {
             $self -> log("admin view", "Permission denied");
-            return $sessuser;
-        }
-
-        my $body;
-        # Dispatch based on selected operation, if any
-        if(defined($self -> {"cgi"} -> param("addstatement"))) {
-            $self -> log("admin edit", "Add statement");
-            $body = $self -> build_admin_editstatement(1);
-
-        } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
-            $self -> log("admin edit", "Do add statement");
-            $body = $self -> add_statement();
-
-        } elsif(defined($self -> {"cgi"} -> param("edit"))) {
-            $self -> log("admin edit", "Edit statement");
-            $body = $self -> build_admin_editstatement();
-
-        } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
-            $self -> log("admin edit", "Do edit statement");
-            $body = $self -> edit_statement();
-
-        } elsif(defined($self -> {"cgi"} -> param("delete"))) {
-            $self -> log("admin edit", "Delete statement");
-            $body = $self -> build_admin_statements($self -> delete_statement());
-
+            $content = $sessuser;
         } else {
-            $self -> log("admin view", "Statements");
-            $body = $self -> build_admin_statements();
-        }
 
-        # Show the admin page
-        $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("stateadmin"),
-                                                                              "***body***"   => $body})
+            my $body;
+            # Dispatch based on selected operation, if any
+            if(defined($self -> {"cgi"} -> param("addstatement"))) {
+                $self -> log("admin edit", "Add statement");
+                $body = $self -> build_admin_editstatement(1);
+
+            } elsif(defined($self -> {"cgi"} -> param("doadd"))) {
+                $self -> log("admin edit", "Do add statement");
+                $body = $self -> add_statement();
+
+            } elsif(defined($self -> {"cgi"} -> param("edit"))) {
+                $self -> log("admin edit", "Edit statement");
+                $body = $self -> build_admin_editstatement();
+
+            } elsif(defined($self -> {"cgi"} -> param("doedit"))) {
+                $self -> log("admin edit", "Do edit statement");
+                $body = $self -> edit_statement();
+
+            } elsif(defined($self -> {"cgi"} -> param("delete"))) {
+                $self -> log("admin edit", "Delete statement");
+                $body = $self -> build_admin_statements($self -> delete_statement());
+
+            } else {
+                $self -> log("admin view", "Statements");
+                $body = $self -> build_admin_statements();
+            }
+
+            # Show the admin page
+            $content = $self -> {"template"} -> load_template("admin/admin.tem", {"***tabbar***" => $self -> generate_admin_tabbar("stateadmin"),
+                                                                                  "***body***"   => $body})
+        }
 
     # User has not logged in, force them to
     } else {
