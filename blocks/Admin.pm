@@ -95,7 +95,7 @@ sub generate_admin_tabbar {
 # @param cohortid The id of the cohort to check for member sorts.
 # @return true if any of the members of the cohort have performed a sort, false
 #         otherwise.
-sub can_modify_cohort {
+sub cohort_has_sorts {
     my $self     = shift;
     my $cohortid = shift;
 
