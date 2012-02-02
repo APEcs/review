@@ -1,0 +1,36 @@
+        <script type="text/javascript" src="templates/default/admin/cohort_statement/mapping.js"></script>
+        <table class="notebox notebox-warning" id="errorbox">
+            <tr>
+                <td class="nbox-image"><img src="templates/default/images/important.png" width="48" height="48" alt="important" /></td>
+                <td class="nbox-text" id="errormsg"></td>
+            </tr>
+        </table>
+        <div class="message">
+            <h2>{L_ADMIN_COHORTSTATES_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/cohortstates.png" width="48" height="48" alt="cohorts_statements" class="fltrt" />
+                <div>{L_ADMIN_COHORTSTATES_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+                <table class="formtable fullwidth" id="mapping">
+                    <tr>
+                        <th>{L_ADMIN_COHORTSTATES_COHORTS}</th>
+                        <th>{L_ADMIN_COHORTSTATES_SET}</th>
+                        <th class="noborder">&nbsp;</th>
+                        <th>{L_ADMIN_COHORTSTATES_STATES}</th>
+                    </tr>
+                    <tr>
+                        <td class="listthin"><select name="cohorts" id="cohorts" size="12" class="statelist">
+***cohorts***
+                            </select>
+                        </td>
+                        <td class="list"><select name="setstates" id="setstates" size="12" multiple="multiple" class="statelist"></select></td>
+                        <td><div class="statebtn"><img src="templates/default/admin/images/setstatement-off.png" wifth="97" height="27" alt="set" title="{L_ADMIN_COHORTSTATES_ADD}" id="setstate" /></div>
+                            <div class="statebtn"><img src="templates/default/admin/images/delstatement-off.png" wifth="97" height="27" alt="remove" title="{L_ADMIN_COHORTSTATES_REM}" id="delstate" /></div>
+                        </td>
+                        <td class="list"><select name="availstates" id="availstates" size="12" multiple="multiple" class="statelist"></select></td>
+                    </tr>
+                </table>
+                <div id="statusbox"></div>
+            </div>
+        </div>

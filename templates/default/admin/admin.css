@@ -6,7 +6,7 @@ div#adminbar {
 
 div#adminbar span.adminbar {
     padding: 3px 10px;
-    border: 1px solid #d4d4ff
+    border: 1px solid #d4d4ff;
     margin-right: 3px;
     background-color: #f7f7ff;
 }
@@ -40,4 +40,43 @@ table#definedstats, table#genstats {
 
 table#toplog {
     width: 100%;
+    border-collapse: collapse;
+}
+
+table#mapping th {
+    color: #000000;
+    background-color:  #d4d4ff;
+    vertical-align: middle;
+    border: 1pt solid #ADB9CC;
+    padding: 0.25em 0.5em;
+}
+
+table#mapping th.noborder {
+    background-color: inherit;
+    border: none;
+}
+
+table#mapping td.list {
+    width: 40%;
+}
+
+table#mapping td.listthin {
+    width: 20%;
+}
+
+select.statelist {
+    width: 100%;
+}
+
+div#statusbox {
+    background:  url(images/spinner.gif) left center no-repeat;
+    padding-left: 28px;
+}
+
+option.locked {
+    color: #944;
+}
+
+.pointer {
+    cursor: pointer;
 }

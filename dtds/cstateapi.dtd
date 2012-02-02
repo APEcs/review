@@ -1,0 +1,9 @@
+<!ELEMENT response (cstatedata|error)>
+<!ELEMENT error (#CDATA)>
+<!ELEMENT cstatedata (setstates|availstates)>
+<!ELEMENT setstates (option*)>
+<!ELEMENT availstates (option*)>
+<!ELEMENT option (#CDATA)>
+<!ATTRLIST option
+value CDATA #IMPLIED
+title CDATA #IMPLIED >

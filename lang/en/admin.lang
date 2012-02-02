@@ -88,7 +88,7 @@ ADMIN_EDITCOHORT_DONE  = Cohort edited successfully.
 
 
 ADMIN_STATE_TITLE      = Statements
-ADMIN_STATE_INTRO      = On this page you can view the statements defined in the system. This is the 'statement pool', each cohort of students can have any number of these statements associated with it, and only the statements associated with a user's cohort will be presented to that user when they are performing a sort. Statements that have been used in one or more sorts <i>can not be edited or removed</i> - they must remain intact and unaltered to allow for meaningful comparative analysis of sorts over time.<br /><br />To edit the statements associated with each cohort, use the "Cohort &lt;&gt; Statements" tab above.
+ADMIN_STATE_INTRO      = On this page you can view the statements defined in the system. This is the 'statement pool', each cohort of students can have any number of these statements associated with it, and only the statements associated with a user's cohort will be presented to that user when they are performing a sort. Statements that have been used in one or more sorts <i>can not be edited or removed</i> - they must remain intact and unaltered to allow for meaningful comparative analysis of sorts over time.<br /><br />To edit the statements associated with each cohort, use the "Cohort Statements" tab above.
 ADMIN_STATE_ADD        = Add a statement
 ADMIN_STATE_EDIT       = Edit this statement
 ADMIN_STATE_DELETE     = Delete this statement
@@ -107,3 +107,14 @@ ADMIN_EDITSTATE_TITLE  = Edit a statement
 ADMIN_EDITSTATE_INTRO  = This form allows you to edit an existing statement in the system. Before a statement may be presented to a user, it must be associated with a cohort.<br /><br />Note that you may include basic HTML in your statements (&lt;i&gt;&lt;/i&gt;, &lt;b&gt;&lt;/b&gt;, and so on), but escaped HTML will be shown in the statments list for security - FlashQ will load and parse the HTML as you would expect, however.
 ADMIN_EDITSTATE_EDIT   = Edit statement
 ADMIN_EDITSTATE_DONE   = Statement edited successfully.
+
+ADMIN_COHORTSTATES_TITLE   = Statements for cohorts
+ADMIN_COHORTSTATES_INTRO   = Here you can view and modify the statements currently associated with each cohort. Note that, once any members of a given cohort perform a sort, you will be unable to modify the statements associated with that cohort in any way - only cohorts whose members have yet to perform any sorts may be modified.
+ADMIN_COHORTSTATES_COHORTS = Cohorts
+ADMIN_COHORTSTATES_SET     = Assigned statements
+ADMIN_COHORTSTATES_STATES  = Available statements
+ADMIN_COHORTSTATES_ADD     = Assign statement(s)
+ADMIN_COHORTSTATES_REM     = Remove statement(s)
+ADMIN_COHORTSTATES_LOCKED  = Locked
+
+ADMIN_COHORTSTATES_ERR_NOCID = No cohort id specified in request. This should not happen!
