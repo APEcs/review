@@ -105,6 +105,7 @@ sub page_display {
     print $self -> {"cgi"} -> header(-type => 'application/xml',
                                      -charset => 'utf-8');
     print Encode::encode_utf8($self -> {"template"} -> load_template("xml/xml.tem", {"***base***"  => "statements",
+                                                                                     "***dtd***"   => '',
                                                                                      "***attrs***" => ' version="1.0" htmlParse="true"',
                                                                                      "***tree***"  => $tree}));
     exit;

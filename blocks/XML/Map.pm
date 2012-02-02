@@ -105,6 +105,7 @@ sub page_display {
     print $self -> {"cgi"} -> header(-type => 'application/xml',
                                      -charset => 'utf-8');
     print $self -> {"template"} -> load_template("xml/xml.tem", {"***base***"  => "map",
+                                                                 "***dtd***"   => '',
                                                                  "***attrs***" => ' version="1.0" htmlParse="false"',
                                                                  "***tree***"  => $tree});
     exit;
