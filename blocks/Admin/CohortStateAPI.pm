@@ -31,6 +31,105 @@ use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
 
 # ============================================================================
+#  Statement movement functions
+
+
+## @method void add_statements($cohortid)
+# Add the statements requested by the user to the specified cohort. This will
+# use the contents of the 'sid' query string parameter (which may be given
+# multiple times) to determine which statements to add to the cohort.
+#
+# @param cohortid The ID of the cohort to add statements to.
+sub add_statements {
+    my $self     = shift;
+    my $cohortid = shift;
+
+    # Is the cohort editable?
+    $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOEDIT"))
+        if($self -> cohort_has_sorts($cohortid));
+
+    # Get the list of statement ids
+    my @sids = $self -> {"cgi"} -> param("sid");
+
+    # strip non-numeric values
+    my @valid_ids = grep /^\d+$/, @sids;
+
+    # Bomb if there are no ids to process
+    $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOSID"))
+        unless(scalar(@valid_ids));
+
+    # Prepare some sql needed for the insert...
+    my $stateh = $self -> {"dbh"} -> prepare("SELECT id FROM ".$self -> {"settings"} -> {"database"} -> {"statements"}."
+                                              WHERE id = ?");
+    my $checkh = $self -> {"dbh"} -> prepare("SELECT id FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_states"}."
+                                              WHERE cohort_id = ?
+                                              AND statement_id = ?");
+    my $inserth = $self -> {"dbh"} -> prepare("INSERT INTO ".$self -> {"settings"} -> {"database"} -> {"cohort_states"}."
+                                               (cohort_id, statement_id)
+                                               VALUES(?, ?)");
+    # process each statement...
+    foreach my $id (@valid_ids) {
+        # Does the statement even exist?
+        $stateh -> execute($id)
+            or $self -> generate_error_xml("FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
+
+        if($stateh -> fetchrow_arrayref()) {
+            # Is the statement already set for this cohort?
+            $checkh -> execute($cohortid, $id)
+                or $self -> generate_error_xml("FATAL: Unable to perform cohort statement lookup query: ".$self -> {"dbh"} -> errstr);
+
+            # If there is no row, the statement needs to be inserted
+            if(!$checkh -> fetchrow_arrayref()) {
+                $inserth -> execute($cohortid, $id)
+                    or $self -> generate_error_xml("FATAL: Unable to perform cohort statement insert query: ".$self -> {"dbh"} -> errstr);
+            }
+        } else {
+            $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_BADSID", {"***sid***" => $id}))
+        }
+    }
+
+    $self -> generate_success_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ADDDONE"));
+}
+
+
+## @method void remove_statements($cohortid)
+# Remove the statements requested by the user from the specified cohort. This will
+# use the contents of the 'sid' query string parameter (which may be given
+# multiple times) to determine which statements to remove from the cohort.
+#
+# @param cohortid The ID of the cohort to remove statements to.
+sub remove_statements {
+    my $self     = shift;
+    my $cohortid = shift;
+
+    # Is the cohort editable?
+    $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOEDIT"))
+        if($self -> cohort_has_sorts($cohortid));
+
+    # Get the list of statement ids
+    my @sids = $self -> {"cgi"} -> param("sid");
+
+    # strip non-numeric values
+    my @valid_ids = grep /^\d+$/, @sids;
+
+    # Bomb if there are no ids to process
+    $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOSID"))
+        unless(scalar(@valid_ids));
+
+    # Only really need one query for this...
+    my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_states"}."
+                                             WHERE cohort_id = ?
+                                             AND statement_id = ?");
+    foreach my $id (@valid_ids) {
+        $nukeh -> execute($cohortid, $id)
+            or $self -> generate_error_xml("FATAL: Unable to perform cohort statement delete query: ".$self -> {"dbh"} -> errstr);
+    }
+
+    $self -> generate_success_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_REMDONE"));
+}
+
+
+# ============================================================================
 #  Statement list generation functions
 
 ## @method $ build_set_statements($cohortid)
@@ -139,11 +238,34 @@ sub generate_error_xml {
 
     my $content = $self -> {"template"} -> load_template("xml/elem.tem", {"***elem***"    => "error",
                                                                           "***attrs***"   => '',
-                                                                          "***content***" => "$errormsg"});
+                                                                          "***content***" => $errormsg});
     # Put together the xml...
     print $self -> {"cgi"} -> header(-type => 'application/xml',
                                      -charset => 'utf-8');
     print Encode::encode_utf8($self -> {"template"} -> load_template("xml/xml.tem", {"***base***"  => "response",
+                                                                                     "***dtd***"   => '<!DOCTYPE response SYSTEM "dtds/cstateapi.dtd" >',
+                                                                                     "***attrs***" => '',
+                                                                                     "***tree***"  => $content}));
+    exit;
+}
+
+
+## @method void generate_success_xml($successmsg)
+# Generate an XML response containing an success message.
+#
+# @param successmsg The text of the success to return to the caller.
+sub generate_success_xml {
+    my $self     = shift;
+    my $successmsg = shift;
+
+    my $content = $self -> {"template"} -> load_template("xml/elem.tem", {"***elem***"    => "success",
+                                                                          "***attrs***"   => '',
+                                                                          "***content***" => $successmsg});
+    # Put together the xml...
+    print $self -> {"cgi"} -> header(-type => 'application/xml',
+                                     -charset => 'utf-8');
+    print Encode::encode_utf8($self -> {"template"} -> load_template("xml/xml.tem", {"***base***"  => "response",
+                                                                                     "***dtd***"   => '<!DOCTYPE response SYSTEM "dtds/cstateapi.dtd" >',
                                                                                      "***attrs***" => '',
                                                                                      "***tree***"  => $content}));
     exit;
@@ -171,14 +293,21 @@ sub page_display {
              $content = $sessuser;
         } else {
 
-            # Has the caller requested the statement lists?
-            if(defined($self -> {"cgi"} -> param("statements"))) {
-                my $cohortid = is_defined_numeric($self -> {"cgi"}, "id");
-                if($cohortid) {
+            # Get the cohort id, this should always be present
+            my $cohortid = is_defined_numeric($self -> {"cgi"}, "id");
+            if($cohortid) {
+
+                # Has the caller requested the statement lists?
+                if(defined($self -> {"cgi"} -> param("statements"))) {
                     $self -> generate_statements_xml($cohortid);
-                } else {
-                    $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOCID"));
+                } elsif(defined($self -> {"cgi"} -> param("add"))) {
+                    $self -> add_statements($cohortid);
+                }  elsif(defined($self -> {"cgi"} -> param("remove"))) {
+                    $self -> remove_statements($cohortid);
                 }
+
+            } else {
+                $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOCID"));
             }
         }
 

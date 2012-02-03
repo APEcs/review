@@ -19,19 +19,31 @@ function moveStatement(fromList, toList, mode) {
     var sel = fromList.selectedIndex;
 
     if(sel != -1 && mode != "disabled") {
-        // Walk all the options in the list
-        sel = 0;
-        while(sel < fromList.options.length) {
-            if(fromList.options[sel].selected) {
-                // Move the item, do not increment pos as the current item will
-                // be removed, dropping down the next.
-                exchangeOption(fromList, sel, toList);
-            } else {
-                ++sel;
+
+        // Need to get the cohort id too...
+        if($('cohorts').selectedIndex != -1) {
+            var cid = $('cohorts').options[$('cohorts').selectedIndex].value;
+
+            if(cid) {
+                sel = 0;
+                var idlist = mode; // Stick the mode at the start of the id list 
+                while(sel < fromList.options.length) {
+                    if(fromList.options[sel].selected) {
+                        // Record the id of the statement to move
+                        idlist += "&sid="+fromList.options[sel].value;
+                        
+                        // Move the item, do not increment pos as the current item will
+                        // be removed, dropping down the next.
+                        exchangeOption(fromList, sel, toList);
+                    } else {
+                        ++sel;
+                    }
+                }
+
+                // do AJAX to move the item...
+                moveReq.send("block=cstateapi&id="+cid+"&"+idlist);
             }
         }
-
-        // do AJAX to move the item...
     }
 }
 

@@ -116,5 +116,9 @@ ADMIN_COHORTSTATES_STATES  = Available statements
 ADMIN_COHORTSTATES_ADD     = Assign statement(s)
 ADMIN_COHORTSTATES_REM     = Remove statement(s)
 ADMIN_COHORTSTATES_LOCKED  = Locked
+ADMIN_COHORTSTATES_ADDDONE = Statement addition successful.
+ADMIN_COHORTSTATES_REMDONE = Statement removal successful.
 
-ADMIN_COHORTSTATES_ERR_NOCID = No cohort id specified in request. This should not happen!
+ADMIN_COHORTSTATES_ERR_NOCID  = No cohort id specified in request. This should not happen!
+ADMIN_COHORTSTATES_ERR_NOSID  = No valid statement ids were provided, unable to process request.
+ADMIN_COHORTSTATES_ERR_BADSID = Unable to find statement ***sid*** in the database. Aborting request.
