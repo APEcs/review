@@ -391,7 +391,7 @@ sub build_sort_grid {
         $sortrows .= $self -> {"template"} -> load_template("sort/emptyrow.tem") if($row == 2);
 
         for(my ($col, $tem) = ($griddata -> {"ranges"} -> {"mincol"}, ""); $col <= $griddata -> {"ranges"} -> {"maxcol"}; ++$col) {
-            next if($griddata -> {$col} -> {"rows"} -> [$row] -> {"skip"});
+            next if($griddata -> {$col} -> {"rows"} -> [$row] && $griddata -> {$col} -> {"rows"} -> [$row] -> {"skip"});
 
             # Pick the template based on the row number (FIXME: Find a less sucky way to do this...)
             if($row == 0) {
