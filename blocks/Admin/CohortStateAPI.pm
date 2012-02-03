@@ -67,6 +67,9 @@ sub add_statements {
     my $inserth = $self -> {"dbh"} -> prepare("INSERT INTO ".$self -> {"settings"} -> {"database"} -> {"cohort_states"}."
                                                (cohort_id, statement_id)
                                                VALUES(?, ?)");
+
+    $self -> log("admin add", "Adding statements to cohort $cohortid: ".join(",", @valid_ids));
+
     # process each statement...
     foreach my $id (@valid_ids) {
         # Does the statement even exist?
@@ -115,6 +118,8 @@ sub remove_statements {
     # Bomb if there are no ids to process
     $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOSID"))
         unless(scalar(@valid_ids));
+
+    $self -> log("admin delete", "Removing statements from cohort $cohortid: ".join(",", @valid_ids));
 
     # Only really need one query for this...
     my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"cohort_states"}."
@@ -204,6 +209,8 @@ sub generate_statements_xml {
     my $self = shift;
     my $cohortid = shift;
 
+    $self -> log("admin view", "Fetching cohort statement list");
+
     # Can this cohort be edited?
     my $disabled = $self -> cohort_has_sorts($cohortid) ? ' modify="disabled"' : '';
 
@@ -235,6 +242,8 @@ sub generate_statements_xml {
 sub generate_error_xml {
     my $self     = shift;
     my $errormsg = shift;
+
+    $self -> log("admin error", "CohortStateAPI error = $errormsg");
 
     my $content = $self -> {"template"} -> load_template("xml/elem.tem", {"***elem***"    => "error",
                                                                           "***attrs***"   => '',
@@ -296,7 +305,6 @@ sub page_display {
             # Get the cohort id, this should always be present
             my $cohortid = is_defined_numeric($self -> {"cgi"}, "id");
             if($cohortid) {
-
                 # Has the caller requested the statement lists?
                 if(defined($self -> {"cgi"} -> param("statements"))) {
                     $self -> generate_statements_xml($cohortid);
@@ -307,6 +315,8 @@ sub page_display {
                 }
 
             } else {
+                $self -> log("admin error", "CohortStateAPI call with no cohort id");
+
                 $self -> generate_error_xml($self -> {"template"} -> replace_langvar("ADMIN_COHORTSTATES_ERR_NOCID"));
             }
         }
