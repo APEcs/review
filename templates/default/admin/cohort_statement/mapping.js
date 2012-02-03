@@ -13,6 +13,15 @@ function showErrorMessage(message) {
 }
 
 
+/** Move statements from one list to another. This will move any selected statements
+ *  in 'fromList' into 'toList', and tells the API that the move has been requested
+ *  (passing the specified 'mode' to the API so that it can process the move as
+ *  appropriate.
+ * 
+ * @param fromList The select element to remove selected items from.
+ * @param toList   The select element to move items to.
+ * @param mode     The move mode, should be 'add' or 'remove' as appropriate.
+ */
 function moveStatement(fromList, toList, mode) {
     // selectedIndex only gives the first selection... but it's a quick way to
     // tell that there *are* any selections...
@@ -147,6 +156,7 @@ window.addEvent('domready', function() {
         onFailure: function(){
             $('statusbox').dissolve();
             showErrorMessage('Unable to process AJAX request.');
+            updateStatementLists(); // force an update so the UI is consistent with the database.
         }
     });
 
