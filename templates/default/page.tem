@@ -40,15 +40,6 @@
 
 <body class="review">
 <div id="container">
-    <div id="header">
-        <div id="siteLogo">
-            <h1><a href="index.cgi">{L_PAGE_TITLE}</a></h1>
-            <div id="siteSub">{L_PAGE_SUBTITLE}</div>
-        </div>
-        <div id="topright">
-            <ul>***topright***</ul>
-        </div>
-    </div> <!-- #header -->
     <div id="mainContent">
         <table class="ienotebox notebox-warning iewarning">
             <tr>
@@ -61,6 +52,15 @@
 
     <div class="cleared"></div>
 
+    <div id="header">
+        <div id="siteLogo">
+            <h1><a href="index.cgi">{L_PAGE_TITLE}</a></h1>
+            <div id="siteSub">{L_PAGE_SUBTITLE}</div>
+        </div>
+    </div> <!-- #header -->
+    <div id="topright">
+        <ul>***topright***</ul>
+    </div>
     <div id="footer" class="printhide">
         <div>
             <div class="small center">

@@ -85,31 +85,33 @@ body  {
     border-bottom: 1px solid #aaa;
 }
 
-#header #topright {
+#topright {
+  position: absolute;
+  top: 0px;
+  right: 0px;
   text-align: right;
-  float: right;
-  margin: 5px 0 0 0;
+  margin: 5px 15px 0 0;
   width: 550px;
 }
 
-#header #topright ul {
+#topright ul {
   list-style: none;
   padding: 0;
   margin: 0;
   }
 
-#header #topright li {
+#topright li {
   font-size: 9pt;
   display: inline;
   }
 
-#header #topright li a {
+#topright li a {
   font-size: 9pt;
   padding: 0 0 0 1.5em;
   text-decoration: none;
   }
 
-#header #topright li a:hover {
+#topright li a:hover {
   text-decoration: underline;
   }
 
@@ -517,6 +519,7 @@ input#dosort {
     top: 0;
     margin: 0px auto;
     padding-top: 80px;
+
 }
 
 ul.sorthist {
