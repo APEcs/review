@@ -320,7 +320,7 @@ sub build_sort_data {
     my $griddata = { "ranges" => {} };
     while(my $maprow = $maph -> fetchrow_hashref()) {
         $griddata -> {$maprow -> {"flashq_id"}} = { "count"  => $maprow -> {"count"} };
-        $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ undef,
+        $griddata -> {$maprow -> {"flashq_id"}} -> {"rows"} = [ { "skip"      => 1 },
                                                                 { "colour"    => $maprow -> {"colour"},
                                                                   "shorttext" => $maprow -> {"flashq_id"} },
                                                               ];
@@ -344,8 +344,15 @@ sub build_sort_data {
         unless(scalar(keys(%{$griddata})));
 
     # Add the notes for the minimum and maximum columns
+    $griddata -> {"0"} -> {"rows"} -> [0] = undef;
     $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_LEASTLIKE");
-    $griddata -> {$griddata -> {"ranges"} -> {"maxcol"}} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
+    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"colspan"}   = $griddata -> {"ranges"} -> {"maxcol"};
+    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"skip"}      = 0;
+    $griddata -> {$griddata -> {"ranges"} -> {"mincol"}} -> {"rows"} -> [0] -> {"align"}     = " left";
+    $griddata -> {"1"} -> {"rows"} -> [0] -> {"shorttext"} = $self -> {"template"} -> replace_langvar("SORTGRID_MOSTLIKE");
+    $griddata -> {"1"} -> {"rows"} -> [0] -> {"colspan"}   = $griddata -> {"ranges"} -> {"maxcol"};
+    $griddata -> {"1"} -> {"rows"} -> [0] -> {"skip"}      = 0;
+    $griddata -> {"1"} -> {"rows"} -> [0] -> {"align"}     = " right";
 
     # Pull in the actual data
     $self -> get_sort_data($sortid, $griddata);
@@ -384,6 +391,8 @@ sub build_sort_grid {
         $sortrows .= $self -> {"template"} -> load_template("sort/emptyrow.tem") if($row == 2);
 
         for(my ($col, $tem) = ($griddata -> {"ranges"} -> {"mincol"}, ""); $col <= $griddata -> {"ranges"} -> {"maxcol"}; ++$col) {
+            next if($griddata -> {$col} -> {"rows"} -> [$row] -> {"skip"});
+
             # Pick the template based on the row number (FIXME: Find a less sucky way to do this...)
             if($row == 0) {
                 $tem = $templates -> {"label"} -> {defined($griddata -> {$col} -> {"rows"} -> [$row]) ? "set" : "unset"};
@@ -396,6 +405,8 @@ sub build_sort_grid {
             $sortcols .= $self -> {"template"} -> process_template($tem, {"***data***"     => $griddata -> {$col} -> {"rows"} -> [$row] -> {"shorttext"},
                                                                           "***fulldata***" => $griddata -> {$col} -> {"rows"} -> [$row] -> {"fulltext"},
                                                                           "***colour***"   => $griddata -> {$col} -> {"rows"} -> [$row] -> {"colour"},
+                                                                          "***colspan***"  => $griddata -> {$col} -> {"rows"} -> [$row] -> {"colspan"},
+                                                                          "***align***"    => $griddata -> {$col} -> {"rows"} -> [$row] -> {"align"},
                                                                    });
 
         }

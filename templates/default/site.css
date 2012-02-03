@@ -530,7 +530,6 @@ table.sort {
 
 table.sort th.sortlabel {
     color: #777;
-    text-align: center;
     font-size: x-small;
 }
 
