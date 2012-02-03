@@ -1,4 +1,5 @@
-<!ELEMENT response (cstatedata|error)>
+<!ELEMENT response (cstatedata|success|error)>
+<!ELEMENT success (#CDATA)>
 <!ELEMENT error (#CDATA)>
 <!ELEMENT cstatedata (setstates|availstates)>
 <!ELEMENT setstates (option*)>
