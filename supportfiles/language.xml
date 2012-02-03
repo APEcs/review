@@ -3,9 +3,9 @@
   <item id="btnContinue">Continue...</item>
   <item id="btnclose">Close</item>
   <item id="btnHelp">Help me!</item>
-  <item id="btnAgreement">Most Like Me</item>
+  <item id="btnAgreement">Most Like How I Think</item>
   <item id="btnNeutral">Neutral</item>
-  <item id="btnDisagreement">Most Unlike Me</item>
+  <item id="btnDisagreement">Most Unlike How I Think</item>
   <item id="btnTransfer">Submit data</item>
   <item id="btnMail">Send via email</item>
   <item id="btnPrint">Print data</item>
