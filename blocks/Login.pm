@@ -176,9 +176,18 @@ sub generate_loggedin {
     $warning = $self -> {"template"} -> load_template("blocks/login_warning.tem", {"***message***" => $self -> {"session"} -> {"auth"} -> {"lasterr"}})
         if($self -> {"session"} -> {"auth"} -> {"lasterr"});
 
-    my $content = $self -> {"template"} -> load_template("blocks/login_done.tem", {"***url***"     => $url,
-                                                                                   "***warning***" => $warning,
-                                                                                   "***return***"  => $self -> {"template"} -> replace_langvar("LOGIN_REDIRECT", {"***url***" => $url})});
+    my $content;
+    # If any warnings were encountered, send back a different logged-in page to avoid
+    # confusing users. Could do this all in one with ?:, but this is more readable...
+    if(!$warning) {
+        $self -> {"template"} -> load_template("blocks/login_done.tem", {"***url***"     => $url,
+                                                                         "***warning***" => "",
+                                                                         "***return***"  => $self -> {"template"} -> replace_langvar("LOGIN_REDIRECT", {"***url***" => $url})});
+    } else {
+        $self -> {"template"} -> load_template("blocks/login_done_noredirect.tem", {"***url***"     => $url,
+                                                                                    "***warning***" => $warning,
+                                                                                    "***return***"  => $self -> {"template"} -> replace_langvar("LOGIN_CONTLINK", {"***url***" => $url})});
+    }
 
     # return the title, content, and extraheader. If the warning is set, do not include an autoredirect.
     return ($self -> {"template"} -> replace_langvar("LOGIN_TITLE"),
