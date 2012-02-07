@@ -74,8 +74,7 @@ sub truncate_words {
 sub fix_colour {
     my $colour = shift;
 
-    $colour =~ s/^0x//;
-    $colour =~ s/^#//;
+    $colour =~ s/^(0x|#)//;
 
     return $colour;
 }
