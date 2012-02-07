@@ -88,7 +88,7 @@ ADMIN_EDITCOHORT_DONE  = Cohort edited successfully.
 
 
 ADMIN_STATE_TITLE      = Statements
-ADMIN_STATE_INTRO      = On this page you can view the statements defined in the system. This is the 'statement pool', each cohort of students can have any number of these statements associated with it, and only the statements associated with a user's cohort will be presented to that user when they are performing a sort. Statements that have been used in one or more sorts <i>can not be edited or removed</i> - they must remain intact and unaltered to allow for meaningful comparative analysis of sorts over time.<br /><br />To edit the statements associated with each cohort, use the "Cohort Statements" tab above.
+ADMIN_STATE_INTRO      = On this page you can view the statements defined in the system. This is the 'statement pool', each cohort of students can have any number of these statements associated with it, and only the statements associated with a user's cohort will be presented to that user when they are performing a sort. Statements that have been used in one or more completed sorts <i>can not be edited or removed</i> - they must remain intact and unaltered to allow for meaningful comparative analysis of sorts over time.<br /><br />To edit the statements associated with each cohort, use the "Cohort Statements" tab above.
 ADMIN_STATE_ADD        = Add a statement
 ADMIN_STATE_EDIT       = Edit this statement
 ADMIN_STATE_DELETE     = Delete this statement
@@ -122,3 +122,16 @@ ADMIN_COHORTSTATES_REMDONE = Statement removal successful.
 ADMIN_COHORTSTATES_ERR_NOCID  = No cohort id specified in request. This should not happen!
 ADMIN_COHORTSTATES_ERR_NOSID  = No valid statement ids were provided, unable to process request.
 ADMIN_COHORTSTATES_ERR_BADSID = Unable to find statement ***sid*** in the database. Aborting request.
+
+ADMIN_FIELDS_TITLE     = Form field definitions
+ADMIN_FIELDS_INTRO     = On this page you can view the form fields defined in the system. This is the 'form field pool', each cohort of students can have any number of these form fields associated with it, and only the form fields associated with a user's cohort will be presented to that user when they are finishing a sort. Form fields that have been used in one or more completed sorts <i>can not be edited or removed</i> - they must remain intact and unaltered to allow for meaningful comparative analysis of sorts over time.<br /><br />To edit the form fields associated with each cohort, use the "Cohort Form Fields" tab above.
+ADMIN_FIELD_ADD        = Add a form field
+ADMIN_FIELD_EDIT       = Edit this form field
+ADMIN_FIELD_DELETE     = Delete this form field
+ADMIN_FIELD_NOEDIT     = One or more sorts have been performed that include this form field, so it may not be edited.
+ADMIN_FIELD_LABEL      = Label
+ADMIN_FIELD_NOTE       = Note
+ADMIN_FIELD_TYPE       = Type
+ADMIN_FIELD_REQD       = Required
+ADMIN_FIELD_LEN        = Max len
+ADMIN_FIELD_LIMIT      = Restrict
