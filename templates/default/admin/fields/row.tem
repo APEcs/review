@@ -1,0 +1,9 @@
+<tr>
+    <td class="nowrap">***label***</td>
+    <td class="nowrap">***note***</td>
+    <td>***type***</td>
+    <td>***required***</td>
+    <td>***maxlen***</td>
+    <td>***limit***</td>
+    <td class="nowrap">***ops***</td>
+</tr>

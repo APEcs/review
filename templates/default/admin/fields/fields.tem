@@ -1,0 +1,31 @@
+***error***
+        <div class="message">
+            <h2>{L_ADMIN_FIELDS_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/fields.png" width="48" height="48" alt="formfields" class="fltrt" />
+                <div>{L_ADMIN_FIELDS_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+***paginate***
+                <table class="zebra fullwidth" id="fields">
+                    <tr>
+                        <th class="nowrap fullwidth">{L_ADMIN_FIELD_LABEL}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_NOTE}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_TYPE}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_REQD}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_LEN}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_LIMIT}</th>
+                        <th>&nbsp;</td>
+                    </tr>
+***fields***
+                    <tr>
+                        <th colspan="6" style="text-align: right">
+                            <input type="submit" name="addfield" value="{L_ADMIN_FIELD_ADD}" />
+                            <input type="hidden" name="block" value="fields" />
+                        </th>
+                    </tr>
+                </table>
+***paginate***
+                </form>
+            </div>
+        </div>
