@@ -204,6 +204,9 @@ sub build_admin_editstatement {
             unless(ref($args) eq "HASH");
     }
 
+    # Avoid hash access warnings
+    $args = {} if(!defined($args));
+
     my ($page, $maxpage) = $self -> get_page();
 
     return $self -> {"template"} -> load_template("admin/statements/".($isadd ? "add" : "edit").".tem",

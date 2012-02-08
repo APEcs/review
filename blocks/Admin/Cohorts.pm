@@ -206,6 +206,9 @@ sub build_admin_editcohort {
             unless(ref($args) eq "HASH");
     }
 
+    # Avoid hash access warnings
+    $args = {} if(!defined($args));
+
     # Fix up formatting for the user-visible input boxes.
     # FIXME: This only works provided the locale is set to en-GB. Can datepicker be set to do this
     #        automagically based on the current locale?
