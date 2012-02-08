@@ -104,6 +104,7 @@ var Popup = new Class({
                            top: relCoords['y'] + this.options.offset['y'] };
         
         this.setPopupPos(element, popupPos);
+        element.hide();
 
         return element;
     },
@@ -314,10 +315,10 @@ function buildpopup(element, hDel, sDel, xOff, yOff, hEl, sys)
 window.addEvent('domready', function() { 
     // Go through each popup span in the document replacing it with a popup.
     $$('span.twpopup').each(function(element,index) {
-        buildpopup(element, 2000, 500, 16, 0, document.getElementById('content'), 0);
+        buildpopup(element, 2000, 500, 16, 0, document.body, 0);
     });
 
     $$('span.twpopup-sys').each(function(element,index) {
-        buildpopup(element, 2000, 500, 16, 0, document.getElementById('content'), 1);
+        buildpopup(element, 2000, 500, 16, 0, document.body, 1);
     });
 });

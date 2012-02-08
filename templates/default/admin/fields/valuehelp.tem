@@ -1,0 +1,7 @@
+<p>{L_ADMIN_FIELD_HELPINTRO}</p>
+<ul class="help">
+<li>{L_ADMIN_FIELD_HELPTEXT}</li>
+<li>{L_ADMIN_FIELD_HELPRADIO}</li>
+<li>{L_ADMIN_FIELD_HELPSELECT}</li>
+<li>{L_ADMIN_FIELD_HELPRATING}</li>
+</ul>

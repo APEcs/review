@@ -12,6 +12,8 @@
                         <th class="nowrap fullwidth">{L_ADMIN_FIELD_LABEL}</th>
                         <th class="nowrap">{L_ADMIN_FIELD_NOTE}</th>
                         <th class="nowrap">{L_ADMIN_FIELD_TYPE}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_VAL}</th>
+                        <th class="nowrap">{L_ADMIN_FIELD_SCALE}</th>
                         <th class="nowrap">{L_ADMIN_FIELD_REQD}</th>
                         <th class="nowrap">{L_ADMIN_FIELD_LEN}</th>
                         <th class="nowrap">{L_ADMIN_FIELD_LIMIT}</th>
@@ -19,7 +21,7 @@
                     </tr>
 ***fields***
                     <tr>
-                        <th colspan="6" style="text-align: right">
+                        <th colspan="9" style="text-align: right">
                             <input type="submit" name="addfield" value="{L_ADMIN_FIELD_ADD}" />
                             <input type="hidden" name="block" value="fields" />
                         </th>

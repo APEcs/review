@@ -1,7 +1,9 @@
 <tr>
-    <td class="nowrap">***label***</td>
-    <td class="nowrap">***note***</td>
+    <td class="nowrap" title="***labelfull***">***label***</td>
+    <td class="nowrap" title="***notefull***">***note***</td>
     <td>***type***</td>
+    <td class="nowrap" title="***valfull***">***value***</td>
+    <td class="nowrap" title="***scalefull***">***scale***</td>
     <td>***required***</td>
     <td>***maxlen***</td>
     <td>***limit***</td>

@@ -655,3 +655,7 @@ img.hotimg {
 .fullwidth {
     width: 100%;
 }
+
+ul.help li {
+    padding-bottom: 1em;
+}
