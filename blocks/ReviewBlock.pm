@@ -60,7 +60,7 @@ sub truncate_words {
     $len -= 3;
 
     my $trunc = substr($data, 0, $len);
-    $trunc =~ s/^(.{0,$len})[-_\s].*$/$1/;
+    $trunc =~ s/^(.{0,$len})[-_;:\.,\?!\s].*$/$1/;
 
     return $trunc."...";
 }
