@@ -175,6 +175,12 @@ body  {
     display: none;
 }
 
+code, tt {
+    font-face: fixed;
+    color: #a96300;
+    background: inherit !important;
+}
+
 table.notebox {
     margin: 0px 10%;   /* 10% = Will not overlap with other elements */
     border: 1px solid #aaa;
