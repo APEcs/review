@@ -26,7 +26,7 @@ var Popup = new Class({
             // uses the long version of fading in, as fade('in')
             // may not work properly on initial load. NFC why this is.
             // popup.get('tween').start('opacity', 0, 1);
-            popup.fade('in');
+            popup.setStyle('display', 'block').fade('in');
         },
         onHide: function(popup){
             //popup.get('tween').start('opacity', 1, 0);
@@ -60,7 +60,7 @@ var Popup = new Class({
         this.timer = $clear(this.timer);
 
         // Add the new div to the document
-        this.options.haltElem.grab(this.options.popup, 'after');
+        this.options.haltElem.grab(this.options.popup, 'bottom');
 
         core.dispose();
 
@@ -104,7 +104,6 @@ var Popup = new Class({
                            top: relCoords['y'] + this.options.offset['y'] };
         
         this.setPopupPos(element, popupPos);
-        element.hide();
 
         return element;
     },
@@ -315,10 +314,10 @@ function buildpopup(element, hDel, sDel, xOff, yOff, hEl, sys)
 window.addEvent('domready', function() { 
     // Go through each popup span in the document replacing it with a popup.
     $$('span.twpopup').each(function(element,index) {
-        buildpopup(element, 2000, 500, 16, 0, document.body, 0);
+        buildpopup(element, 2000, 500, 16, 0, $('container'), 0);
     });
 
     $$('span.twpopup-sys').each(function(element,index) {
-        buildpopup(element, 2000, 500, 16, 0, document.body, 1);
+        buildpopup(element, 2000, 500, 16, 0, $('container'), 1);
     });
 });
