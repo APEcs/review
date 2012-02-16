@@ -57,7 +57,7 @@ sub get_cohort_options {
 
         $options .= '<option value="'.$cohort -> [0].'"';
         $options .= ' class="locked"' if($has_sorts);
-        $options .= ' selected="selected"' if($cohort -> [0] == $defaultid);
+        $options .= ' selected="selected"' if($defaultid && $cohort -> [0] == $defaultid);
         $options .= '>'.$cohort -> [1];
         $options .= $locked if($has_sorts);
         $options .= "</option>\n";
