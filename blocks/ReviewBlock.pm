@@ -585,7 +585,7 @@ sub build_sort_summaries {
     while(my $summary = $summaryh -> fetchrow_hashref()) {
         $entries .= $self -> {"template"} -> process_template($entrytem, {"***title***"     => $self -> {"template"} -> process_template($titles[$donefirst], {"***stored***" => $self -> {"template"} -> format_time($summary -> {"storetime"})}),
                                                                           "***summary***"   => text_to_html($summary -> {"summary"}),
-                                                                          "***editopt***"   => $editopt[$donefirst],
+                                                                          "***editopt***"   => $self -> {"template"} -> process_template($editopt[$donefirst], {"***id***" => $sortid}),
                                                                           "***printable***" => $printable[$donefirst]});
 
         if(!$donefirst) {
@@ -597,7 +597,7 @@ sub build_sort_summaries {
         }
     }
 
-    $entries = $self -> {"template"} -> load_template("summary/noentries_".($firstonly ? "noedit" : "edit").".tem")
+    $entries = $self -> {"template"} -> load_template("summary/noentries_".($firstonly ? "noedit" : "edit").".tem", {"***id***" => $sortid })
         if(!$entries);
 
     return $self -> {"template"} -> load_template("summary/entries.tem", {"***summaries***"    => $entries,

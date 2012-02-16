@@ -1,5 +1,3 @@
-var editbox;
-
 window.addEvent('domready', function() {
     var accordion = new Fx.Accordion($$('.acc-title'),$$('.acc-content'), {
             onActive: function(toggler) { toggler.setStyles({'background-color': '#d4d4ff',
