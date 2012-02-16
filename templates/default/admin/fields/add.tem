@@ -38,7 +38,7 @@
                     </td>
                 </tr>
                 <tr><td class="label">{L_ADMIN_FIELD_LIMIT}:</td>
-                    <td class="field fullwidth"><input type="text" name="restricted" id="restricted" size="30" maxlength="80" value="***restricted***" />
+                    <td class="field fullwidth"><input type="text" name="restricted" id="restricted" size="30" maxlength="80" value="***restricted***" />&nbsp;{L_ADMIN_FIELD_LIMNOTE}
                     </td>
                 </tr>
                 <tr><td colspan="2" style="text-align: right"><input type="submit" name="doadd" value="{L_ADMIN_ADDFIELD_ADD}" />&nbsp;<input type="submit" name="cancel" value="{L_ADMIN_ADDFIELD_CANCEL}" />

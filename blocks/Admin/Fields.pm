@@ -238,6 +238,86 @@ sub build_admin_editfield {
 }
 
 
+## @method private @ validate_edit_field($isadd)
+# Determine whether the value specified by the user in a field add/edit
+# form are valid.
+#
+# @param isadd Set to true when called as part of an add process. Checks
+#              that the field is valid and ediable are skipped if set.
+# @return A reference to a hash of values submitted by the user, and a
+#         string containing any error messages.
+sub validate_edit_field {
+    my $self  = shift;
+    my $isadd = shift;
+    my $args  = {};
+    my ($error, $errors, $field);
+
+    my $errtem = $self -> {"template"} -> load_template("error_entry.tem");
+
+    # If this isn't an add, check that the field is valid and editable
+    if(!$isadd) {
+        $field = $self -> get_editable_field();
+        return ($args, $self -> {"template"} -> load_template("blocks/error_box.tem",
+                                                              {"***message***" => $field}))
+                unless(ref($field) eq "HASH");
+
+        # Store the id for use later
+        $args -> {"id"} = $field -> {"id"};
+    }
+
+    # Deal with the simple fields first - label and note are just straight validates
+    ($args -> {"label"}, $error) = $self -> validate_string("label", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_LABEL"),
+                                                                      "required" => 1,
+                                                                      "maxlen"   => 128});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    ($args -> {"note"}, $error) = $self -> validate_string("note", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_NOTE"),
+                                                                    "required" => 0,
+                                                                    "maxlen"   => 255});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    ($args -> {"scale"}, $error) = $self -> validate_string("scale", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_SCALE"),
+                                                                      "required" => 0});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # Required is either set or not...
+    $args -> {"required"} = $self -> {"cgi"} -> param("required") ? 1 : 0;
+
+    # Just let restricted through as-is - trying to validate it would be insane,
+    # and Flash should deal with pretty much anything in here for us anyway.
+    ($args -> {"restricted"}, $error) = $self -> validate_string("restricted", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_LIMIT"),
+                                                                                "required" => 0,
+                                                                                "maxlen"   => 80});
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # Maximum length, if specified, must be numeric
+    ($args -> {"maxlength"}, $error) = $self -> validate_string("maxlength", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_LEN"),
+                                                                              "required" => 0,
+                                                                              "maxlen"   => 6,
+                                                                              "formattest" => '^\d+$',
+                                                                              "formatdesc" => $self -> {"template"} -> replace_langvar("ADMIN_ERR_ONLYDIGITS")
+                                                                });
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+    # Check that type is valid...
+    my $values = $self -> get_enum_values($self -> {"settings"} -> {"database"} -> {"formfields"}, "type");
+    die_log($self -> {"cgi"} -> remote_host(), $values) unless(ref($values) eq "ARRAY");
+
+    ($args -> {"type"}, $error) = $self -> validate_options("type", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_TYPE"),
+                                                                     "required" => 1,
+                                                                     "source"   => $values });
+    $errors .= $self -> {"template"} -> process_template($errtem, {"***error***" => $error})
+        if($error);
+
+
+    return ($args, $errors);
+}
+
 # ============================================================================
 #  Field listing
 
