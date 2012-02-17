@@ -259,7 +259,7 @@ sub _ssh_valid_user {
         # If a userdn has been obtained, check that the password for it is valid
         if($userdn) {
             # Open a new connection, as the server may not allow reuse.
-            my $vldap = Net::LDAPS -> new();
+            my $vldap = Net::LDAPS -> new($self -> {"settings"} -> {"config"} -> {"LDAPCohortAuth:server"});
 
             # Do the actual login...
             $mesg = $vldap -> bind($userdn, password => $password);
