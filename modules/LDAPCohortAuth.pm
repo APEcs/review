@@ -223,7 +223,7 @@ sub _get_user_byusername {
 # @param password The password to check against the server.
 # @return true if the login is valid, false otherwise. If the return value is false,
 #         $self -> {"lasterr"} contains the response from the ssh server.
-sub _ssh_valid_user {
+sub _ldap_valid_user {
     my $self     = shift;
     my $username = shift;
     my $password = shift;
