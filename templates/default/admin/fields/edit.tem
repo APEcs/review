@@ -1,0 +1,54 @@
+***error***
+        <div class="message">
+            <h2>{L_ADMIN_ADDFIELD_TITLE}</h2>
+            <div class="mbody">
+                <img src="templates/default/admin/images/addfield.png" width="48" height="48" alt="addfield" class="fltrt" />
+                <div>{L_ADMIN_ADDFIELD_INTRO}</div>
+                <div class="cleared"></div>
+                <form action="index.cgi" method="post">
+                <table class="formtable padover">
+                <tr><td class="label required">{L_ADMIN_FIELD_LABEL}:</td>
+                    <td class="field fullwidth"><input type="text" name="label" id="label" size="120" maxlength="128" value="***label***" />
+                    </td>
+                </tr>
+                <tr><td class="label">{L_ADMIN_FIELD_NOTE}:</td>
+                    <td class="field fullwidth"><input type="text" name="note" id="note" size="120" maxlength="255" value="***note***" />
+                    </td>
+                </tr>
+                <tr><td class="label required">{L_ADMIN_FIELD_TYPE}:</td>
+                    <td class="field fullwidth"><select id="type" name="type">
+***type***
+                                                </select>&nbsp;***help***
+                    </td>
+                </tr>
+                <tr><td class="label top">{L_ADMIN_FIELD_VAL}:</td>
+                    <td class="field fullwidth"><textarea name="note" id="note" cols="120" rows="6">***value***</textarea>
+                    </td>
+                </tr>
+                <tr><td class="label top">{L_ADMIN_FIELD_SCALE}:</td>
+                    <td class="field fullwidth"><input type="text" name="scale" id="scale" size="60" maxlength="255" value="***scale***" />&nbsp;{L_ADMIN_FIELD_SCALENOTE}
+                    </td>
+                </tr>
+                <tr><td class="label">{L_ADMIN_FIELD_REQD}:</td>
+                    <td class="field fullwidth"><input type="checkbox" name="required" id="required" ***required*** />
+                    </td>
+                </tr>
+                <tr><td class="label">{L_ADMIN_FIELD_LEN}:</td>
+                    <td class="field fullwidth"><input type="text" name="maxlength" id="maxlength" size="6" maxlength="6" value="***maxlength***" />
+                    </td>
+                </tr>
+                <tr><td class="label">{L_ADMIN_FIELD_LIMIT}:</td>
+                    <td class="field fullwidth"><input type="text" name="restricted" id="restricted" size="30" maxlength="80" value="***restricted***" />&nbsp;{L_ADMIN_FIELD_LIMNOTE}
+                    </td>
+                </tr>
+                <tr><td colspan="2" style="text-align: right"><input type="submit" name="doedit" value="{L_ADMIN_EDITFIELD_EDIT}" />&nbsp;<input type="submit" name="cancel" value="{L_ADMIN_ADDFIELD_CANCEL}" />
+                    <input type="hidden" name="page"  value="***page***" />
+                    <input type="hidden" name="id" id="id" value="***id***" />
+                    <input type="hidden" name="block" value="fields" />
+                    </td>
+                </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+
