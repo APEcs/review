@@ -228,7 +228,7 @@ sub generate_statements_xml {
     print $self -> {"cgi"} -> header(-type => 'application/xml',
                                      -charset => 'utf-8');
     print Encode::encode_utf8($self -> {"template"} -> load_template("xml/xml.tem", {"***base***"  => "response",
-                                                                                     "***dtd***"   => '<!DOCTYPE response SYSTEM "dtds/cstateapi.dtd" >',
+                                                                                     "***dtd***"   => '<!DOCTYPE response PUBLIC "dtds/cstateapi.dtd" >',
                                                                                      "***attrs***" => '',
                                                                                      "***tree***"  => $content}));
     exit;
