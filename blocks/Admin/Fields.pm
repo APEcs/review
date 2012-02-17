@@ -318,6 +318,42 @@ sub validate_edit_field {
     return ($args, $errors);
 }
 
+
+## @method private $ add_field()
+# Attempt to add a form field to the system form field pool.
+#
+# @return A string containing the page content to return to the user.
+sub add_field {
+    my $self = shift;
+
+    # Determine whether the submission is valid
+    my ($args, $errors) = $self -> validate_edit_field(1);
+
+    # If there are any errors, report them and send the form back.
+    return $self -> build_admin_fields(1, $args, $errors)
+        if($errors);
+
+    local $Data::Dumper::Terse = 1;
+    $self -> log("admin edit", "Adding new field: ".Dumper($args));
+
+    # No errors - do the insert...
+    my $newh = $self -> {"dbh"} -> prepare("INSERT INTO ".$self -> {"settings"} -> {"database"} -> {"formfields"}."
+                                            (label, note, type, value, scale, required, maxlength, restricted)
+                                            VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+    $newh -> execute($args -> {"label"},
+                     $args -> {"note"}
+                     $args -> {"type"},
+                     $args -> {"value"},
+                     $args -> {"scale"},
+                     $args -> {"required"},
+                     $args -> {"maxlength"},
+                     $args -> {"restricted"})
+        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field insert query: ".$self -> {"dbh"} -> errstr);
+
+    return $self -> build_admin_fields($self -> {"template"} -> load_template("admin/fields/add_done.tem"));
+}
+
+
 # ============================================================================
 #  Field listing
 
