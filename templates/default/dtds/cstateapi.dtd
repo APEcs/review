@@ -1,10 +1,16 @@
+<!DOCTYPE response [
 <!ELEMENT response (cstatedata|success|error)>
-<!ELEMENT success (#CDATA)>
-<!ELEMENT error (#CDATA)>
+<!ELEMENT success (#PCDATA)>
+<!ELEMENT error (#PCDATA)>
 <!ELEMENT cstatedata (setstates|availstates)>
-<!ELEMENT setstates (option*)>
-<!ELEMENT availstates (option*)>
-<!ELEMENT option (#CDATA)>
-<!ATTRLIST option
+<!ELEMENT setstates (opt*)>
+<!ELEMENT availstates (opt*)>
+<!ELEMENT opt (#PCDATA)>
+<!ATTLIST opt
 value CDATA #IMPLIED
-title CDATA #IMPLIED >
+title CDATA #IMPLIED>
+<!ENTITY ndash "&#8211;">
+<!ENTITY mdash "&#8212;">
+<!ENTITY lsquo "&#8216;">
+<!ENTITY rsquo "&#8217;">
+]>

@@ -77,10 +77,10 @@ function setStatementLists(responseXML) {
         $('delstate').src = "templates/default/admin/images/delstatement"+(mode == "disabled" ? "-off" : "")+".png";
 
         var setstates   = responseXML.getElementsByTagName('setstates')[0];
-        if(setstates) setOptions($('setstates'), setstates.getElementsByTagName('option'));
+        if(setstates) setOptions($('setstates'), setstates.getElementsByTagName('opt'));
 
         var availstates = responseXML.getElementsByTagName('availstates')[0];
-        if(availstates) setOptions($('availstates'), availstates.getElementsByTagName('option'));
+        if(availstates) setOptions($('availstates'), availstates.getElementsByTagName('opt'));
 
         if(mode != "disabled") {
             $('setstate').addEvent('click', function() { moveStatement($('availstates'), $('setstates'), "add"); });

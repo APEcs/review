@@ -161,7 +161,7 @@ sub build_set_statements {
     my $options = "";
     while(my $statement = $statesh -> fetchrow_arrayref()) {
         my $showstatement = $self -> truncate_words($statement -> [1]);
-        $options .= '<option value="'.$statement -> [0].'" title="'.$statement -> [1].'">'.$showstatement."</option>\n";
+        $options .= '<opt value="'.$statement -> [0].'" title="'.$statement -> [1].'">'.$showstatement."</opt>\n";
     }
 
     return $options;
@@ -191,7 +191,7 @@ sub build_unset_statements {
     my $options = "";
     while(my $statement = $statesh -> fetchrow_arrayref()) {
         my $showstatement = $self -> truncate_words($statement -> [1]);
-        $options .= '<option value="'.$statement -> [0].'" title="'.$statement -> [1].'">'.$showstatement."</option>\n";
+        $options .= '<opt value="'.$statement -> [0].'" title="'.$statement -> [1].'">'.$showstatement."</opt>\n";
 
     }
 
@@ -228,7 +228,7 @@ sub generate_statements_xml {
     print $self -> {"cgi"} -> header(-type => 'application/xml',
                                      -charset => 'utf-8');
     print Encode::encode_utf8($self -> {"template"} -> load_template("xml/xml.tem", {"***base***"  => "response",
-                                                                                     "***dtd***"   => '<!DOCTYPE response SYSTEM "dtds/cstateapi.dtd" >',
+                                                                                     "***dtd***"   => $self -> {"template"} -> load_template("dtds/cstateapi.dtd"),
                                                                                      "***attrs***" => '',
                                                                                      "***tree***"  => $content}));
     exit;
