@@ -327,13 +327,13 @@ sub _set_user_cohort {
 
         # Did we get a cohort id and name? If not, give up with an error
         if(!$cohort) {
-            $self -> {"lasterr"} = "Unable to determine cohort for user, or obtain a fallback cohort. Please contact ".$self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:support_email"}." for assistance, giving your username and this error.";
+            $self -> {"lasterr"} = "Unable to determine cohort for user, or obtain a fallback cohort. Please contact ".$self -> {"settings"} -> {"config"} -> {"LDAPCohortAuth:support_email"}." for assistance, giving your username and this error.";
             return undef;
         }
 
         # set the id in the user's data and possibly set the warning message
         $user -> {"cohort_id"} = $cohort -> {"id"};
-        $self -> {"lasterr"} = "Warning: the system has fallen back on using the current cohort (".$cohort -> {"name"}.") as your cohort as it could not determine your cohort by other means. If this is incorrect, please stop at this point and contact ".$self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:support_email"}." for assistance, giving your username and this warning."
+        $self -> {"lasterr"} = "Warning: the system has fallen back on using the current cohort (".$cohort -> {"name"}.") as your cohort as it could not determine your cohort by other means. If this is incorrect, please stop at this point and contact ".$self -> {"settings"} -> {"config"} -> {"LDAPCohortAuth:support_email"}." for assistance, giving your username and this warning."
             if($self -> {"settings"} -> {"config"} -> {"SSHCohortAuth:fallback_warning"});
     }
 
