@@ -2,6 +2,7 @@
 
 use strict;
 use lib qw(/var/www/webperl);
+use lib qw(modules);
 use utf8;
 
 # System modules
