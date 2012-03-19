@@ -10,7 +10,7 @@ LOGIN_INVALID   = Username or password are not valid.
 LOGIN_DAYS      = days
 
 LOGIN_DONE      = You have successfully logged into the system, and you will be redirected shortly.
-LOGIN_DONE_NOR  = You have successfully logged into the system, but warnings were generated during the login process. Please read the warning message show above before continuing.
+LOGIN_DONE_NOR  = You have successfully logged into the system, but warnings were generated during the login process. Please read the warning message shown above before continuing.
 LOGIN_REDIRECT  = <p>If you do not want to wait, <a href="***url***">click here</a>.</p><p><a href="index.cgi">Click here</a> to return to the front page.</p>
 LOGIN_CONTLINK  = <p><a href="***url***">Click here</a> to return to the page you needed to log in to access. <a href="index.cgi">Click here</a> to return to the front page.</p>
 
