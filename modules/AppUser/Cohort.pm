@@ -21,7 +21,6 @@ package AppUser::Cohort;
 
 use strict;
 use base qw(AppUser);
-use Logging qw(die_log);
 
 # ============================================================================
 #  Post-auth functions.
@@ -71,7 +70,7 @@ sub _set_user_cohort {
                                                FROM ".$self -> {"settings"} -> {"database"} -> {"usercache"}."
                                                WHERE username = ?");
     $cohorth -> execute($user -> {"username"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache query: ".$self -> {"dbh"} -> errstr);
 
     my $cohortrow = $cohorth -> fetchrow_arrayref();
 
@@ -93,7 +92,7 @@ sub _set_user_cohort {
                                                    WHERE startdate <= UNIX_TIMESTAMP()
                                                    AND enddate >= UNIX_TIMESTAMP()");
         $cohorth -> execute()
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
+            or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
 
         my $cohort = $cohorth -> fetchrow_hashref();
 
@@ -114,7 +113,7 @@ sub _set_user_cohort {
                                              SET cohort_id = ?
                                              WHERE user_id = ?");
     $newch -> execute($user -> {"cohort_id"}, $user -> {"user_id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform user update query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform user update query: ".$self -> {"dbh"} -> errstr);
 
     # Done, return the user with the new cohort id set...
     return $user;

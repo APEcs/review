@@ -25,7 +25,6 @@ package Admin::Fields;
 # admin users to add, edit, and remove the fields in the form field pool.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use MIME::Base64;               # Needed for base64 encoding of popup bodies.
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
@@ -58,7 +57,7 @@ sub can_modify_field {
                                              AND s.user_id = u.user_id
                                              LIMIT 1");
     $usedh -> execute($fieldid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform used field count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform used field count query: ".$self -> {"dbh"} -> errstr);
 
     my $used = $usedh -> fetchrow_arrayref();
     return $used ? 0 : 1; # Theoretically !$used should work, but this is safer.
@@ -74,7 +73,7 @@ sub get_field_count {
 
     my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(*) FROM ".$self -> {"settings"} -> {"database"} -> {"formfields"});
     $counth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform form field count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform form field count query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -113,7 +112,7 @@ sub build_typelist {
 
     # Which types do we support?
     my $values = $self -> get_enum_values($self -> {"settings"} -> {"database"} -> {"formfields"}, "type");
-    die_log($self -> {"cgi"} -> remote_host(), $values) unless(ref($values) eq "ARRAY");
+    $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), $values) unless(ref($values) eq "ARRAY");
 
     print STDERR "Values: ".Dumper($values);
 
@@ -150,7 +149,7 @@ sub get_editable_field {
     my $fieldh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"formfields"}."
                                               WHERE id = ?");
     $fieldh -> execute($fieldid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $field = $fieldh -> fetchrow_hashref();
     return $self -> {"template"} -> replace_langvar("ADMIN_FIELD_ERR_BADID")
@@ -184,7 +183,7 @@ sub delete_field {
     my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"formfields"}."
                                              WHERE id = ?");
     $nukeh -> execute($field -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field delete query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field delete query: ".$self -> {"dbh"} -> errstr);
 
     $self -> log("admin edit", "Deleted field ".$field -> {"id"}." (".$field -> {"label"}.")");
 
@@ -306,7 +305,7 @@ sub validate_edit_field {
 
     # Check that type is valid...
     my $values = $self -> get_enum_values($self -> {"settings"} -> {"database"} -> {"formfields"}, "type");
-    die_log($self -> {"cgi"} -> remote_host(), $values) unless(ref($values) eq "ARRAY");
+    $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), $values) unless(ref($values) eq "ARRAY");
 
     ($args -> {"type"}, $error) = $self -> validate_options("type", {"nicename" => $self -> {"template"} -> replace_langvar("ADMIN_FIELD_TYPE"),
                                                                      "required" => 1,
@@ -348,7 +347,7 @@ sub add_field {
                      $args -> {"required"},
                      $args -> {"maxlength"},
                      $args -> {"restricted"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field insert query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform field insert query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_fields($self -> {"template"} -> load_template("admin/fields/add_done.tem"));
 }
@@ -378,7 +377,7 @@ sub build_admin_fields {
                                               ORDER BY `label` ASC
                                               LIMIT $start,".$self -> {"settings"} -> {"config"} -> {"Admin:page_length"});
     $fieldh -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform form field lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform form field lookup query: ".$self -> {"dbh"} -> errstr);
 
     # precache some templates needed later
     my $temcache = { "row"      => $self -> {"template"} -> load_template("admin/fields/row.tem"),

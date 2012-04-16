@@ -25,7 +25,6 @@ package SaveSort;
 # stored when they are done.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
 use Encode;
 
 
@@ -48,7 +47,7 @@ sub save_sort {
                                                (user_id, period_id, sortdate, updated)
                                                VALUES(?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
     $headerh -> execute($userid, $period -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header creation query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header creation query: ".$self -> {"dbh"} -> errstr);
 
     # Get the ID that was created. This is horrible and icky, but it should be realiable on MySQL...
     my $sortid = $self -> {"dbh"} -> {"mysql_insertid"};
@@ -60,7 +59,7 @@ sub save_sort {
     my %params = $self -> {"cgi"} -> Vars;
     foreach my $param (keys(%params)) {
         $datah -> execute($sortid, $param, $params{$param})
-                    or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data creation query ($param = $params{param} failed): ".$self -> {"dbh"} -> errstr);
+                    or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data creation query ($param = $params{param} failed): ".$self -> {"dbh"} -> errstr);
     }
 
     return "status=1";

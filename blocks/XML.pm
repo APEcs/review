@@ -25,6 +25,5 @@ package XML;
 # common to all XML modules.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
 
 1;

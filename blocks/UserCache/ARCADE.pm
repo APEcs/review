@@ -29,7 +29,6 @@ package UserCache::ARCADE;
 use strict;
 use base qw(UserCache); # This class extends ReviewBlock
 use Date::Calc qw(Today Add_Delta_YM);
-use Logging qw(die_log);
 use Time::Local;
 use Socket;
 
@@ -49,7 +48,7 @@ sub cache_user {
     my $checkh = $self -> {"dbh"} -> prepare("SELECT username FROM ".$self -> {"settings"} -> {"database"} -> {"usercache"}."
                                               WHERE username = ?");
     $checkh -> execute($username)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $incache = $checkh -> fetchrow_arrayref();
     return "user already in cache" if($incache);
@@ -59,7 +58,7 @@ sub cache_user {
                                              (username, cohort_id)
                                              VALUES(?, ?)");
     $userh -> execute($username, $cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache insert query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform usercache insert query: ".$self -> {"dbh"} -> errstr);
 
     return "user added to cache";
 }
@@ -120,13 +119,13 @@ sub populate_usercache {
         my ($tyear, $tmonth, $tday) = Add_Delta_YM($year, $month, $day, $yearoffset, 0);
 
         $cohorts -> {$yearoffset} = $self -> get_cohort_bytime(timelocal(0, 0, 0, $tday, $tmonth, $tyear))
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to obtain a cohort for offset $yearoffset (".timelocal(0, 0, 0, $tday, $tmonth, $tyear).")");
+            or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to obtain a cohort for offset $yearoffset (".timelocal(0, 0, 0, $tday, $tmonth, $tyear).")");
     }
 
     # Now the fun starts - ask the database for which courses we need to ask ARCADE for
     my $arcadeh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"arcade"});
     $arcadeh -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform arcade lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform arcade lookup query: ".$self -> {"dbh"} -> errstr);
 
     # Each course needs to be checked against arcade, and the resuling users stored
     my $progress = "";

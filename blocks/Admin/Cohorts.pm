@@ -26,7 +26,6 @@ package Admin::Cohorts;
 # be placed in.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
 use Data::Dumper;
@@ -48,7 +47,7 @@ sub can_delete_cohort {
     my $checkh = $self -> {"dbh"} -> prepare("SELECT COUNT(user_id) FROM ".$self -> {"settings"} -> {"database"} -> {"users"}."
                                               WHERE cohort_id = ?");
     $checkh -> execute($cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort delete check query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort delete check query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $checkh -> fetchrow_arrayref();
 
@@ -66,7 +65,7 @@ sub get_cohort_count {
 
     my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(*) FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"});
     $counth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort count query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -141,7 +140,7 @@ sub get_deletable_cohort {
     my $cohorth = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}."
                                                WHERE id = ?");
     $cohorth -> execute($cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $cohort = $cohorth -> fetchrow_hashref();
     return $self -> {"template"} -> replace_langvar("ADMIN_COHORT_ERR_BADID")
@@ -175,7 +174,7 @@ sub delete_cohort {
     my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}."
                                              WHERE id = ?");
     $nukeh -> execute($cohort -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort delete query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort delete query: ".$self -> {"dbh"} -> errstr);
 
     $self -> log("admin edit", "Deleted cohort ".$cohort -> {"id"}." (".$cohort -> {"name"}.")");
 
@@ -335,7 +334,7 @@ sub add_cohort {
     $newh -> execute($args -> {"startdate"},
                      $args -> {"enddate"},
                      $args -> {"name"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort insert query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort insert query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_cohorts($self -> {"template"} -> load_template("admin/cohorts/add_done.tem"));
 }
@@ -365,7 +364,7 @@ sub edit_cohort {
                       $args -> {"enddate"},
                       $args -> {"name"},
                       $args -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort edit query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort edit query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_cohorts($self -> {"template"} -> load_template("admin/cohorts/edit_done.tem"));
 }
@@ -442,7 +441,7 @@ sub build_admin_cohorts {
                                                ORDER BY `$sortfield` $sortdir
                                                LIMIT $start,".$self -> {"settings"} -> {"config"} -> {"Admin:page_length"});
     $cohorth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
 
     while(my $cohort = $cohorth -> fetchrow_hashref()) {
         # Determine whether this cohort can be deleted.

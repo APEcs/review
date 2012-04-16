@@ -25,7 +25,6 @@ package Admin::Statements;
 # admin users to add, edit, and remove the statements in the statement pool.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
 use Data::Dumper;
@@ -57,7 +56,7 @@ sub can_modify_statement {
                                              AND s.user_id = u.user_id
                                              LIMIT 1");
     $usedh -> execute($statementid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform used statement count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform used statement count query: ".$self -> {"dbh"} -> errstr);
 
     my $used = $usedh -> fetchrow_arrayref();
     return $used ? 0 : 1; # Theoretically !$used should work, but this is safer.
@@ -73,7 +72,7 @@ sub get_statement_count {
 
     my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(*) FROM ".$self -> {"settings"} -> {"database"} -> {"statements"});
     $counth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement count query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -139,7 +138,7 @@ sub get_editable_statement {
     my $statementh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"statements"}."
                                                   WHERE id = ?");
     $statementh -> execute($statementid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $statement = $statementh -> fetchrow_hashref();
     return $self -> {"template"} -> replace_langvar("ADMIN_STATE_ERR_BADID")
@@ -173,7 +172,7 @@ sub delete_statement {
     my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"statements"}."
                                              WHERE id = ?");
     $nukeh -> execute($statement -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement delete query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement delete query: ".$self -> {"dbh"} -> errstr);
 
     $self -> log("admin edit", "Deleted statement ".$statement -> {"id"}." (".$statement -> {"statement"}.")");
 
@@ -284,7 +283,7 @@ sub add_statement {
                                             (statement)
                                             VALUES(?)");
     $newh -> execute($args -> {"statement"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement insert query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement insert query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_statements($self -> {"template"} -> load_template("admin/statements/add_done.tem"));
 }
@@ -312,7 +311,7 @@ sub edit_statement {
                                              WHERE id = ?");
     $edith -> execute($args -> {"statement"},
                       $args -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement edit query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement edit query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_statements($self -> {"template"} -> load_template("admin/statements/edit_done.tem"));
 }
@@ -367,7 +366,7 @@ sub build_admin_statements {
                                                   ORDER BY `statement` $sortdir
                                                   LIMIT $start,".$self -> {"settings"} -> {"config"} -> {"Admin:page_length"});
     $statementh -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
 
     # precache some templates needed later
     my $temcache = { "row" => $self -> {"template"} -> load_template("admin/statements/row.tem"),

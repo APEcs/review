@@ -26,7 +26,6 @@ package Admin::Index;
 # modules to manage periods, maps, statements, and so on.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 
 ## @method private $ admin_table_count($table)
 # Count the number of rows in the specified table. This will return a dumb
@@ -41,7 +40,7 @@ sub admin_table_count {
 
     my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(*) FROM ".$self -> {"settings"} -> {"database"} -> {$table});
     $counth -> execute()
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute count query on table $table: ".$self -> {"dbh"} -> errstr);
+            or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute count query on table $table: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -70,7 +69,7 @@ sub build_admin_index {
                                               WHERE id NOT IN (SELECT DISTINCT(sort_id) FROM ".$self -> {"settings"} -> {"database"} -> {"summaries"}.")");
 
     $counth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute missing summary count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute missing summary count query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -87,7 +86,7 @@ sub build_admin_index {
                                             ORDER BY logtime DESC
                                             LIMIT ".$self -> {"settings"} -> {"config"} -> {"Admin:shortlog_count"});
     $logh -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute log query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute log query: ".$self -> {"dbh"} -> errstr);
 
     my $logrow = $self -> {"template"} -> load_template("admin/index_logline.tem");
     $stats -> {"***loglines***"} = "";

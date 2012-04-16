@@ -25,7 +25,6 @@ package FlashQ;
 # review webapp.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
 
 # ============================================================================
 #  Interface functions

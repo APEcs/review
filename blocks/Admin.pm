@@ -25,7 +25,6 @@ package Admin;
 # common to all Admin modules.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
 
 
 ## @method $ check_admin_permission($userid)
@@ -74,7 +73,7 @@ sub generate_admin_tabbar {
                                               WHERE b.id = a.block_id
                                               ORDER BY a.position");
     $blocks -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute admin block lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to execute admin block lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $entrytem = $self -> {"template"} -> load_template("admin/bar_entry.tem");
     my $entries = "";
@@ -109,7 +108,7 @@ sub cohort_has_sorts {
                                               AND u.cohort_id = ?
                                               LIMIT 1");
     $checkh -> execute($cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort check query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort check query: ".$self -> {"dbh"} -> errstr);
 
     # If the row fetch was successful, one or more sorts have been peformed
     return $checkh -> fetchrow_arrayref();

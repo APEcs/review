@@ -27,8 +27,6 @@ package XML::Config;
 # application.
 use strict;
 use base qw(XML); # This class extends XML
-use Logging qw(die_log);
-
 
 ## @method private $ build_formfields($userid)
 # Build the list of form fields set for the cohort the specified user is in. This
@@ -54,7 +52,7 @@ sub build_formfields {
                                               AND c.cohort_id = ?
                                               ORDER BY c.position");
     $fieldh -> execute($user -> {"cohort_id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform form field lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform form field lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $element = $self -> {"template"} -> load_template("xml/elem.tem");
     my $fields = "";

@@ -26,7 +26,6 @@ package Admin::CohortStateAPI;
 # as opposed to Admin::CohortStatements which is essentially a frontend server.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
 
@@ -156,7 +155,7 @@ sub build_set_statements {
                                                AND c.cohort_id = ?
                                                ORDER BY s.statement");
     $statesh -> execute($cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort statement lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort statement lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $options = "";
     while(my $statement = $statesh -> fetchrow_arrayref()) {
@@ -186,7 +185,7 @@ sub build_unset_statements {
                                                                   WHERE c.cohort_id = ?)
                                                ORDER BY s.statement");
     $statesh -> execute($cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort statement lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort statement lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $options = "";
     while(my $statement = $statesh -> fetchrow_arrayref()) {

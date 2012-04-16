@@ -25,6 +25,5 @@ package UserCache;
 # common to all UserCache modules.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
 
 1;

@@ -31,7 +31,6 @@ package Admin::CohortCheck;
 # cohort, the system will accept it as valid.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use Utils qw(is_defined_numeric);
 
 ## @method $ page_display()

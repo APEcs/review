@@ -27,8 +27,6 @@ package XML::Map;
 # application.
 use strict;
 use base qw(XML); # This class extends XML
-use Logging qw(die_log);
-
 
 ## @method private $ build_map_tree($userid)
 # Build the list of map entries set for the cohort the specified user is in. This
@@ -63,7 +61,7 @@ sub build_map_tree {
                                             WHERE m.id = c.map_id
                                             AND c.cohort_id = ?");
     $maph -> execute($user -> {"cohort_id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to map lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to map lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $tree = "";
     while(my $map = $maph -> fetchrow_hashref()) {

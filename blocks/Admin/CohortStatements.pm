@@ -25,7 +25,6 @@ package Admin::CohortStatements;
 # admin users to select which statements are associated with each cohort.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
 
@@ -48,7 +47,7 @@ sub get_cohort_options {
                                                FROM ".$self -> {"settings"} -> {"database"} -> {"cohorts"}."
                                                ORDER BY name ASC");
     $cohorth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort list query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort list query: ".$self -> {"dbh"} -> errstr);
 
     my $locked = $self -> {"template"} -> load_template("admin/cohort_statement/locked_cohort.tem");
     my $options = "";

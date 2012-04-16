@@ -27,7 +27,6 @@ package ReviewBlock;
 use strict;
 use base qw(Block); # This class extends Block
 use HTML::Entities;
-use Logging qw(die_log);
 use List::Util qw(max);
 use MIME::Base64;               # Needed for base64 encoding of popup bodies.
 use URI::Encode qw(uri_encode); # Needed when composing query strings
@@ -175,7 +174,7 @@ sub get_sort_data {
                                              WHERE name = 'sort'
                                              AND sort_id = ?");
     $sorth -> execute($sortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $sortrow = $sorth -> fetchrow_arrayref();
 
@@ -195,15 +194,15 @@ sub get_sort_data {
             my @celldata = split(/,/, $sortfields[$pos]);
 
             # Does the cell data column id match the current column?
-            die_log($self -> {"cgi"} -> remote_host(), "FATAL: sort data column mismatch - expected $celldata[1] but got $col")
+            $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: sort data column mismatch - expected $celldata[1] but got $col")
                 unless($celldata[1] == $col);
 
             # Get the statement text
             $statementh -> execute($celldata[0])
-                or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
+                or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform statement lookup query: ".$self -> {"dbh"} -> errstr);
 
             my $statement = $statementh -> fetchrow_arrayref();
-            die_log($self -> {"cgi"} -> remote_host(), "FATAL: Request for unknown statement $celldata[0]")
+            $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Request for unknown statement $celldata[0]")
                 unless($statement);
 
             my $field = { "fulltext"  => $statement -> [0],
@@ -244,12 +243,12 @@ sub get_sort_comments {
                                              AND sort_id = ?");
 
     $sorth -> execute($sortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform comment lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform comment lookup query: ".$self -> {"dbh"} -> errstr);
 
     while(my $comment = $sorth -> fetchrow_arrayref()) {
         my ($id, $data) = $comment -> [0] =~ /^\(s(\d+)\)\s*(.*)$/;
 
-        die_log($self -> {"cgi"} -> remote_host(), "FATAL: malformed comment data for sort $sortid: ".$comment -> [0])
+        $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: malformed comment data for sort $sortid: ".$comment -> [0])
             if(!$id);
 
         $griddata -> {"comment"} -> {$id} -> {"comment"} = $data;
@@ -285,7 +284,7 @@ sub get_sort_times {
                     );
     foreach my $dur (@durations) {
         $timeh -> execute($dur, $sortid)
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
+            or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
 
         my $timer = $timeh -> fetchrow_arrayref();
 
@@ -314,7 +313,7 @@ sub build_sort_data {
                                             WHERE m.id = c.map_id
                                             AND c.cohort_id = ?");
     $maph -> execute($cohortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform map range lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform map range lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $griddata = { "ranges" => {} };
     while(my $maprow = $maph -> fetchrow_hashref()) {
@@ -568,7 +567,7 @@ sub build_sort_summaries {
                                                 WHERE sort_id = ?
                                                 ORDER BY storetime DESC");
     $summaryh -> execute($sortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
 
     # Precache the entry templates for speed
     my $entrytem = $self -> {"template"} -> load_template("summary/entry.tem");
@@ -703,7 +702,7 @@ sub get_cohort_bytime {
                                                WHERE startdate <= ?
                                                AND enddate >= ?");
     $cohorth -> execute($time, $time)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform cohort lookup query: ".$self -> {"dbh"} -> errstr);
 
     return $cohorth -> fetchrow_hashref();
 }
@@ -730,7 +729,7 @@ sub get_period {
                                                WHERE startdate <= ?
                                                AND enddate >= ?");
     $periodh -> execute($time, $time)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
 
     return $periodh -> fetchrow_hashref();
 }
@@ -817,7 +816,7 @@ sub get_sortdata {
                                              WHERE user_id = ?
                                              AND period_id = ?");
     $sorth -> execute($userid, $periodid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
 
     # If there is no sort record for this user/period, or fullsort is not set, return whatever we got...
     my $sort = $sorth -> fetchrow_hashref();
@@ -827,7 +826,7 @@ sub get_sortdata {
     my $datah = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"sortdata"}."
                                              WHERE sort_id = ?");
     $datah -> execute($sort -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort data lookup query: ".$self -> {"dbh"} -> errstr);
 
     # Copy any data we get into the sort hash
     while(my $data = $datah -> fetchrow_hashref()) {
@@ -839,7 +838,7 @@ sub get_sortdata {
                                              WHERE sort_id = ?
                                              ORDER BY storetime DESC");
     $summh -> execute($sort -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary lookup query: ".$self -> {"dbh"} -> errstr);
 
     # Fetch all the rows as an array of hashrefs...
     $sort -> {"summaries"} = $summh -> fetchall_arrayref({});
@@ -871,7 +870,7 @@ sub get_user_sorts {
                                              AND p.id = s.period_id
                                              ORDER BY s.sortdate DESC");
     $sorth -> execute($userid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
 
     # Query to get the number of summaries for a given sort
     my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(id) FROM ".$self -> {"settings"} -> {"database"} -> {"summaries"}."
@@ -884,7 +883,7 @@ sub get_user_sorts {
     while(my $sort = $sorth -> fetchrow_hashref()) {
         # Work out the sort summary count for this sort
         $counth -> execute($sort -> {"id"})
-            or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary count query: ".$self -> {"dbh"} -> errstr);
+            or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary count query: ".$self -> {"dbh"} -> errstr);
 
         my $count = $counth -> fetchrow_arrayref();
         $sort -> {"summary_count"} = $count ? $count -> [0] : 0;
@@ -920,7 +919,7 @@ sub get_sort_byids {
                                              WHERE s.period_id = p.id
                                              AND s.id = ?");
     $sorth -> execute($sortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $sort = $sorth -> fetchrow_hashref();
 

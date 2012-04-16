@@ -26,7 +26,6 @@ package Admin::Periods;
 # students may perform sorts.
 use strict;
 use base qw(Admin); # This class extends Admin
-use Logging qw(die_log);
 use POSIX qw(ceil);
 use Utils qw(is_defined_numeric);
 use Data::Dumper;
@@ -49,7 +48,7 @@ sub can_modify_period {
     my $checkh = $self -> {"dbh"} -> prepare("SELECT COUNT(id) FROM ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
                                               WHERE period_id = ?");
     $checkh -> execute($periodid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period modification check query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period modification check query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $checkh -> fetchrow_arrayref();
 
@@ -67,7 +66,7 @@ sub get_period_count {
 
     my $counth = $self -> {"dbh"} -> prepare("SELECT COUNT(*) FROM ".$self -> {"settings"} -> {"database"} -> {"periods"});
     $counth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period count query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period count query: ".$self -> {"dbh"} -> errstr);
 
     my $count = $counth -> fetchrow_arrayref();
 
@@ -140,7 +139,7 @@ sub get_editable_period {
     my $periodh = $self -> {"dbh"} -> prepare("SELECT * FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
                                                WHERE id = ?");
     $periodh -> execute($periodid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $period = $periodh -> fetchrow_hashref();
     return $self -> {"template"} -> replace_langvar("ADMIN_PERIOD_ERR_BADID")
@@ -174,7 +173,7 @@ sub delete_period {
     my $nukeh = $self -> {"dbh"} -> prepare("DELETE FROM ".$self -> {"settings"} -> {"database"} -> {"periods"}."
                                              WHERE id = ?");
     $nukeh -> execute($period -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period delete query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period delete query: ".$self -> {"dbh"} -> errstr);
 
     $self -> log("admin edit", "Deleted period ".$period -> {"id"}." (".$period -> {"name"}.", ".$period -> {"year"}.")");
 
@@ -360,7 +359,7 @@ sub add_period {
                      $args -> {"enddate"},
                      $args -> {"name"},
                      $args -> {"allow_sort"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period insert query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period insert query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_periods($self -> {"template"} -> load_template("admin/periods/add_done.tem"));
 }
@@ -392,7 +391,7 @@ sub edit_period {
                       $args -> {"name"},
                       $args -> {"allow_sort"},
                       $args -> {"id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period edit query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period edit query: ".$self -> {"dbh"} -> errstr);
 
     return $self -> build_admin_periods($self -> {"template"} -> load_template("admin/periods/edit_done.tem"));
 }
@@ -471,7 +470,7 @@ sub build_admin_periods {
                                                ORDER BY `$sortfield` $sortdir
                                                LIMIT $start,".$self -> {"settings"} -> {"config"} -> {"Admin:page_length"});
     $periodh -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform period lookup query: ".$self -> {"dbh"} -> errstr);
 
     while(my $period = $periodh -> fetchrow_hashref()) {
         # Determine whether this period can be edited/deleted.

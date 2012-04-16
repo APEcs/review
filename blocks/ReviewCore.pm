@@ -26,8 +26,6 @@ package ReviewCore;
 # is available, and serve up the flashQ application page if appropriate.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
-
 
 # ============================================================================
 #  Content generation functions

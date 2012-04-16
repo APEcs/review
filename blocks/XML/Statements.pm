@@ -27,8 +27,6 @@ package XML::Statements;
 # application.
 use strict;
 use base qw(XML); # This class extends XML
-use Logging qw(die_log);
-
 
 ## @method private $ build_statement_tree($userid)
 # Build the list of statements set for the cohort the specified user is in. This
@@ -63,7 +61,7 @@ sub build_statement_tree {
                                                   WHERE s.id = c.statement_id
                                                   AND c.cohort_id = ?");
     $statementh -> execute($user -> {"cohort_id"})
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to statement lookup query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to statement lookup query: ".$self -> {"dbh"} -> errstr);
 
     my $tree = "";
     while(my $statement = $statementh -> fetchrow_arrayref()) {

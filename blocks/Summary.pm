@@ -26,7 +26,6 @@ package Summary;
 # that did the sort), and allows the user to update the reflective summary for it.
 use strict;
 use base qw(ReviewBlock); # This class extends ReviewBlock
-use Logging qw(die_log);
 use Utils qw(is_defined_numeric);
 
 ## @method private $ build_summary_view($sortid, $multiview)
@@ -95,7 +94,7 @@ sub build_summary_multiview {
                                              WHERE id IN (".join(",", @valid_ids).")
                                              ORDER BY sortdate $order");
     $sorth -> execute()
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header query: ".$self -> {"dbh"} -> errstr);
 
     my $summaries = "";
     while(my $sort = $sorth -> fetchrow_arrayref()) {
@@ -137,14 +136,14 @@ sub store_summary {
                                                 (sort_id, summary, storetime)
                                                 VALUES(?, ?, UNIx_TIMESTAMP())");
     $summaryh -> execute($sortid, $summary)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary insert query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort summary insert query: ".$self -> {"dbh"} -> errstr);
 
     # Update the sort header updated timestamp
     my $updateh = $self -> {"dbh"} -> prepare("UPDATE ".$self -> {"settings"} -> {"database"} -> {"sorts"}."
                                                SET updated = UNIX_TIMESTAMP()
                                                WHERE id = ?");
     $updateh -> execute($sortid)
-        or die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header update query: ".$self -> {"dbh"} -> errstr);
+        or $self -> {"logger"} -> die_log($self -> {"cgi"} -> remote_host(), "FATAL: Unable to perform sort header update query: ".$self -> {"dbh"} -> errstr);
 
     return undef;
 }
