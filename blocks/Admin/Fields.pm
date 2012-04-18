@@ -392,13 +392,13 @@ sub build_admin_fields {
         my $modify = $self -> can_modify_field($field -> {"id"});
 
         # Put a row together
-        $fields .= $self -> {"template"} -> process_template($temcache -> {"row"}, {"***label***"     => $self -> truncate_words($field -> {"label"}), #, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
+        $fields .= $self -> {"template"} -> process_template($temcache -> {"row"}, {"***label***"     => $self -> {"template"} -> truncate_words($field -> {"label"}), #, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
                                                                                     "***labelfull***" => $field -> {"label"},
-                                                                                    "***note***"      => $self -> truncate_words($field -> {"note"}, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
+                                                                                    "***note***"      => $self -> {"template"} -> truncate_words($field -> {"note"}, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
                                                                                     "***notefull***"  => $field -> {"note"},
-                                                                                    "***value***"     => $self -> truncate_words($field -> {"value"}, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
+                                                                                    "***value***"     => $self -> {"template"} -> truncate_words($field -> {"value"}, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
                                                                                     "***valfull***"   => $field -> {"value"},
-                                                                                    "***scale***"     => $self -> truncate_words($field -> {"scale"}, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
+                                                                                    "***scale***"     => $self -> {"template"} -> truncate_words($field -> {"scale"}, $self -> {"settings"} -> {"config"} -> {"Admin::Fields:truncate_length"}),
                                                                                     "***scalefull***" => $field -> {"scale"},
                                                                                     "***type***"      => $field -> {"type"},
                                                                                     "***required***"  => $temcache -> {"required"} -> [$field -> {"required"}],

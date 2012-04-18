@@ -35,34 +35,6 @@ use Utils qw(superchomp trimspace);
 # ============================================================================
 #  General utility stuff.
 
-## @method $ truncate_words($data, $len)
-# Truncate the specified string to the nearest word boundary less than the specified
-# length. This will take a string and, if it is longer than the specified length
-# (or the default length set in the settings, if the length is not given), it will truncate
-# it to the nearest space, hyphen, or underscore less than the desired length. If the
-# string is truncated, it will have an elipsis ('...') appended to it.
-#
-# @param data The string to truncate.
-# @param len  Optional length in characters. If not specified, this will default to the
-#             Core:truncate_length value set in the configuation. If the config value
-#             is missing, this function does nothing.
-# @return A string that fits into the specified length.
-sub truncate_words {
-    my $self = shift;
-    my $data = shift;
-    my $len  = shift || $self -> {"settings"} -> {"config"} -> {"Core:truncate_length"}; # fall back on the default if not set
-
-    # return the string unmodified if it fits inside the truncation length (or one isn't set)
-    return $data if(!defined($len) || length($data) <= $len);
-
-    # make space for the elipsis
-    $len -= 3;
-
-    my $trunc = substr($data, 0, $len);
-    $trunc =~ s/^(.{0,$len})[-_;:\.,\?!\s].*$/$1/;
-
-    return $trunc."...";
-}
 
 
 ## @fn $ fix_colour($colour)
@@ -206,7 +178,7 @@ sub get_sort_data {
                 unless($statement);
 
             my $field = { "fulltext"  => $statement -> [0],
-                          "shorttext" => $self -> truncate_words($statement -> [0]),
+                          "shorttext" => $self -> {"template"} -> truncate_words($statement -> [0]),
                           "colour"    => $colours[$celldata[2] - 1],
                           "col"       => $col,
             };

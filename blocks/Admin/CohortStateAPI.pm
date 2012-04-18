@@ -159,7 +159,7 @@ sub build_set_statements {
 
     my $options = "";
     while(my $statement = $statesh -> fetchrow_arrayref()) {
-        my $showstatement = $self -> truncate_words($statement -> [1]);
+        my $showstatement = $self -> {"template"} -> truncate_words($statement -> [1]);
         $options .= '<opt value="'.$statement -> [0].'" title="'.$statement -> [1].'">'.$showstatement."</opt>\n";
     }
 
@@ -189,7 +189,7 @@ sub build_unset_statements {
 
     my $options = "";
     while(my $statement = $statesh -> fetchrow_arrayref()) {
-        my $showstatement = $self -> truncate_words($statement -> [1]);
+        my $showstatement = $self -> {"template"} -> truncate_words($statement -> [1]);
         $options .= '<opt value="'.$statement -> [0].'" title="'.$statement -> [1].'">'.$showstatement."</opt>\n";
 
     }
