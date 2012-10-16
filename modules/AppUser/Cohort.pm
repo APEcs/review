@@ -49,7 +49,7 @@ sub post_authenticate {
 # ============================================================================
 #  Internal functions
 
-## @method private $ _set_user_cohort($user, $auth)
+## @method private $ _set_user_cohort($user, $pass, $auth)
 # Determine which cohort the user is is in, and set it if needed. This will check whether
 # the specified user has been placed into a cohort, and if they have not it will attempt
 # to add them to the appropriate one.
@@ -60,6 +60,7 @@ sub post_authenticate {
 sub _set_user_cohort {
     my $self = shift;
     my $user = shift;
+    my $pass = shift;
     my $auth = shift;
 
     # If the user already has a cohort id, just return the user hash...
