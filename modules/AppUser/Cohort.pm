@@ -25,21 +25,23 @@ use base qw(AppUser);
 # ============================================================================
 #  Post-auth functions.
 
-## @method $ post_authenticate($username, $auth)
+## @method $ post_authenticate($username, $password, $auth)
 # Ensure that a newly-logged-in user is placed into a cohort based on their
 # username, or the current cohort if necessary.
 #
 # @param username The username of the user to update the user_auth field for.
+# @param password The user's password.
 # @param auth     A reference to the auth object calling this.
 # @return A reference to a hash containing the user's data on success,
 #         otherwise an error message.
 sub post_authenticate {
     my $self     = shift;
     my $username = shift;
+    my $password = shift;
     my $auth     = shift;
 
     # Call the superclass method to handle making sure the user exists
-    my $user = $self -> SUPER::post_authenticate($username, $auth);
+    my $user = $self -> SUPER::post_authenticate($username, $password, $auth);
 
     # Otherwise make sure the user is set up
     return $self -> _set_user_cohort($user, $auth);
@@ -49,7 +51,7 @@ sub post_authenticate {
 # ============================================================================
 #  Internal functions
 
-## @method private $ _set_user_cohort($user, $pass, $auth)
+## @method private $ _set_user_cohort($user, $auth)
 # Determine which cohort the user is is in, and set it if needed. This will check whether
 # the specified user has been placed into a cohort, and if they have not it will attempt
 # to add them to the appropriate one.
@@ -60,7 +62,6 @@ sub post_authenticate {
 sub _set_user_cohort {
     my $self = shift;
     my $user = shift;
-    my $pass = shift;
     my $auth = shift;
 
     # If the user already has a cohort id, just return the user hash...
